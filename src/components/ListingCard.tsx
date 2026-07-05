@@ -58,7 +58,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
   const [chatVisible, setChatVisible] = useState(false);
   const [timeLeftStr, setTimeLeftStr] = useState('');
 
-  const categoryInfo = CATEGORY_MAP[listing.category];
+  const categoryInfo = CATEGORY_MAP[listing.category] || CATEGORY_MAP['anything'];
   const isSupply = listing.type === 'supply';
 
   // Dynamic time remaining calculation
