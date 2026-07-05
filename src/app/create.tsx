@@ -13,6 +13,7 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useApp, ListingCategory, ListingType, ContactType, ListingMedia } from '@/context/AppContext';
 import { WheelPicker } from '@/components/ui/WheelPicker';
+import { MapPickerModal } from '@/components/MapPickerModal';
 
 const CATEGORY_OPTIONS: { labelKey: string; value: ListingCategory; icon: string; fallbackIcon: string; color: string }[] = [
   { labelKey: 'common.ski_pass', value: 'ski_pass', icon: 'figure.skiing.downhill', fallbackIcon: 'ticket', color: '#3A86F0' },
@@ -46,6 +47,9 @@ export default function CreateScreen() {
   const [customPriceText, setCustomPriceText] = useState('0.00');
 
   const [location, setLocation] = useState('');
+  const [latitude, setLatitude] = useState<number | undefined>();
+  const [longitude, setLongitude] = useState<number | undefined>();
+  const [mapVisible, setMapVisible] = useState(false);
   
   // Expiry duration state (Days, Hours, Minutes)
   const [selectedDays, setSelectedDays] = useState('0');
@@ -157,6 +161,8 @@ export default function CreateScreen() {
         category,
         type,
         location: location.trim(),
+        latitude,
+        longitude,
         expiresAt: getComputedExpiresAt(),
         isAnonymous,
         ownerName: isAnonymous ? t('profile.anonymousUser') : ownerName.trim(),
@@ -172,6 +178,8 @@ export default function CreateScreen() {
       setSelectedCents('.00');
       setCustomPriceText('0.00');
       setLocation('');
+      setLatitude(undefined);
+      setLongitude(undefined);
       setSelectedDays('0');
       setSelectedHours('4');
       setSelectedMinutes('0');
@@ -469,13 +477,25 @@ export default function CreateScreen() {
           {/* Location */}
           <View style={styles.formGroup}>
             <ThemedText type="smallBold" style={styles.label}>{t('create.locationLabel')}</ThemedText>
-            <TextInput
-              placeholder={t('create.locationPlaceholder')}
-              placeholderTextColor={theme.textSecondary}
-              value={location}
-              onChangeText={setLocation}
-              style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
-            />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TextInput
+                placeholder={t('create.locationPlaceholder')}
+                placeholderTextColor={theme.textSecondary}
+                value={location}
+                onChangeText={setLocation}
+                style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
+              />
+              <Pressable
+                onPress={() => setMapVisible(true)}
+                style={({ pressed }) => [
+                  styles.mapIconBtn,
+                  { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+                  pressed && { opacity: 0.8 }
+                ]}
+              >
+                <SymbolView tintColor={theme.text} name={{ ios: 'map.fill', android: 'map', web: 'map' } as any} size={20} />
+              </Pressable>
+            </View>
           </View>
 
           {/* Anonymity Switch */}
@@ -607,6 +627,17 @@ export default function CreateScreen() {
           )}
         </ScrollView>
       </SafeAreaView>
+
+      <MapPickerModal
+        visible={mapVisible}
+        onClose={() => setMapVisible(false)}
+        onSelectLocation={(address, lat, lng) => {
+          setLocation(address);
+          setLatitude(lat);
+          setLongitude(lng);
+          setMapVisible(false);
+        }}
+      />
     </ThemedView>
   );
 }
@@ -817,5 +848,14 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.two,
     width: '100%',
     alignItems: 'center',
+  },
+  mapIconBtn: {
+    height: 50,
+    width: 50,
+    borderWidth: 1,
+    borderRadius: Spacing.two,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: Spacing.two,
   },
 });

@@ -21,6 +21,8 @@ export interface Listing {
   category: ListingCategory;
   type: ListingType;
   location: string;
+  latitude?: number;
+  longitude?: number;
   expiresAt: string; // ISO string representing expiry
   createdAt: string;
   isAnonymous: boolean;
