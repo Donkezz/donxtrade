@@ -200,7 +200,7 @@ const getInitialListings = (): Listing[] => {
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [unlockedListings, setUnlockedListings] = useState<string[]>([]);
-  const [walletBalance, setWalletBalance] = useState<number>(5.00);
+  const [walletBalance, setWalletBalance] = useState<number>(50);
   const [chats, setChats] = useState<ChatConversation[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [lastClaimedBonus, setLastClaimedBonus] = useState<string | null>(null);
@@ -211,7 +211,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoginVisible, setLoginVisible] = useState(false);
   
-  const unlockFee = 0.10;
+  const unlockFee = 1;
 
   // Load state from AsyncStorage
   useEffect(() => {
@@ -245,8 +245,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (storedBalance) {
           setWalletBalance(parseFloat(storedBalance));
         } else {
-          setWalletBalance(5.00);
-          await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, '5.00');
+          setWalletBalance(50);
+          await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, '50');
         }
 
         if (storedChats) {
@@ -625,7 +625,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       setListings(initialListings);
       setUnlockedListings([]);
-      setWalletBalance(5.00);
+      setWalletBalance(50);
       setChats([]);
       setTransactions([]);
       setLastClaimedBonus(null);
@@ -634,7 +634,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       await i18n.changeLanguage('sk');
       
       await AsyncStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify(initialListings));
-      await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, '5.00');
+      await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, '50');
     } catch (error) {
       console.error('Failed to reset state:', error);
     }

@@ -12,6 +12,7 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useApp, Listing, Transaction } from '@/context/AppContext';
 import { SecureChatModal } from '@/components/SecureChatModal';
+import { GamificationModal } from '@/components/GamificationModal';
 
 const LANGUAGES = [
   { code: 'sk', label: 'SK', flag: '🇸🇰' },
@@ -93,6 +94,7 @@ export default function WalletScreen() {
   const [successVisible, setSuccessVisible] = useState(false);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [langMenuVisible, setLangMenuVisible] = useState(false);
+  const [gamificationVisible, setGamificationVisible] = useState(false);
 
 
 
@@ -161,6 +163,25 @@ export default function WalletScreen() {
               </Pressable>
             </View>
           )}
+
+          {/* Gamification Banner */}
+          <Pressable 
+            onPress={() => setGamificationVisible(true)}
+            style={({ pressed }) => [
+              styles.gamificationBanner,
+              { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+              pressed && { opacity: 0.8 }
+            ]}
+          >
+            <View style={styles.bannerIcon}>
+              <SymbolView tintColor="#FFD700" name={{ ios: 'star.circle.fill', android: 'star', web: 'star' } as any} size={28} />
+            </View>
+            <View style={styles.bannerText}>
+              <ThemedText type="smallBold">🌟 Ako získať viac Kreditov?</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: 2 }}>Zisti ako si zarobiť na odomykanie kontaktov zadarmo.</ThemedText>
+            </View>
+            <SymbolView tintColor={theme.textSecondary} name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' } as any} size={20} />
+          </Pressable>
 
           {/* Settings Section (Theme) */}
           <View style={[styles.sectionWrapper, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
@@ -388,6 +409,7 @@ export default function WalletScreen() {
           onClose={() => setActiveChatId(null)}
         />
       )}
+      <GamificationModal visible={gamificationVisible} onClose={() => setGamificationVisible(false)} />
 
       {/* Language Modal */}
       <Modal visible={langMenuVisible} transparent animationType="fade" onRequestClose={() => setLangMenuVisible(false)}>
@@ -498,11 +520,21 @@ const styles = StyleSheet.create({
     padding: Spacing.four,
     height: 180,
     justifyContent: 'space-between',
-    marginBottom: Spacing.three,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 5,
+    marginBottom: Spacing.four,
+  },
+  gamificationBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.three,
+    borderRadius: Spacing.three,
+    borderWidth: 1,
+    marginBottom: Spacing.four,
+  },
+  bannerIcon: {
+    marginRight: Spacing.three,
+  },
+  bannerText: {
+    flex: 1,
   },
   cardHeader: {
     flexDirection: 'row',

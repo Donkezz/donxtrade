@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TextInput, Pressable, FlatList, Platform, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { ListingCard } from '@/components/ListingCard';
+import { GamificationModal } from '@/components/GamificationModal';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useApp, ListingCategory, ListingType } from '@/context/AppContext';
@@ -18,6 +20,20 @@ export default function MarketplaceScreen() {
   const { listings, unlockedListings, walletBalance, appLanguage, setAppLanguage } = useApp();
 
   const [langMenuVisible, setLangMenuVisible] = useState(false);
+  const [gamificationVisible, setGamificationVisible] = useState(false);
+
+  useEffect(() => {
+    const checkFirstLaunch = async () => {
+      try {
+        const hasSeen = await AsyncStorage.getItem('hasSeenGamification');
+        if (!hasSeen) {
+          setGamificationVisible(true);
+          await AsyncStorage.setItem('hasSeenGamification', 'true');
+        }
+      } catch (e) {}
+    };
+    checkFirstLaunch();
+  }, []);
   const LANGUAGES = [
     { code: 'sk', label: 'SK', flag: '🇸🇰' },
     { code: 'en', label: 'EN', flag: '🇬🇧' },
@@ -102,7 +118,7 @@ export default function MarketplaceScreen() {
               size={16}
             />
             <ThemedText type="smallBold" style={styles.walletBalanceText}>
-              {walletBalance.toFixed(2)} € (Demo)
+              🪙 {Math.floor(walletBalance)} {t('common.currency')} (Demo)
             </ThemedText>
           </Pressable>
         </View>
@@ -268,6 +284,8 @@ export default function MarketplaceScreen() {
           </View>
         </Pressable>
       </Modal>
+
+      <GamificationModal visible={gamificationVisible} onClose={() => setGamificationVisible(false)} />
     </ThemedView>
   );
 }
