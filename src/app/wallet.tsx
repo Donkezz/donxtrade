@@ -88,7 +88,8 @@ export default function WalletScreen() {
     setAppTheme,
     currentUser,
     setLoginVisible,
-    logout
+    logout,
+    transactions
   } = useApp();
 
   const [successVisible, setSuccessVisible] = useState(false);
@@ -100,6 +101,7 @@ export default function WalletScreen() {
 
   const unlockedItems = listings.filter((item) => unlockedListings.includes(item.id));
   const myItems = listings.filter((item) => item.isMine === true);
+  const earnedCredits = transactions.filter(t => t.type === 'bonus' || t.type === 'create').reduce((acc, t) => acc + t.amount, 0);
 
   const handleReset = () => {
     const confirmMessage = t('profile.resetConfirm');
@@ -163,6 +165,47 @@ export default function WalletScreen() {
               </Pressable>
             </View>
           )}
+
+          {/* Gamification Dashboard */}
+          <View style={[styles.dashboardCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+            <View style={styles.dashboardHeader}>
+              <ThemedText type="smallBold" themeColor="textSecondary">Môj Zostatok</ThemedText>
+              <ThemedText type="subtitle" style={{ fontSize: 32, marginTop: Spacing.one }}>🪙 {Math.floor(walletBalance)}</ThemedText>
+            </View>
+
+            <View style={styles.statsRow}>
+              <View style={styles.statBox}>
+                <ThemedText type="small" themeColor="textSecondary">Zarobené</ThemedText>
+                <ThemedText type="smallBold" style={{ color: '#00b894', marginTop: 2 }}>+{Math.floor(earnedCredits)}</ThemedText>
+              </View>
+              <View style={[styles.statDivider, { backgroundColor: theme.backgroundSelected }]} />
+              <View style={styles.statBox}>
+                <ThemedText type="small" themeColor="textSecondary">Odomknuté</ThemedText>
+                <ThemedText type="smallBold" style={{ marginTop: 2 }}>{unlockedItems.length}</ThemedText>
+              </View>
+              <View style={[styles.statDivider, { backgroundColor: theme.backgroundSelected }]} />
+              <View style={styles.statBox}>
+                <ThemedText type="small" themeColor="textSecondary">Moje inzeráty</ThemedText>
+                <ThemedText type="smallBold" style={{ marginTop: 2 }}>{myItems.length}</ThemedText>
+              </View>
+            </View>
+
+            <Pressable
+              onPress={() => {
+                topUpWallet(50);
+                setSuccessVisible(true);
+                setTimeout(() => setSuccessVisible(false), 3000);
+              }}
+              style={({ pressed }) => [
+                styles.topupButton,
+                { backgroundColor: theme.text },
+                pressed && { opacity: 0.8 }
+              ]}
+            >
+              <SymbolView tintColor={theme.background} name={{ ios: 'plus.circle.fill', android: 'add_circle', web: 'add_circle' } as any} size={20} style={{ marginRight: 8 }} />
+              <ThemedText type="smallBold" style={{ color: theme.background }}>Dobiť Kredity (Zadarmo)</ThemedText>
+            </Pressable>
+          </View>
 
           {/* Gamification Banner */}
           <Pressable 
@@ -535,6 +578,40 @@ const styles = StyleSheet.create({
   },
   bannerText: {
     flex: 1,
+  },
+  dashboardCard: {
+    padding: Spacing.four,
+    borderRadius: Spacing.three,
+    borderWidth: 1,
+    marginBottom: Spacing.four,
+  },
+  dashboardHeader: {
+    alignItems: 'center',
+    marginBottom: Spacing.four,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.02)',
+    padding: Spacing.three,
+    borderRadius: Spacing.two,
+    marginBottom: Spacing.four,
+  },
+  statBox: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statDivider: {
+    width: 1,
+    height: 40,
+  },
+  topupButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.three,
+    borderRadius: Spacing.three,
   },
   cardHeader: {
     flexDirection: 'row',
