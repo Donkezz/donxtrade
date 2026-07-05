@@ -289,10 +289,13 @@ export default function CreateScreen() {
           </View>
 
           {/* Category Chips */}
-          <ThemedText type="smallBold" style={styles.label}>{t('create.categoryLabel')}</ThemedText>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 2 }}>
+            <ThemedText type="smallBold" style={styles.label}>{t('create.categoryLabel')}</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={{ opacity: 0.6, fontSize: 11, marginBottom: 8 }}>Potiahnite pre viac 👉</ThemedText>
+          </View>
           <ScrollView 
             horizontal 
-            showsHorizontalScrollIndicator={false} 
+            showsHorizontalScrollIndicator={true} 
             contentContainerStyle={styles.categoryScroll}
           >
             {CATEGORY_OPTIONS.map((opt) => {

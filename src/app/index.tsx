@@ -170,7 +170,7 @@ export default function MarketplaceScreen() {
         <View style={styles.categoriesContainer}>
           <FlatList
             horizontal
-            showsHorizontalScrollIndicator={false}
+            showsHorizontalScrollIndicator={true}
             data={CATEGORIES}
             keyExtractor={(item) => item.value}
             contentContainerStyle={styles.categoriesList}
