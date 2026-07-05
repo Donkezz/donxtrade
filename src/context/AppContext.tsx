@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 import i18n from '@/i18n';
 
-export type ListingCategory = 'ski_pass' | 'ticket' | 'service' | 'social';
+export type ListingCategory = 'anything' | 'clothing' | 'material' | 'kids' | 'men' | 'women' | 'service' | 'meeting' | 'tickets' | 'electronics' | 'home' | 'pets' | 'sport' | 'auto';
 export type ListingType = 'supply' | 'demand';
 export type ContactType = 'chat' | 'phone';
 
@@ -122,7 +122,7 @@ const getInitialListings = (): Listing[] => {
       description: 'Končím skôr, skipas je platný na celé stredisko Jasná Chopok do konca dňa (16:00). Odovzdám priamo na parkovisku Biela Púť.',
       price: 15,
       originalPrice: 59,
-      category: 'ski_pass',
+      category: 'sport',
       type: 'supply',
       location: 'Jasná - Chopok',
       expiresAt: new Date(now + 4 * 3600 * 1000).toISOString(), // 4 hours from now
@@ -141,7 +141,7 @@ const getInitialListings = (): Listing[] => {
       title: 'Dopyt: 2x lístok na koncert IMT Smile v Prešove',
       description: 'Kúpim dva lístky na dnešný večerný koncert v Prešove. Platba v hotovosti alebo na účet pri prevzatí lístkov.',
       price: 25,
-      category: 'ticket',
+      category: 'tickets',
       type: 'demand',
       location: 'Prešov, Amfiteáter',
       expiresAt: new Date(now + 8 * 3600 * 1000).toISOString(), // 8 hours from now
@@ -180,7 +180,7 @@ const getInitialListings = (): Listing[] => {
       title: 'Parťák na večerný beh (Chopok / Jasná)',
       description: 'Hľadám niekoho na stredne rýchly beh okolo Vrbického plesa dnes večer. Príjemný pokec a spoločné tempo.',
       price: 0,
-      category: 'social',
+      category: 'meeting',
       type: 'demand',
       location: 'Vrbické pleso',
       expiresAt: new Date(now + 2 * 3600 * 1000).toISOString(), // 2 hours from now
@@ -532,7 +532,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           ? 'Super fotka! Vyzerá to dobre.' 
           : 'Pekné video, dikes za detaily.';
       } else {
-        if (category === 'ski_pass') {
+        if (category === 'sport') {
           if (text.toLowerCase().includes('ahoj') || text.toLowerCase().includes('cau') || text.toLowerCase().includes('zdrav')) {
             replyText = 'Ahoj! Áno, skipas je stále voľný. Budem pri pokladniach na Bielej Púti o 10 minút, odovzdám ti ho.';
           } else if (text.toLowerCase().includes('kedy') || text.toLowerCase().includes('kde') || text.toLowerCase().includes('stret')) {
@@ -540,7 +540,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           } else {
             replyText = 'Dobre, dohodnuté! Zatiaľ čau, čakám ťa tam.';
           }
-        } else if (category === 'ticket') {
+        } else if (category === 'tickets') {
           if (text.toLowerCase().includes('ahoj') || text.toLowerCase().includes('voln') || text.toLowerCase().includes('listok')) {
             replyText = 'Ahoj, lístky na koncert sú ešte voľné. Môžem ti ich poslať na mail, alebo ak chceš, osobne v Prešove?';
           } else {

@@ -18,11 +18,21 @@ interface ListingCardProps {
   isUnlocked: boolean;
 }
 
-const CATEGORY_MAP = {
-  ski_pass: { labelKey: 'common.ski_pass', icon: 'figure.skiing.downhill', fallbackIcon: 'ticket', color: '#3A86F0' },
-  ticket: { labelKey: 'common.ticket', icon: 'ticket', fallbackIcon: 'tag', color: '#FF006E' },
+const CATEGORY_MAP: Record<string, { labelKey: string; icon: string; fallbackIcon: string; color: string }> = {
+  anything: { labelKey: 'common.anything', icon: 'square.grid.2x2', fallbackIcon: 'apps', color: '#6c5ce7' },
+  clothing: { labelKey: 'common.clothing', icon: 'tshirt', fallbackIcon: 'checkroom', color: '#ff7675' },
+  material: { labelKey: 'common.material', icon: 'shippingbox', fallbackIcon: 'inventory_2', color: '#fdcb6e' },
+  kids: { labelKey: 'common.kids', icon: 'stroller', fallbackIcon: 'child_friendly', color: '#00b894' },
+  men: { labelKey: 'common.men', icon: 'figure.stand', fallbackIcon: 'man', color: '#0984e3' },
+  women: { labelKey: 'common.women', icon: 'figure.dress', fallbackIcon: 'woman', color: '#e84393' },
   service: { labelKey: 'common.service', icon: 'wrench.and.screwdriver', fallbackIcon: 'build', color: '#8338EC' },
-  social: { labelKey: 'common.social', icon: 'person.2', fallbackIcon: 'people', color: '#38B000' },
+  meeting: { labelKey: 'common.meeting', icon: 'person.2', fallbackIcon: 'people', color: '#38B000' },
+  tickets: { labelKey: 'common.tickets', icon: 'ticket', fallbackIcon: 'local_activity', color: '#FF006E' },
+  electronics: { labelKey: 'common.electronics', icon: 'desktopcomputer', fallbackIcon: 'devices', color: '#2d3436' },
+  home: { labelKey: 'common.home', icon: 'house', fallbackIcon: 'home', color: '#d63031' },
+  pets: { labelKey: 'common.pets', icon: 'pawprint', fallbackIcon: 'pets', color: '#e17055' },
+  sport: { labelKey: 'common.sport', icon: 'figure.run', fallbackIcon: 'sports_soccer', color: '#3A86F0' },
+  auto: { labelKey: 'common.auto', icon: 'car', fallbackIcon: 'directions_car', color: '#b2bec3' },
 };
 
 const VideoPlayerItem = ({ uri }: { uri: string }) => {

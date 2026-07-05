@@ -12,7 +12,6 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useApp, Listing, Transaction } from '@/context/AppContext';
 import { SecureChatModal } from '@/components/SecureChatModal';
-import { FortuneWheel } from '@/components/FortuneWheel';
 
 const LANGUAGES = [
   { code: 'sk', label: 'SK', flag: '🇸🇰' },
@@ -70,45 +69,6 @@ const MyListingItem = ({ listing, onDelete }: { listing: Listing; onDelete: () =
   );
 };
 
-const TransactionItem = ({ tx }: { tx: Transaction }) => {
-  const { t } = useTranslation();
-  const theme = useTheme();
-  
-  const isPositive = tx.amount > 0;
-  const isZero = tx.amount === 0;
-  
-  const dateObj = new Date(tx.timestamp);
-  const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const dateStr = dateObj.toLocaleDateString([], { month: 'short', day: 'numeric' });
-  
-  let label = '';
-  switch(tx.type) {
-    case 'bonus':
-      label = t('profile.txBonus');
-      break;
-    case 'topup':
-      label = t('profile.txTopup');
-      break;
-    case 'unlock':
-      label = `${t('profile.txUnlock')}: ${tx.listingTitle || ''}`;
-      break;
-    case 'create':
-      label = `${t('profile.txCreate')}: ${tx.listingTitle || ''}`;
-      break;
-  }
-
-  return (
-    <View style={[styles.txItem, { borderBottomColor: theme.backgroundSelected }]}>
-      <View style={{ flex: 1, paddingRight: Spacing.two }}>
-        <ThemedText type="smallBold" numberOfLines={1}>{label}</ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">{dateStr} {timeStr}</ThemedText>
-      </View>
-      <ThemedText type="smallBold" style={{ color: isPositive ? '#38B000' : isZero ? theme.textSecondary : '#ff6b6b' }}>
-        {isPositive ? '+' : ''}{tx.amount.toFixed(2)} €
-      </ThemedText>
-    </View>
-  );
-};
 
 export default function WalletScreen() {
   const { t } = useTranslation();
@@ -120,7 +80,6 @@ export default function WalletScreen() {
     listings, 
     unlockedListings, 
     chats,
-    transactions,
     deleteListing,
     appLanguage,
     setAppLanguage,
@@ -135,45 +94,10 @@ export default function WalletScreen() {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [langMenuVisible, setLangMenuVisible] = useState(false);
 
-  const currentLang = LANGUAGES.find(l => l.code === appLanguage) || LANGUAGES[0];
 
-  // Animation values for Top-up button and card
-  const cardScale = useSharedValue(1);
-  const cardRotate = useSharedValue(0);
 
-  const cardAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { scale: cardScale.value },
-        { rotateZ: `${cardRotate.value}deg` }
-      ],
-    };
-  });
-
-  // Filter listings that have been unlocked
   const unlockedItems = listings.filter((item) => unlockedListings.includes(item.id));
-  
-  // Filter user's own listings
   const myItems = listings.filter((item) => item.isMine === true);
-
-  const handleTopUp = async () => {
-    // Trigger animations
-    cardScale.value = withSequence(
-      withSpring(1.05, { damping: 4, stiffness: 200 }),
-      withSpring(1, { damping: 10, stiffness: 100 })
-    );
-    cardRotate.value = withSequence(
-      withTiming(-2, { duration: 100 }),
-      withTiming(2, { duration: 100 }),
-      withTiming(0, { duration: 150 })
-    );
-
-    await topUpWallet(5.00);
-    setSuccessVisible(true);
-    setTimeout(() => {
-      setSuccessVisible(false);
-    }, 2000);
-  };
 
   const handleReset = () => {
     const confirmMessage = t('profile.resetConfirm');
@@ -220,17 +144,10 @@ export default function WalletScreen() {
           {/* Header */}
           <View style={styles.header}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <Pressable 
-                onPress={() => setLangMenuVisible(true)}
-                style={[styles.langFlagBtn, { backgroundColor: theme.backgroundElement }]}
-              >
-                <ThemedText style={{ fontSize: 20 }}>{currentLang.flag}</ThemedText>
-              </Pressable>
-              
-              <View style={{ alignItems: 'flex-end' }}>
-                <ThemedText type="title">{t('profile.title')}</ThemedText>
+              <View>
+                <ThemedText type="title">Môj Profil</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
-                  {t('profile.subtitle')}
+                  Tvoje údaje a nastavenia
                 </ThemedText>
               </View>
             </View>
@@ -304,87 +221,13 @@ export default function WalletScreen() {
             </View>
           ) : (
             <>
-              {/* Premium Card UI */}
-          <Animated.View 
-            style={[
-              styles.walletCard, 
-              cardAnimatedStyle,
-              { 
-                backgroundColor: theme.text,
-                shadowColor: theme.text,
-              }
-            ]}
-          >
-            <View style={styles.cardHeader}>
-              <ThemedText style={[styles.cardTitle, { color: theme.background }]}>
-                DONX PAY
-              </ThemedText>
-              <View style={styles.demoBadge}>
-                <ThemedText style={[styles.demoBadgeText, { color: theme.text, backgroundColor: theme.background }]}>
-                  {t('common.playMoneyWarning').toUpperCase()}
-                </ThemedText>
-              </View>
-            </View>
-
-            <View style={styles.cardBody}>
-              <ThemedText style={[styles.cardLabel, { color: theme.background + 'B0' }]}>
-                {t('profile.demoBalanceLabel')}
-              </ThemedText>
-              <ThemedText style={[styles.cardBalance, { color: theme.background }]}>
-                {walletBalance.toFixed(2)} €
-              </ThemedText>
-            </View>
-
-            <View style={styles.cardFooter}>
-              <ThemedText style={[styles.cardHolder, { color: theme.background + 'D0' }]}>
-                {t('profile.demoCardLabel')}
-              </ThemedText>
-              <View style={styles.cardLogo}>
-                <View style={[styles.cardCircle, { backgroundColor: '#FF006E' }]} />
-                <View style={[styles.cardCircle, { backgroundColor: '#FFB703', marginLeft: -10 }]} />
-              </View>
-            </View>
-          </Animated.View>
-
-          {/* Top-up Success Badge */}
-          {successVisible && (
-            <View style={styles.successBadge}>
-              <SymbolView
-                tintColor="#38B000"
-                name={{ ios: 'checkmark.seal.fill', android: 'check_circle', web: 'check_circle' }}
-                size={14}
-              />
-              <ThemedText type="smallBold" style={{ color: '#38B000', marginLeft: Spacing.one }}>
-                {t('profile.topupSuccess')}
-              </ThemedText>
-            </View>
-          )}
-
           {/* Action Buttons */}
-          <View style={styles.buttonRow}>
-            <Pressable
-              onPress={handleTopUp}
-              style={({ pressed }) => [
-                styles.topUpButton,
-                { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
-                pressed && { opacity: 0.8 }
-              ]}
-            >
-              <SymbolView
-                tintColor={theme.text}
-                name={{ ios: 'plus.circle.fill', android: 'add_circle', web: 'add_circle' }}
-                size={18}
-              />
-              <ThemedText type="smallBold" style={{ marginLeft: Spacing.one }}>
-                {t('profile.topupBtn')}
-              </ThemedText>
-            </Pressable>
-
+          <View style={[styles.buttonRow, { marginTop: Spacing.four }]}>
             <Pressable
               onPress={handleReset}
               style={({ pressed }) => [
                 styles.resetButton,
-                { borderColor: '#ff6b6b' },
+                { borderColor: '#ff6b6b', flex: 1, borderWidth: 1 },
                 pressed && { backgroundColor: '#ff6b6b20' }
               ]}
             >
@@ -394,7 +237,7 @@ export default function WalletScreen() {
                 size={16}
               />
               <ThemedText type="smallBold" style={{ color: '#ff6b6b', marginLeft: Spacing.one }}>
-                {t('profile.resetBtn')}
+                Obnoviť dáta
               </ThemedText>
             </Pressable>
           </View>
@@ -403,7 +246,7 @@ export default function WalletScreen() {
             onPress={() => router.push('/admin')}
             style={({ pressed }) => [
               styles.adminButton,
-              { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+              { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected, marginTop: Spacing.four },
               pressed && { opacity: 0.8 }
             ]}
           >
@@ -417,64 +260,7 @@ export default function WalletScreen() {
             </ThemedText>
           </Pressable>
 
-          {/* Daily Bonus Claim (Fortune Wheel) */}
-          <FortuneWheel />
-
           {/* My Active Listings Section */}
-          <View style={styles.unlockedSection}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>
-              {t('profile.myListingsSection').replace('%s', String(myItems.length))}
-            </ThemedText>
-            {myItems.length === 0 ? (
-              <View style={[styles.emptyBox, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-                <SymbolView
-                  tintColor={theme.textSecondary}
-                  name={{ ios: 'doc.text.fill', android: 'article', web: 'article' }}
-                  size={24}
-                />
-                <ThemedText type="smallBold" style={styles.emptyTitle}>
-                  {t('profile.noListings')}
-                </ThemedText>
-              </View>
-            ) : (
-              <View style={styles.myListingsContainer}>
-                {myItems.map((item) => (
-                  <MyListingItem 
-                    key={item.id} 
-                    listing={item} 
-                    onDelete={() => handleDeleteListing(item.id)} 
-                  />
-                ))}
-              </View>
-            )}
-          </View>
-
-          {/* Transaction History Section */}
-          <View style={[styles.unlockedSection, { marginTop: Spacing.four }]}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>
-              {t('profile.transactionsSection')}
-            </ThemedText>
-            {transactions.length === 0 ? (
-              <View style={[styles.emptyBox, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-                <SymbolView
-                  tintColor={theme.textSecondary}
-                  name={{ ios: 'list.bullet.indent', android: 'receipt_long', web: 'receipt_long' }}
-                  size={24}
-                />
-                <ThemedText type="smallBold" style={styles.emptyTitle}>
-                  Žiadne transakcie
-                </ThemedText>
-              </View>
-            ) : (
-              <View style={[styles.transactionsListContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-                {transactions.map((tx) => (
-                  <TransactionItem key={tx.id} tx={tx} />
-                ))}
-              </View>
-            )}
-          </View>
-
-          {/* Unlocked Contacts Section */}
           <View style={[styles.unlockedSection, { marginTop: Spacing.four }]}>
             <ThemedText type="subtitle" style={styles.sectionTitle}>
               {t('profile.unlockedContactsSection').replace('%s', String(unlockedItems.length))}

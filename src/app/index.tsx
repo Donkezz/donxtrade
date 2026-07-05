@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, Pressable, FlatList, Platform } from 'react-native';
+import { StyleSheet, View, TextInput, Pressable, FlatList, Platform, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
@@ -15,18 +15,38 @@ import { useApp, ListingCategory, ListingType } from '@/context/AppContext';
 export default function MarketplaceScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { listings, unlockedListings, walletBalance } = useApp();
+  const { listings, unlockedListings, walletBalance, appLanguage, setAppLanguage } = useApp();
+
+  const [langMenuVisible, setLangMenuVisible] = useState(false);
+  const LANGUAGES = [
+    { code: 'sk', label: 'SK', flag: '🇸🇰' },
+    { code: 'en', label: 'EN', flag: '🇬🇧' },
+    { code: 'pl', label: 'PL', flag: '🇵🇱' },
+    { code: 'hu', label: 'HU', flag: '🇭🇺' },
+    { code: 'uk', label: 'UK', flag: '🇺🇦' },
+  ];
+  const currentLang = LANGUAGES.find(l => l.code === appLanguage) || LANGUAGES[0];
 
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ListingCategory | 'all'>('all');
   const [selectedType, setSelectedType] = useState<ListingType>('supply'); // default: Ponuky
 
   const CATEGORIES: { labelKey: string; value: ListingCategory | 'all'; icon: string; fallbackIcon: string }[] = [
-    { labelKey: 'common.all', value: 'all', icon: 'square.grid.2x2', fallbackIcon: 'apps' },
-    { labelKey: 'common.ski_pass', value: 'ski_pass', icon: 'figure.skiing.downhill', fallbackIcon: 'ticket' },
-    { labelKey: 'common.ticket', value: 'ticket', icon: 'ticket', fallbackIcon: 'tag' },
+    { labelKey: 'common.all', value: 'all', icon: 'square.grid.2x2.fill', fallbackIcon: 'apps' },
+    { labelKey: 'common.anything', value: 'anything', icon: 'square.grid.2x2', fallbackIcon: 'apps' },
+    { labelKey: 'common.clothing', value: 'clothing', icon: 'tshirt', fallbackIcon: 'checkroom' },
+    { labelKey: 'common.material', value: 'material', icon: 'shippingbox', fallbackIcon: 'inventory_2' },
+    { labelKey: 'common.kids', value: 'kids', icon: 'stroller', fallbackIcon: 'child_friendly' },
+    { labelKey: 'common.men', value: 'men', icon: 'figure.stand', fallbackIcon: 'man' },
+    { labelKey: 'common.women', value: 'women', icon: 'figure.dress', fallbackIcon: 'woman' },
     { labelKey: 'common.service', value: 'service', icon: 'wrench.and.screwdriver', fallbackIcon: 'build' },
-    { labelKey: 'common.social', value: 'social', icon: 'person.2', fallbackIcon: 'people' },
+    { labelKey: 'common.meeting', value: 'meeting', icon: 'person.2', fallbackIcon: 'people' },
+    { labelKey: 'common.tickets', value: 'tickets', icon: 'ticket', fallbackIcon: 'local_activity' },
+    { labelKey: 'common.electronics', value: 'electronics', icon: 'desktopcomputer', fallbackIcon: 'devices' },
+    { labelKey: 'common.home', value: 'home', icon: 'house', fallbackIcon: 'home' },
+    { labelKey: 'common.pets', value: 'pets', icon: 'pawprint', fallbackIcon: 'pets' },
+    { labelKey: 'common.sport', value: 'sport', icon: 'figure.run', fallbackIcon: 'sports_soccer' },
+    { labelKey: 'common.auto', value: 'auto', icon: 'car', fallbackIcon: 'directions_car' },
   ];
 
   // Filter listings based on search, category, type, and expiration
@@ -52,9 +72,17 @@ export default function MarketplaceScreen() {
         
         {/* Header: Title & Balance */}
         <View style={styles.header}>
-          <View>
-            <ThemedText type="title" style={styles.brandTitle}>{t('common.brand')}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">{t('common.subtitle')}</ThemedText>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Pressable 
+              onPress={() => setLangMenuVisible(true)}
+              style={styles.langFlagBtn}
+            >
+              <ThemedText style={{ fontSize: 24, marginRight: Spacing.three }}>{currentLang.flag}</ThemedText>
+            </Pressable>
+            <View>
+              <ThemedText type="title" style={styles.brandTitle}>{t('common.brand')}</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">{t('common.subtitle')}</ThemedText>
+            </View>
           </View>
 
           <Pressable 
@@ -208,6 +236,35 @@ export default function MarketplaceScreen() {
           )}
         />
       </SafeAreaView>
+
+      {/* Language Selection Modal */}
+      <Modal
+        visible={langMenuVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLangMenuVisible(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setLangMenuVisible(false)}>
+          <View style={[styles.langModalContent, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+            {LANGUAGES.map(lang => (
+              <Pressable
+                key={lang.code}
+                style={[
+                  styles.langModalItem,
+                  appLanguage === lang.code && { backgroundColor: theme.backgroundSelected }
+                ]}
+                onPress={() => {
+                  setAppLanguage(lang.code);
+                  setLangMenuVisible(false);
+                }}
+              >
+                <ThemedText style={{ fontSize: 20 }}>{lang.flag}</ThemedText>
+                <ThemedText type="smallBold" style={{ marginLeft: Spacing.three }}>{lang.label}</ThemedText>
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
     </ThemedView>
   );
 }
@@ -323,5 +380,31 @@ const styles = StyleSheet.create({
   },
   emptySubtext: {
     textAlign: 'center',
+    maxWidth: 250,
+  },
+  langFlagBtn: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.four,
+  },
+  langModalContent: {
+    width: 250,
+    borderRadius: Spacing.three,
+    padding: Spacing.four,
+    borderWidth: 1,
+  },
+  langModalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Spacing.two,
+    marginBottom: Spacing.one,
   },
 });

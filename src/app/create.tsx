@@ -16,10 +16,20 @@ import { WheelPicker } from '@/components/ui/WheelPicker';
 import { MapPickerModal } from '@/components/MapPickerModal';
 
 const CATEGORY_OPTIONS: { labelKey: string; value: ListingCategory; icon: string; fallbackIcon: string; color: string }[] = [
-  { labelKey: 'common.ski_pass', value: 'ski_pass', icon: 'figure.skiing.downhill', fallbackIcon: 'ticket', color: '#3A86F0' },
-  { labelKey: 'common.ticket', value: 'ticket', icon: 'ticket', fallbackIcon: 'tag', color: '#FF006E' },
+  { labelKey: 'common.anything', value: 'anything', icon: 'square.grid.2x2', fallbackIcon: 'apps', color: '#6c5ce7' },
+  { labelKey: 'common.clothing', value: 'clothing', icon: 'tshirt', fallbackIcon: 'checkroom', color: '#ff7675' },
+  { labelKey: 'common.material', value: 'material', icon: 'shippingbox', fallbackIcon: 'inventory_2', color: '#fdcb6e' },
+  { labelKey: 'common.kids', value: 'kids', icon: 'stroller', fallbackIcon: 'child_friendly', color: '#00b894' },
+  { labelKey: 'common.men', value: 'men', icon: 'figure.stand', fallbackIcon: 'man', color: '#0984e3' },
+  { labelKey: 'common.women', value: 'women', icon: 'figure.dress', fallbackIcon: 'woman', color: '#e84393' },
   { labelKey: 'common.service', value: 'service', icon: 'wrench.and.screwdriver', fallbackIcon: 'build', color: '#8338EC' },
-  { labelKey: 'common.social', value: 'social', icon: 'person.2', fallbackIcon: 'people', color: '#38B000' },
+  { labelKey: 'common.meeting', value: 'meeting', icon: 'person.2', fallbackIcon: 'people', color: '#38B000' },
+  { labelKey: 'common.tickets', value: 'tickets', icon: 'ticket', fallbackIcon: 'local_activity', color: '#FF006E' },
+  { labelKey: 'common.electronics', value: 'electronics', icon: 'desktopcomputer', fallbackIcon: 'devices', color: '#2d3436' },
+  { labelKey: 'common.home', value: 'home', icon: 'house', fallbackIcon: 'home', color: '#d63031' },
+  { labelKey: 'common.pets', value: 'pets', icon: 'pawprint', fallbackIcon: 'pets', color: '#e17055' },
+  { labelKey: 'common.sport', value: 'sport', icon: 'figure.run', fallbackIcon: 'sports_soccer', color: '#3A86F0' },
+  { labelKey: 'common.auto', value: 'auto', icon: 'car', fallbackIcon: 'directions_car', color: '#b2bec3' },
 ];
 
 // Price Picker constants
@@ -37,7 +47,7 @@ export default function CreateScreen() {
   const { createListing, currentUser, setLoginVisible } = useApp();
 
   const [type, setType] = useState<ListingType>('supply');
-  const [category, setCategory] = useState<ListingCategory>('ski_pass');
+  const [category, setCategory] = useState<ListingCategory>('anything');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   
