@@ -4,6 +4,7 @@ import { useColorScheme } from 'react-native';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 import { AppProvider, useApp } from '@/context/AppContext';
+import { LoginModal } from '@/components/LoginModal';
 
 // To force i18n load during rendering
 import '@/i18n';
@@ -20,6 +21,7 @@ function InnerLayout() {
     <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <AnimatedSplashOverlay />
       <AppTabs />
+      <LoginModal />
     </ThemeProvider>
   );
 }

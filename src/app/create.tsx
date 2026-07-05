@@ -33,7 +33,7 @@ const MINUTES_ITEMS = Array.from({ length: 60 }, (_, i) => i.toString()); // 0 t
 export default function CreateScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { createListing } = useApp();
+  const { createListing, currentUser, setLoginVisible } = useApp();
 
   const [type, setType] = useState<ListingType>('supply');
   const [category, setCategory] = useState<ListingCategory>('ski_pass');
@@ -221,6 +221,28 @@ export default function CreateScreen() {
             </ThemedText>
           </View>
 
+          {!currentUser ? (
+            <View style={[styles.loginPrompt, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+              <SymbolView tintColor={theme.text} name={{ ios: 'lock.circle.fill', android: 'lock', web: 'lock' } as any} size={48} />
+              <ThemedText type="subtitle" style={{ marginTop: Spacing.three, textAlign: 'center' }}>
+                Prihláste sa
+              </ThemedText>
+              <ThemedText type="small" themeColor="textSecondary" style={{ textAlign: 'center', marginTop: Spacing.one, marginBottom: Spacing.four }}>
+                Pre pridávanie nových inzerátov sa musíte prihlásiť.
+              </ThemedText>
+              <Pressable
+                onPress={() => setLoginVisible(true)}
+                style={({ pressed }) => [
+                  styles.primaryButton,
+                  { backgroundColor: theme.text },
+                  pressed && { opacity: 0.8 }
+                ]}
+              >
+                <ThemedText type="smallBold" style={{ color: theme.background }}>Prihlásiť sa</ThemedText>
+              </Pressable>
+            </View>
+          ) : (
+            <>
           {/* Type Toggle */}
           <ThemedText type="smallBold" style={styles.label}>{t('create.typeLabel')}</ThemedText>
           <View style={[styles.toggleContainer, { backgroundColor: theme.backgroundElement }]}>
@@ -555,20 +577,34 @@ export default function CreateScreen() {
           )}
 
           {/* Submit Button */}
-          <Pressable
-            onPress={handleSubmit}
-            disabled={submitting}
-            style={({ pressed }) => [
-              styles.submitButton,
-              { backgroundColor: theme.text },
-              pressed && { opacity: 0.8 },
-              submitting && { opacity: 0.6 }
-            ]}
-          >
-            <ThemedText type="smallBold" style={{ color: theme.background, fontSize: 15 }}>
-              {submitting ? t('create.submittingBtn') : t('create.submitBtn')}
-            </ThemedText>
-          </Pressable>
+          {currentUser ? (
+            <Pressable
+              onPress={handleSubmit}
+              disabled={submitting}
+              style={({ pressed }) => [
+                styles.submitButton,
+                { backgroundColor: theme.text },
+                pressed && { opacity: 0.8 },
+                submitting && { opacity: 0.6 }
+              ]}
+            >
+              <ThemedText type="smallBold" style={{ color: theme.background, fontSize: 15 }}>
+                {submitting ? t('create.submittingBtn') : t('create.submitBtn')}
+              </ThemedText>
+            </Pressable>
+          ) : (
+            <View style={[styles.loginPrompt, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+              <ThemedText style={{ marginBottom: Spacing.two }}>Na vytvorenie inzerátu sa musíte prihlásiť.</ThemedText>
+              <Pressable
+                onPress={() => setLoginVisible(true)}
+                style={[styles.primaryButton, { backgroundColor: theme.text }]}
+              >
+                <ThemedText style={{ color: theme.background, fontWeight: 'bold' }}>Prihlásiť sa</ThemedText>
+              </Pressable>
+            </View>
+          )}
+          </>
+          )}
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -764,9 +800,22 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     paddingVertical: Spacing.three,
-    borderRadius: Spacing.three,
+    borderRadius: Spacing.two,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: Spacing.two,
+  },
+  loginPrompt: {
+    padding: Spacing.four,
+    borderRadius: Spacing.three,
+    borderWidth: 1,
+    alignItems: 'center',
+    marginTop: Spacing.four,
+  },
+  primaryButton: {
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    borderRadius: Spacing.two,
+    width: '100%',
+    alignItems: 'center',
   },
 });

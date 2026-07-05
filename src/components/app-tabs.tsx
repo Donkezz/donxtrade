@@ -1,10 +1,12 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/use-theme';
+import { useApp } from '@/context/AppContext';
 
 export default function AppTabs() {
   const { t } = useTranslation();
   const colors = useTheme();
+  const { currentUser } = useApp();
 
   return (
     <NativeTabs
@@ -34,6 +36,16 @@ export default function AppTabs() {
           renderingMode="template"
         />
       </NativeTabs.Trigger>
+
+      {currentUser?.role === 'admin' && (
+        <NativeTabs.Trigger name="admin">
+          <NativeTabs.Trigger.Label>Admin</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Icon
+            src={require('@/assets/images/tabIcons/wallet.png')}
+            renderingMode="template"
+          />
+        </NativeTabs.Trigger>
+      )}
     </NativeTabs>
   );
 }

@@ -43,7 +43,7 @@ const VideoPlayerItem = ({ uri }: { uri: string }) => {
 export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { unlockContact, walletBalance, unlockFee, startChat, toggleLike } = useApp();
+  const { unlockContact, walletBalance, unlockFee, startChat, toggleLike, requireAuth } = useApp();
   const [loading, setLoading] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
   const [timeLeftStr, setTimeLeftStr] = useState('');
@@ -82,7 +82,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
   }, [listing.expiresAt, t]);
 
   const handleUnlock = () => {
-    if (walletBalance < unlockFee) {
+    requireAuth(() => {
+      if (walletBalance < unlockFee) {
       Alert.alert(
         t('listingCard.insufficientFundsTitle'),
         t('listingCard.insufficientFundsSub'),
@@ -108,6 +109,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
         ]
       );
     }
+    });
   };
 
   const performUnlock = async () => {
@@ -241,7 +243,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
 
         {/* Interaction Buttons */}
         <View style={styles.interactionGroup}>
-          <Pressable onPress={() => toggleLike(listing.id)} style={styles.iconButton}>
+          <Pressable onPress={() => requireAuth(() => toggleLike(listing.id))} style={styles.iconButton}>
             <SymbolView 
               tintColor={listing.isLiked ? '#ff3b30' : theme.textSecondary} 
               name={{ ios: listing.isLiked ? 'heart.fill' : 'heart', android: listing.isLiked ? 'favorite' : 'favorite_border', web: listing.isLiked ? 'favorite' : 'favorite_border' } as any} 
@@ -284,10 +286,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
               <Animated.View entering={FadeIn} style={styles.unlockedBox}>
                 {listing.contactType === 'chat' ? (
                   <Pressable
-                    onPress={async () => {
-                      const participantName = listing.isAnonymous ? t('profile.anonymousUser') : listing.ownerName;
-                      await startChat(listing.id, listing.title, participantName);
-                      setChatVisible(true);
+                    onPress={() => {
+                      requireAuth(() => {
+                        const participantName = listing.isAnonymous ? t('profile.anonymousUser') : listing.ownerName;
+                        startChat(listing.id, listing.title, participantName);
+                        setChatVisible(true);
+                      });
                     }}
                     style={({ pressed }) => [
                       styles.unlockButton,

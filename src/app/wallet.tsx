@@ -125,7 +125,10 @@ export default function WalletScreen() {
     appLanguage,
     setAppLanguage,
     appTheme,
-    setAppTheme
+    setAppTheme,
+    currentUser,
+    setLoginVisible,
+    logout
   } = useApp();
 
   const [successVisible, setSuccessVisible] = useState(false);
@@ -233,6 +236,15 @@ export default function WalletScreen() {
             </View>
           </View>
 
+          {currentUser && (
+            <View style={{ alignItems: 'flex-end', marginBottom: Spacing.four }}>
+              <ThemedText type="smallBold" themeColor="textSecondary">Prihlásený ako: {currentUser.name}</ThemedText>
+              <Pressable onPress={logout} style={{ marginTop: Spacing.one }}>
+                <ThemedText type="smallBold" style={{ color: '#ff6b6b' }}>Odhlásiť sa</ThemedText>
+              </Pressable>
+            </View>
+          )}
+
           {/* Settings Section (Theme) */}
           <View style={[styles.sectionWrapper, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
             <ThemedText type="smallBold" style={styles.sectionHeader}>{t('profile.settingsSection')}</ThemedText>
@@ -270,7 +282,29 @@ export default function WalletScreen() {
             </View>
           </View>
 
-          {/* Premium Card UI */}
+          {!currentUser ? (
+            <View style={[styles.loginPrompt, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+              <SymbolView tintColor={theme.text} name={{ ios: 'lock.circle.fill', android: 'lock', web: 'lock' } as any} size={48} />
+              <ThemedText type="subtitle" style={{ marginTop: Spacing.three, textAlign: 'center' }}>
+                Prihláste sa
+              </ThemedText>
+              <ThemedText type="small" themeColor="textSecondary" style={{ textAlign: 'center', marginTop: Spacing.one, marginBottom: Spacing.four }}>
+                Pre využívanie peňaženky Donx Pay a správu inzerátov sa musíte prihlásiť.
+              </ThemedText>
+              <Pressable
+                onPress={() => setLoginVisible(true)}
+                style={({ pressed }) => [
+                  styles.primaryButton,
+                  { backgroundColor: theme.text },
+                  pressed && { opacity: 0.8 }
+                ]}
+              >
+                <ThemedText type="smallBold" style={{ color: theme.background }}>Prihlásiť sa</ThemedText>
+              </Pressable>
+            </View>
+          ) : (
+            <>
+              {/* Premium Card UI */}
           <Animated.View 
             style={[
               styles.walletCard, 
@@ -556,6 +590,8 @@ export default function WalletScreen() {
               })
             )}
           </View>
+          </>
+          )}
 
         </ScrollView>
       </SafeAreaView>
@@ -896,5 +932,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: Spacing.three,
     borderBottomWidth: 1,
+  },
+  loginPrompt: {
+    padding: Spacing.four,
+    borderRadius: Spacing.three,
+    borderWidth: 1,
+    alignItems: 'center',
+    marginTop: Spacing.four,
+  },
+  primaryButton: {
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    borderRadius: Spacing.two,
+    width: '100%',
+    alignItems: 'center',
   },
 });

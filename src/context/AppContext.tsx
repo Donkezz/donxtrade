@@ -59,6 +59,13 @@ export interface Transaction {
   listingTitle?: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'user';
+}
+
 interface AppContextType {
   listings: Listing[];
   unlockedListings: string[];
@@ -80,6 +87,14 @@ interface AppContextType {
   setAppTheme: (theme: 'light' | 'dark' | 'system') => Promise<void>;
   resetAllData: () => Promise<void>;
   toggleLike: (listingId: string) => Promise<void>;
+  
+  // Auth
+  currentUser: User | null;
+  login: (email: string) => Promise<void>;
+  logout: () => Promise<void>;
+  isLoginVisible: boolean;
+  setLoginVisible: (visible: boolean) => void;
+  requireAuth: (callback: () => void) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -93,6 +108,7 @@ const STORAGE_KEYS = {
   TRANSACTIONS: '@donx_transactions',
   LANGUAGE: '@donx_language',
   THEME: '@donx_theme',
+  USER: '@donx_user',
 };
 
 const getInitialListings = (): Listing[] => {
@@ -189,6 +205,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   
   const [appLanguage, setAppLanguageState] = useState<string>('sk');
   const [appTheme, setAppThemeState] = useState<'light' | 'dark' | 'system'>('system');
+
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoginVisible, setLoginVisible] = useState(false);
   
   const unlockFee = 0.10;
 
@@ -204,6 +223,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const storedTransactions = await AsyncStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
         const storedLanguage = await AsyncStorage.getItem(STORAGE_KEYS.LANGUAGE);
         const storedTheme = await AsyncStorage.getItem(STORAGE_KEYS.THEME);
+        const storedUser = await AsyncStorage.getItem(STORAGE_KEYS.USER);
 
         const initialListings = getInitialListings();
 
@@ -259,6 +279,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         } else {
           setAppThemeState('system');
         }
+
+        if (storedUser) {
+          setCurrentUser(JSON.parse(storedUser));
+        }
       } catch (error) {
         console.error('Failed to load state from storage:', error);
       }
@@ -285,6 +309,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       await AsyncStorage.setItem(STORAGE_KEYS.THEME, themeValue);
     } catch (error) {
       console.error('Failed to set theme:', error);
+    }
+  };
+
+  // Auth Actions
+  const login = async (email: string) => {
+    const user: User = {
+      id: Math.random().toString(),
+      email,
+      name: email.split('@')[0],
+      role: email.toLowerCase() === 'admin' ? 'admin' : 'user',
+    };
+    setCurrentUser(user);
+    setLoginVisible(false);
+    await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+  };
+
+  const logout = async () => {
+    setCurrentUser(null);
+    await AsyncStorage.removeItem(STORAGE_KEYS.USER);
+  };
+
+  const requireAuth = (callback: () => void) => {
+    if (currentUser) {
+      callback();
+    } else {
+      setLoginVisible(true);
     }
   };
 
@@ -611,6 +661,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setAppTheme,
         resetAllData,
         toggleLike,
+        currentUser,
+        login,
+        logout,
+        isLoginVisible,
+        setLoginVisible,
+        requireAuth,
       }}
     >
       {children}
