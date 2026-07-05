@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, NativeSyntheticEvent, NativeScrollEvent, Platform } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, NativeSyntheticEvent, NativeScrollEvent, Platform } from 'react-native';
 import { useTheme } from '@/hooks/use-theme';
 
 interface WheelPickerProps {
@@ -18,40 +18,28 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
   itemHeight = 40,
 }) => {
   const theme = useTheme();
-  const flatListRef = useRef<FlatList>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
   
   const selectedIndex = items.indexOf(selectedValue);
   
   useEffect(() => {
     if (selectedIndex !== -1) {
-      // Small timeout to allow FlatList layout to settle
+      // Small timeout to allow ScrollView layout to settle
       const timer = setTimeout(() => {
-        flatListRef.current?.scrollToIndex({
-          index: selectedIndex,
+        scrollViewRef.current?.scrollTo({
+          y: selectedIndex * itemHeight,
           animated: false,
-          viewPosition: 0.5, // Center the item
         });
       }, 50);
       return () => clearTimeout(timer);
     }
   }, [selectedValue, selectedIndex]);
 
-  const onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const onScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const y = event.nativeEvent.contentOffset.y;
     const index = Math.round(y / itemHeight);
     if (index >= 0 && index < items.length) {
       onValueChange(items[index]);
-    }
-  };
-
-  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    // For Web or platforms where momentum scroll doesn't fire as expected
-    if (Platform.OS === 'web') {
-      const y = event.nativeEvent.contentOffset.y;
-      const index = Math.round(y / itemHeight);
-      if (index >= 0 && index < items.length) {
-        onValueChange(items[index]);
-      }
     }
   };
 
@@ -70,27 +58,21 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
         ]} 
       />
       
-      <FlatList
-        ref={flatListRef}
-        data={items}
-        keyExtractor={(item, idx) => `${item}-${idx}`}
+      <ScrollView
+        ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
         snapToInterval={itemHeight}
         decelerationRate="fast"
-        onMomentumScrollEnd={onMomentumScrollEnd}
-        onScrollEndDrag={onScrollEndDrag}
+        onMomentumScrollEnd={onScrollEnd}
+        onScrollEndDrag={onScrollEnd}
         contentContainerStyle={{
           paddingVertical: (height - itemHeight) / 2,
         }}
-        getItemLayout={(_, index) => ({
-          length: itemHeight,
-          offset: itemHeight * index,
-          index,
-        })}
-        renderItem={({ item }) => {
+      >
+        {items.map((item, index) => {
           const isSelected = item === selectedValue;
           return (
-            <View style={[styles.itemWrapper, { height: itemHeight }]}>
+            <View key={`${item}-${index}`} style={[styles.itemWrapper, { height: itemHeight }]}>
               <Text 
                 style={[
                   styles.itemText, 
@@ -102,8 +84,8 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
               </Text>
             </View>
           );
-        }}
-      />
+        })}
+      </ScrollView>
     </View>
   );
 };
