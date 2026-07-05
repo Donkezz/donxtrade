@@ -168,6 +168,9 @@ export default function MarketplaceScreen() {
 
         {/* Category Scroll Filter */}
         <View style={styles.categoriesContainer}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 2 }}>
+            <ThemedText type="small" themeColor="textSecondary" style={{ opacity: 0.6, fontSize: 11, marginBottom: 4 }}>Potiahnite pre viac 👉</ThemedText>
+          </View>
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={true}
