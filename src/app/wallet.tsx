@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SymbolView } from 'expo-symbols';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withSequence, withTiming } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
+import { router } from 'expo-router';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -363,6 +364,24 @@ export default function WalletScreen() {
               </ThemedText>
             </Pressable>
           </View>
+
+          <Pressable
+            onPress={() => router.push('/admin')}
+            style={({ pressed }) => [
+              styles.adminButton,
+              { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+              pressed && { opacity: 0.8 }
+            ]}
+          >
+            <SymbolView
+              tintColor={theme.text}
+              name={{ ios: 'chart.pie.fill', android: 'analytics', web: 'analytics' } as any}
+              size={18}
+            />
+            <ThemedText type="smallBold" style={{ marginLeft: Spacing.one }}>
+              {t('profile.adminDashboardBtn') || 'Admin Dashboard'}
+            </ThemedText>
+          </Pressable>
 
           {/* Daily Bonus Claim (Fortune Wheel) */}
           <FortuneWheel />
@@ -747,6 +766,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
+  },
+  adminButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    paddingVertical: Spacing.three,
+    borderRadius: Spacing.three,
+    marginBottom: Spacing.five,
   },
   unlockedSection: {
     marginTop: Spacing.one,

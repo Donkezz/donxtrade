@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Pressable, View, Alert, Platform, ScrollView } from 'react-native';
+import { StyleSheet, Pressable, View, Alert, Platform, ScrollView, Share } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +43,7 @@ const VideoPlayerItem = ({ uri }: { uri: string }) => {
 export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { unlockContact, walletBalance, unlockFee, startChat } = useApp();
+  const { unlockContact, walletBalance, unlockFee, startChat, toggleLike } = useApp();
   const [loading, setLoading] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
   const [timeLeftStr, setTimeLeftStr] = useState('');
@@ -116,6 +116,16 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
     setLoading(false);
     if (!success) {
       Alert.alert(t('common.error'), t('common.error'));
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Pozri na tento super inzerát na Donx: "${listing.title}" za ${listing.price === 0 ? 'zadarmo' : listing.price + ' €'}! Pridaj sa na Donx a dohodni sa.`,
+      });
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -201,30 +211,54 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
         </View>
       )}
 
-      {/* Meta details: Location, Expiry & Price */}
+      {/* Meta details: Location, Expiry & Interactions */}
       <View style={styles.metaRow}>
-        <View style={styles.metaItem}>
-          <SymbolView
-            tintColor={theme.textSecondary}
-            name={{ ios: 'mappin.and.ellipse', android: 'place', web: 'place' }}
-            size={12}
-          />
-          <ThemedText type="small" themeColor="textSecondary" style={styles.metaText}>
-            {listing.location}
-          </ThemedText>
+        <View style={styles.metaLeftGroup}>
+          <View style={styles.metaItem}>
+            <SymbolView
+              tintColor={theme.textSecondary}
+              name={{ ios: 'mappin.and.ellipse', android: 'place', web: 'place' } as any}
+              size={12}
+            />
+            <ThemedText type="small" themeColor="textSecondary" style={styles.metaText}>
+              {listing.location}
+            </ThemedText>
+          </View>
+
+          <View style={styles.metaItem}>
+            <SymbolView
+              tintColor={theme.textSecondary}
+              name={{ ios: 'clock', android: 'schedule', web: 'schedule' } as any}
+              size={12}
+            />
+            <ThemedText type="small" themeColor="textSecondary" style={styles.metaText}>
+              {timeLeftStr.includes(':') || timeLeftStr.toLowerCase().includes('expi') 
+                ? timeLeftStr 
+                : t('listingCard.timeLeft').replace('%s', timeLeftStr)}
+            </ThemedText>
+          </View>
         </View>
 
-        <View style={styles.metaItem}>
-          <SymbolView
-            tintColor={theme.textSecondary}
-            name={{ ios: 'clock', android: 'schedule', web: 'schedule' }}
-            size={12}
-          />
-          <ThemedText type="small" themeColor="textSecondary" style={styles.metaText}>
-            {timeLeftStr.includes(':') || timeLeftStr.toLowerCase().includes('expi') 
-              ? timeLeftStr 
-              : t('listingCard.timeLeft').replace('%s', timeLeftStr)}
-          </ThemedText>
+        {/* Interaction Buttons */}
+        <View style={styles.interactionGroup}>
+          <Pressable onPress={() => toggleLike(listing.id)} style={styles.iconButton}>
+            <SymbolView 
+              tintColor={listing.isLiked ? '#ff3b30' : theme.textSecondary} 
+              name={{ ios: listing.isLiked ? 'heart.fill' : 'heart', android: listing.isLiked ? 'favorite' : 'favorite_border', web: listing.isLiked ? 'favorite' : 'favorite_border' } as any} 
+              size={18} 
+            />
+            <ThemedText type="smallBold" style={{ color: listing.isLiked ? '#ff3b30' : theme.textSecondary, marginLeft: 4 }}>
+              {listing.likes}
+            </ThemedText>
+          </Pressable>
+
+          <Pressable onPress={handleShare} style={styles.iconButton}>
+            <SymbolView 
+              tintColor={theme.textSecondary} 
+              name={{ ios: 'square.and.arrow.up', android: 'share', web: 'share' } as any} 
+              size={18} 
+            />
+          </Pressable>
         </View>
       </View>
 
@@ -389,9 +423,25 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     flexDirection: 'row',
-    gap: Spacing.three,
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: Spacing.three,
     marginTop: Spacing.one,
+  },
+  metaLeftGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    flex: 1,
+    gap: Spacing.three,
+  },
+  interactionGroup: {
+    flexDirection: 'row',
+    gap: Spacing.two,
+  },
+  iconButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.one,
   },
   metaItem: {
     flexDirection: 'row',

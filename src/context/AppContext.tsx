@@ -30,6 +30,8 @@ export interface Listing {
   media?: ListingMedia[];
   isMine?: boolean; // True if created by current user
   isDemo?: boolean; // True if initial mock listing
+  likes: number;
+  isLiked: boolean;
 }
 
 export interface Message {
@@ -67,7 +69,7 @@ interface AppContextType {
   lastClaimedBonus: string | null;
   appLanguage: string;
   appTheme: 'light' | 'dark' | 'system';
-  createListing: (listing: Omit<Listing, 'id' | 'createdAt' | 'isMine'>) => Promise<void>;
+  createListing: (listing: Omit<Listing, 'id' | 'createdAt' | 'isMine' | 'likes' | 'isLiked'>) => Promise<void>;
   deleteListing: (id: string) => Promise<void>;
   unlockContact: (id: string) => Promise<boolean>;
   topUpWallet: (amount?: number) => Promise<void>;
@@ -77,6 +79,7 @@ interface AppContextType {
   setAppLanguage: (lang: string) => Promise<void>;
   setAppTheme: (theme: 'light' | 'dark' | 'system') => Promise<void>;
   resetAllData: () => Promise<void>;
+  toggleLike: (listingId: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -111,7 +114,9 @@ const getInitialListings = (): Listing[] => {
       contactType: 'chat',
       contactInfo: 'Súkromný chat Donx',
       isDemo: true,
-      isMine: true
+      isMine: true,
+      likes: 12,
+      isLiked: false,
     },
     {
       id: '2',
@@ -128,7 +133,9 @@ const getInitialListings = (): Listing[] => {
       contactType: 'phone',
       contactInfo: '+421 905 123 456',
       isDemo: true,
-      isMine: true
+      isMine: true,
+      likes: 3,
+      isLiked: true,
     },
     {
       id: '3',
@@ -146,7 +153,9 @@ const getInitialListings = (): Listing[] => {
       contactType: 'chat',
       contactInfo: 'Súkromný chat Donx',
       isDemo: true,
-      isMine: true
+      isMine: true,
+      likes: 8,
+      isLiked: false,
     },
     {
       id: '4',
@@ -163,7 +172,9 @@ const getInitialListings = (): Listing[] => {
       contactType: 'phone',
       contactInfo: 'peter.beh@gmail.com',
       isDemo: true,
-      isMine: true
+      isMine: true,
+      likes: 4,
+      isLiked: false,
     }
   ];
 };
@@ -277,14 +288,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  // Action: Create Listing
-  const createListing = async (newListingData: Omit<Listing, 'id' | 'createdAt' | 'isMine'>) => {
+  const createListing = async (newListingData: Omit<Listing, 'id' | 'createdAt' | 'isMine' | 'likes' | 'isLiked'>) => {
     try {
       const newListing: Listing = {
         ...newListingData,
         id: Math.random().toString(36).substring(2, 9),
         createdAt: new Date().toISOString(),
         isMine: true, // Flag this user created it
+        likes: 0,
+        isLiked: false,
       };
       
       const updatedListings = [newListing, ...listings];
@@ -304,6 +316,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       await AsyncStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updatedTxs));
     } catch (error) {
       console.error('Failed to save listing:', error);
+    }
+  };
+
+  // Action: Toggle Like
+  const toggleLike = async (id: string) => {
+    try {
+      const updatedListings = listings.map(listing => {
+        if (listing.id === id) {
+          const isLiked = !listing.isLiked;
+          const likes = isLiked ? listing.likes + 1 : Math.max(0, listing.likes - 1);
+          return { ...listing, isLiked, likes };
+        }
+        return listing;
+      });
+      setListings(updatedListings);
+      await AsyncStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify(updatedListings));
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
     }
   };
 
@@ -580,6 +610,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setAppLanguage,
         setAppTheme,
         resetAllData,
+        toggleLike,
       }}
     >
       {children}
