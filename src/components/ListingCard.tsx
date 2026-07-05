@@ -132,20 +132,30 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
     >
       {/* Header: Category Badge & Type Badge */}
       <View style={styles.headerRow}>
-        <View style={[styles.badge, { backgroundColor: categoryInfo.color + '20' }]}>
-          <SymbolView
-            tintColor={categoryInfo.color}
-            name={{ 
-              ios: categoryInfo.icon as any, 
-              android: categoryInfo.fallbackIcon as any, 
-              web: categoryInfo.fallbackIcon as any 
-            }}
-            size={13}
-            style={styles.badgeIcon}
-          />
-          <ThemedText style={[styles.badgeText, { color: categoryInfo.color }]}>
-            {t(categoryInfo.labelKey)}
-          </ThemedText>
+        <View style={{ flexDirection: 'row', gap: Spacing.one }}>
+          <View style={[styles.badge, { backgroundColor: categoryInfo.color + '20' }]}>
+            <SymbolView
+              tintColor={categoryInfo.color}
+              name={{ 
+                ios: categoryInfo.icon as any, 
+                android: categoryInfo.fallbackIcon as any, 
+                web: categoryInfo.fallbackIcon as any 
+              }}
+              size={13}
+              style={styles.badgeIcon}
+            />
+            <ThemedText style={[styles.badgeText, { color: categoryInfo.color }]}>
+              {t(categoryInfo.labelKey)}
+            </ThemedText>
+          </View>
+
+          {listing.isDemo && (
+            <View style={[styles.badge, { backgroundColor: '#8e8e9325' }]}>
+              <ThemedText style={[styles.badgeText, { color: '#8e8e93' }]}>
+                Demo
+              </ThemedText>
+            </View>
+          )}
         </View>
 
         <View 

@@ -55,7 +55,9 @@ const MyListingItem = ({ listing, onDelete }: { listing: Listing; onDelete: () =
   return (
     <View style={[styles.myListingCard, { backgroundColor: theme.backgroundSelected, borderColor: theme.backgroundSelected }]}>
       <View style={{ flex: 1 }}>
-        <ThemedText type="smallBold" numberOfLines={1}>{listing.title}</ThemedText>
+        <ThemedText type="smallBold" numberOfLines={1}>
+          {listing.title} {listing.isDemo && '(Demo)'}
+        </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
           {listing.price === 0 ? t('common.free') : `${listing.price.toFixed(2)} €`} • {timeLeft}
         </ThemedText>
@@ -221,10 +223,8 @@ export default function WalletScreen() {
             <ThemedText type="smallBold" style={styles.sectionHeader}>{t('profile.settingsSection')}</ThemedText>
             
             {/* Language Selection */}
-            <View style={styles.settingsRow}>
-              <View style={{ flex: 1 }}>
-                <ThemedText type="smallBold">{t('profile.languageLabel')}</ThemedText>
-              </View>
+            <View style={styles.settingsGroup}>
+              <ThemedText type="smallBold" style={styles.settingsLabel}>{t('profile.languageLabel')}</ThemedText>
               <View style={styles.langGrid}>
                 {LANGUAGES.map((lang) => {
                   const isSelected = appLanguage === lang.code;
@@ -249,10 +249,8 @@ export default function WalletScreen() {
             </View>
 
             {/* Theme Selection */}
-            <View style={[styles.settingsRow, { borderTopWidth: 1, borderTopColor: theme.backgroundSelected, paddingTop: Spacing.three, marginTop: Spacing.three }]}>
-              <View style={{ flex: 1 }}>
-                <ThemedText type="smallBold">{t('profile.themeLabel')}</ThemedText>
-              </View>
+            <View style={[styles.settingsGroup, { borderTopWidth: 1, borderTopColor: theme.backgroundSelected, paddingTop: Spacing.three, marginTop: Spacing.three }]}>
+              <ThemedText type="smallBold" style={styles.settingsLabel}>{t('profile.themeLabel')}</ThemedText>
               <View style={styles.themeGrid}>
                 {THEMES.map((themeItem) => {
                   const isSelected = appTheme === themeItem.value;
@@ -611,32 +609,34 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
-  settingsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
+  settingsGroup: {
+    width: '100%',
+  },
+  settingsLabel: {
+    fontSize: 14,
+    marginBottom: Spacing.two,
   },
   langGrid: {
     flexDirection: 'row',
-    gap: Spacing.one,
+    flexWrap: 'wrap',
+    gap: Spacing.two,
   },
   langChip: {
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-    borderRadius: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    borderRadius: Spacing.three,
   },
   themeGrid: {
     flexDirection: 'row',
-    gap: Spacing.one,
+    flexWrap: 'wrap',
+    gap: Spacing.two,
   },
   themeChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-    borderRadius: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    borderRadius: Spacing.three,
   },
   walletCard: {
     borderRadius: Spacing.four,

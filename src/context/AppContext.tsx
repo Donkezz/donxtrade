@@ -29,6 +29,7 @@ export interface Listing {
   contactInfo: string; // Phone/Telegram or "Súkromný chat Donx"
   media?: ListingMedia[];
   isMine?: boolean; // True if created by current user
+  isDemo?: boolean; // True if initial mock listing
 }
 
 export interface Message {
@@ -108,7 +109,9 @@ const getInitialListings = (): Listing[] => {
       isAnonymous: true,
       ownerName: 'Anonymný Lyžiar',
       contactType: 'chat',
-      contactInfo: 'Súkromný chat Donx'
+      contactInfo: 'Súkromný chat Donx',
+      isDemo: true,
+      isMine: true
     },
     {
       id: '2',
@@ -123,7 +126,9 @@ const getInitialListings = (): Listing[] => {
       isAnonymous: false,
       ownerName: 'Martin S.',
       contactType: 'phone',
-      contactInfo: '+421 905 123 456'
+      contactInfo: '+421 905 123 456',
+      isDemo: true,
+      isMine: true
     },
     {
       id: '3',
@@ -139,7 +144,9 @@ const getInitialListings = (): Listing[] => {
       isAnonymous: false,
       ownerName: 'Zuzana K.',
       contactType: 'chat',
-      contactInfo: 'Súkromný chat Donx'
+      contactInfo: 'Súkromný chat Donx',
+      isDemo: true,
+      isMine: true
     },
     {
       id: '4',
@@ -154,7 +161,9 @@ const getInitialListings = (): Listing[] => {
       isAnonymous: false,
       ownerName: 'Peter B.',
       contactType: 'phone',
-      contactInfo: 'peter.beh@gmail.com'
+      contactInfo: 'peter.beh@gmail.com',
+      isDemo: true,
+      isMine: true
     }
   ];
 };

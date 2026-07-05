@@ -12,6 +12,7 @@ import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useApp, ListingCategory, ListingType, ContactType, ListingMedia } from '@/context/AppContext';
+import { WheelPicker } from '@/components/ui/WheelPicker';
 
 const CATEGORY_OPTIONS: { labelKey: string; value: ListingCategory; icon: string; fallbackIcon: string; color: string }[] = [
   { labelKey: 'common.ski_pass', value: 'ski_pass', icon: 'figure.skiing.downhill', fallbackIcon: 'ticket', color: '#3A86F0' },
@@ -20,17 +21,14 @@ const CATEGORY_OPTIONS: { labelKey: string; value: ListingCategory; icon: string
   { labelKey: 'common.social', value: 'social', icon: 'person.2', fallbackIcon: 'people', color: '#38B000' },
 ];
 
-const PRICE_PRESETS = [0, 2, 5, 10, 20, 50, -1]; // -1 represents Custom
+// Price Picker constants
+const EUROS_ITEMS = Array.from({ length: 201 }, (_, i) => i.toString()); // 0 to 200
+const CENTS_ITEMS = ['.00', '.10', '.20', '.30', '.40', '.50', '.60', '.70', '.80', '.90'];
 
-const DURATION_PRESETS = [
-  { labelKey: 'create.duration_15m', value: 15 * 60 * 1000 },
-  { labelKey: 'create.duration_1h', value: 1 * 3600 * 1000 },
-  { labelKey: 'create.duration_4h', value: 4 * 3600 * 1000 },
-  { labelKey: 'create.duration_12h', value: 12 * 3600 * 1000 },
-  { labelKey: 'create.duration_1d', value: 24 * 3600 * 1000 },
-  { labelKey: 'create.duration_3d', value: 72 * 3600 * 1000 },
-  { labelKey: 'create.duration_7d', value: 168 * 3600 * 1000 },
-];
+// Duration Picker constants
+const DAYS_ITEMS = Array.from({ length: 31 }, (_, i) => i.toString()); // 0 to 30 days
+const HOURS_ITEMS = Array.from({ length: 24 }, (_, i) => i.toString()); // 0 to 23 hours
+const MINUTES_ITEMS = Array.from({ length: 60 }, (_, i) => i.toString()); // 0 to 59 minutes
 
 export default function CreateScreen() {
   const { t } = useTranslation();
@@ -42,14 +40,17 @@ export default function CreateScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   
-  // Price presets state
-  const [priceMode, setPriceMode] = useState<number>(0); // Default: Free
-  const [customPrice, setCustomPrice] = useState('');
+  // Price state using Pickers + Manual input
+  const [selectedEuros, setSelectedEuros] = useState('0');
+  const [selectedCents, setSelectedCents] = useState('.00');
+  const [customPriceText, setCustomPriceText] = useState('0.00');
 
   const [location, setLocation] = useState('');
   
-  // Duration preset state
-  const [selectedDuration, setSelectedDuration] = useState<number>(4 * 3600 * 1000); // Default 4h
+  // Expiry duration state (Days, Hours, Minutes)
+  const [selectedDays, setSelectedDays] = useState('0');
+  const [selectedHours, setSelectedHours] = useState('4'); // Default 4 hours
+  const [selectedMinutes, setSelectedMinutes] = useState('0');
 
   const [isAnonymous, setIsAnonymous] = useState(true); // Default to true (recommended)
   const [ownerName, setOwnerName] = useState('');
@@ -59,6 +60,32 @@ export default function CreateScreen() {
   // Media uploads state
   const [media, setMedia] = useState<ListingMedia[]>([]);
   const [submitting, setSubmitting] = useState(false);
+
+  // Sync Price Pickers to Custom Text Input
+  const handlePricePickerChange = (euros: string, cents: string) => {
+    setSelectedEuros(euros);
+    setSelectedCents(cents);
+    const combinedVal = parseFloat(`${euros}${cents}`).toFixed(2);
+    setCustomPriceText(combinedVal);
+  };
+
+  // Sync Text Input back to Price Pickers (snapping to nearest values)
+  const handleCustomPriceTextChange = (text: string) => {
+    setCustomPriceText(text);
+    const parsed = parseFloat(text);
+    if (!isNaN(parsed) && parsed >= 0) {
+      const euros = Math.floor(parsed);
+      const remainingCents = parsed - euros;
+      // Round to nearest ten cents (.00, .10, etc)
+      const centsIndex = Math.min(9, Math.max(0, Math.round(remainingCents * 10)));
+      
+      const matchedEurosStr = Math.min(200, euros).toString();
+      const matchedCentsStr = CENTS_ITEMS[centsIndex];
+      
+      setSelectedEuros(matchedEurosStr);
+      setSelectedCents(matchedCentsStr);
+    }
+  };
 
   // Pick media (images/videos)
   const handlePickMedia = async () => {
@@ -88,20 +115,30 @@ export default function CreateScreen() {
     setMedia(prev => prev.filter((_, i) => i !== idx));
   };
 
+  const getComputedDurationMs = () => {
+    const d = parseInt(selectedDays, 10) || 0;
+    const h = parseInt(selectedHours, 10) || 0;
+    const m = parseInt(selectedMinutes, 10) || 0;
+    let totalMs = (d * 24 * 3600 + h * 3600 + m * 60) * 1000;
+    if (totalMs === 0) {
+      totalMs = 15 * 60 * 1000; // minimum fallback is 15 minutes
+    }
+    return totalMs;
+  };
+
   const getComputedExpiresAt = () => {
-    return new Date(Date.now() + selectedDuration).toISOString();
+    return new Date(Date.now() + getComputedDurationMs()).toISOString();
   };
 
   const getFormattedExpiryPreview = () => {
-    const expiryDate = new Date(Date.now() + selectedDuration);
+    const expiryDate = new Date(Date.now() + getComputedDurationMs());
     const timeStr = expiryDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const dateStr = expiryDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
     return `${dateStr} o ${timeStr}`;
   };
 
   const handleSubmit = async () => {
-    // Resolve price
-    const resolvedPrice = priceMode === -1 ? parseFloat(customPrice) || 0 : priceMode;
+    const finalPrice = parseFloat(customPriceText) || 0;
 
     // Validation
     if (!title.trim()) return showAlert(t('common.error'), t('create.validationTitle'));
@@ -116,7 +153,7 @@ export default function CreateScreen() {
       await createListing({
         title: title.trim(),
         description: description.trim(),
-        price: resolvedPrice,
+        price: finalPrice,
         category,
         type,
         location: location.trim(),
@@ -131,10 +168,13 @@ export default function CreateScreen() {
       // Reset Form
       setTitle('');
       setDescription('');
-      setPriceMode(0);
-      setCustomPrice('');
+      setSelectedEuros('0');
+      setSelectedCents('.00');
+      setCustomPriceText('0.00');
       setLocation('');
-      setSelectedDuration(4 * 3600 * 1000);
+      setSelectedDays('0');
+      setSelectedHours('4');
+      setSelectedMinutes('0');
       setIsAnonymous(true);
       setOwnerName('');
       setContactInfo('');
@@ -303,75 +343,88 @@ export default function CreateScreen() {
             )}
           </View>
 
-          {/* Price Selector (Presets + Custom) */}
+          {/* iOS Style Drum Picker for Price */}
           <View style={styles.formGroup}>
             <ThemedText type="smallBold" style={styles.label}>{t('create.priceLabel')} (€)</ThemedText>
-            <View style={styles.priceGrid}>
-              {PRICE_PRESETS.map((preset) => {
-                const isSelected = priceMode === preset;
-                const label = preset === 0 ? t('common.free') : preset === -1 ? '...' : `${preset} €`;
-                return (
-                  <Pressable
-                    key={preset}
-                    onPress={() => setPriceMode(preset)}
+            <View style={styles.pickerSectionRow}>
+              {/* Euros Picker */}
+              <View style={styles.pickerColumnWrapper}>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Eur</ThemedText>
+                <WheelPicker 
+                  items={EUROS_ITEMS} 
+                  selectedValue={selectedEuros} 
+                  onValueChange={(val) => handlePricePickerChange(val, selectedCents)} 
+                />
+              </View>
+
+              {/* Cents Picker */}
+              <View style={styles.pickerColumnWrapper}>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Cent</ThemedText>
+                <WheelPicker 
+                  items={CENTS_ITEMS} 
+                  selectedValue={selectedCents} 
+                  onValueChange={(val) => handlePricePickerChange(selectedEuros, val)} 
+                />
+              </View>
+
+              {/* Text Input Column */}
+              <View style={[styles.pickerColumnWrapper, { flex: 1.3 }]}>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Vlastná (€)</ThemedText>
+                <View style={styles.pickerInputWrapper}>
+                  <TextInput
+                    placeholder="0.00"
+                    placeholderTextColor={theme.textSecondary}
+                    value={customPriceText}
+                    onChangeText={handleCustomPriceTextChange}
+                    keyboardType="numeric"
                     style={[
-                      styles.priceChip,
+                      styles.input, 
+                      styles.pickerTextInput, 
                       { 
-                        backgroundColor: isSelected ? theme.text : theme.backgroundElement,
-                        borderColor: theme.backgroundSelected
+                        backgroundColor: theme.backgroundElement, 
+                        color: theme.text, 
+                        borderColor: theme.backgroundSelected 
                       }
                     ]}
-                  >
-                    <ThemedText 
-                      type="smallBold" 
-                      style={{ color: isSelected ? theme.background : theme.text }}
-                    >
-                      {label}
-                    </ThemedText>
-                  </Pressable>
-                );
-              })}
+                  />
+                </View>
+              </View>
             </View>
-
-            {priceMode === -1 && (
-              <TextInput
-                placeholder={t('create.pricePlaceholder')}
-                placeholderTextColor={theme.textSecondary}
-                value={customPrice}
-                onChangeText={setCustomPrice}
-                keyboardType="numeric"
-                style={[styles.input, { marginTop: Spacing.two, backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
-              />
-            )}
           </View>
 
-          {/* Expiration presets (Doba platnosti) */}
+          {/* iOS Style Drum Picker for Expiration (Days, Hours, Minutes) */}
           <View style={styles.formGroup}>
             <ThemedText type="smallBold" style={styles.label}>{t('create.validityLabel')}</ThemedText>
-            <View style={styles.durationGrid}>
-              {DURATION_PRESETS.map((preset) => {
-                const isSelected = selectedDuration === preset.value;
-                return (
-                  <Pressable
-                    key={preset.value}
-                    onPress={() => setSelectedDuration(preset.value)}
-                    style={[
-                      styles.durationChip,
-                      { 
-                        backgroundColor: isSelected ? theme.text : theme.backgroundElement,
-                        borderColor: theme.backgroundSelected
-                      }
-                    ]}
-                  >
-                    <ThemedText 
-                      type="smallBold" 
-                      style={{ color: isSelected ? theme.background : theme.text, fontSize: 11 }}
-                    >
-                      {t(preset.labelKey)}
-                    </ThemedText>
-                  </Pressable>
-                );
-              })}
+            <View style={styles.pickerSectionRow}>
+              {/* Days Picker */}
+              <View style={styles.pickerColumnWrapper}>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>dni</ThemedText>
+                <WheelPicker 
+                  items={DAYS_ITEMS} 
+                  selectedValue={selectedDays} 
+                  onValueChange={setSelectedDays} 
+                />
+              </View>
+
+              {/* Hours Picker */}
+              <View style={styles.pickerColumnWrapper}>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>hod</ThemedText>
+                <WheelPicker 
+                  items={HOURS_ITEMS} 
+                  selectedValue={selectedHours} 
+                  onValueChange={setSelectedHours} 
+                />
+              </View>
+
+              {/* Minutes Picker */}
+              <View style={styles.pickerColumnWrapper}>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>min</ThemedText>
+                <WheelPicker 
+                  items={MINUTES_ITEMS} 
+                  selectedValue={selectedMinutes} 
+                  onValueChange={setSelectedMinutes} 
+                />
+              </View>
             </View>
             <ThemedText type="small" themeColor="textSecondary" style={styles.helpText}>
               {t('create.expiresText').replace('%s', getFormattedExpiryPreview()).replace('%s', '')}
@@ -633,28 +686,31 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 2,
   },
-  priceGrid: {
+  pickerSectionRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     gap: Spacing.two,
   },
-  priceChip: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.two,
-    borderWidth: 1,
+  pickerColumnWrapper: {
+    flex: 1,
+    alignItems: 'center',
   },
-  durationGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-    marginBottom: Spacing.one,
+  pickerLabelInline: {
+    fontSize: 11,
+    marginBottom: 4,
+    textTransform: 'uppercase',
   },
-  durationChip: {
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.two,
-    borderWidth: 1,
+  pickerInputWrapper: {
+    height: 120,
+    width: '100%',
+    justifyContent: 'center',
+  },
+  pickerTextInput: {
+    width: '100%',
+    textAlign: 'center',
+    height: 48,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   anonymBox: {
     flexDirection: 'row',
@@ -675,7 +731,7 @@ const styles = StyleSheet.create({
   },
   helpText: {
     fontSize: 11,
-    marginTop: Spacing.one,
+    marginTop: Spacing.two,
   },
   submitButton: {
     paddingVertical: Spacing.three,

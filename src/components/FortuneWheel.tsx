@@ -35,7 +35,7 @@ const getSlicePath = (index: number) => {
 };
 
 const getLabelCoords = (index: number) => {
-  const R_text = 60;
+  const R_text = 65;
   const cx = 100;
   const cy = 100;
   const midAngle = ((index * 60 + 30) * Math.PI) / 180;
@@ -45,8 +45,6 @@ const getLabelCoords = (index: number) => {
     angle: index * 60 + 30
   };
 };
-
-const AnimatedG = Animated.createAnimatedComponent(G) as any;
 
 export const FortuneWheel: React.FC = () => {
   const { t } = useTranslation();
@@ -76,6 +74,7 @@ export const FortuneWheel: React.FC = () => {
     const prize = SLICES[winIndex];
 
     // 2. Math to center winning slice at the top pointer (270 degrees)
+    // Slices are 60 deg each. Top center is 270 deg.
     const targetSliceCenter = winIndex * 60 + 30;
     const targetAngle = (270 - targetSliceCenter + 360) % 360;
     
@@ -104,7 +103,6 @@ export const FortuneWheel: React.FC = () => {
     setSpinning(false);
     if (success) {
       setRewardWon(prizeValue);
-      // Fallback translation: winText, winHeader
       const winMessage = t('profile.winText', `Vyhrali ste denný bonus +${prizeValue.toFixed(2)} €!`).replace('{{amount}}', prizeValue.toFixed(2));
       if (Platform.OS === 'web') {
         window.alert(winMessage);
@@ -151,46 +149,54 @@ export const FortuneWheel: React.FC = () => {
       </View>
 
       <View style={styles.wheelWrapper}>
-        {/* SVG Fortune Wheel */}
-        <Svg width={210} height={210} viewBox="0 0 200 200">
-          {/* Animated Wheel Group */}
-          <AnimatedG style={animatedStyle} originX={100} originY={100}>
-            {/* Slices */}
-            {SLICES.map((slice, i) => {
-              const coords = getLabelCoords(i);
-              return (
-                <G key={i}>
-                  <Path d={getSlicePath(i)} fill={slice.color} stroke={theme.backgroundElement} strokeWidth={1.5} />
-                  {/* Labels */}
-                  <G transform={`translate(${coords.x}, ${coords.y}) rotate(${coords.angle + 90})`}>
-                    <SvgText
-                      x={0}
-                      y={0}
-                      fill="#ffffff"
-                      fontSize={8}
-                      fontWeight="bold"
-                      textAnchor="middle"
-                      alignmentBaseline="middle"
-                    >
-                      {slice.label}
-                    </SvgText>
-                  </G>
-                </G>
-              );
-            })}
-            <Circle cx={100} cy={100} r={12} fill="#ffffff" />
-            <Circle cx={100} cy={100} r={8} fill={theme.text} />
-          </AnimatedG>
+        {/* Outer Wheel Container */}
+        <View style={styles.wheelOuter}>
+          {/* Animated Wheel View (Spins around center) */}
+          <Animated.View style={[animatedStyle, styles.wheelInner]}>
+            <Svg width={200} height={200} viewBox="0 0 200 200">
+              <G>
+                {/* Slices */}
+                {SLICES.map((slice, i) => {
+                  const coords = getLabelCoords(i);
+                  return (
+                    <G key={i}>
+                      <Path d={getSlicePath(i)} fill={slice.color} stroke={theme.backgroundElement} strokeWidth={1.5} />
+                      {/* Labels */}
+                      <G transform={`translate(${coords.x}, ${coords.y}) rotate(${coords.angle + 90})`}>
+                        <SvgText
+                          x={0}
+                          y={0}
+                          fill="#ffffff"
+                          fontSize={8}
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          alignmentBaseline="middle"
+                        >
+                          {slice.label}
+                        </SvgText>
+                      </G>
+                    </G>
+                  );
+                })}
+                <Circle cx={100} cy={100} r={12} fill="#ffffff" />
+                <Circle cx={100} cy={100} r={8} fill={theme.text} />
+              </G>
+            </Svg>
+          </Animated.View>
 
           {/* Static Top Pointer/Needle */}
-          <Path
-            d="M 100 22 L 94 6 L 106 6 Z"
-            fill="#ff3b30"
-            stroke="#ffffff"
-            strokeWidth={1.5}
-          />
-          <Circle cx={100} cy={6} r={3} fill="#ff3b30" />
-        </Svg>
+          <View style={styles.pointerContainer}>
+            <Svg width={20} height={26} viewBox="0 0 20 26">
+              <Path
+                d="M 10 26 L 3 2 L 17 2 Z"
+                fill="#ff3b30"
+                stroke="#ffffff"
+                strokeWidth={1.5}
+              />
+              <Circle cx={10} cy={6} r={3} fill="#ffffff" />
+            </Svg>
+          </View>
+        </View>
 
         {/* Spin Button */}
         {available ? (
@@ -259,6 +265,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.three,
+  },
+  wheelOuter: {
+    width: 220,
+    height: 220,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  wheelInner: {
+    width: 200,
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pointerContainer: {
+    position: 'absolute',
+    top: -2,
+    left: '50%',
+    marginLeft: -10,
+    zIndex: 10,
+    elevation: 3,
   },
   spinButton: {
     paddingHorizontal: Spacing.five,
