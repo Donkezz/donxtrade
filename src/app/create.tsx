@@ -347,28 +347,34 @@ export default function CreateScreen() {
           <View style={styles.formGroup}>
             <ThemedText type="smallBold" style={styles.label}>{t('create.priceLabel')} (€)</ThemedText>
             <View style={styles.pickerSectionRow}>
-              {/* Euros Picker */}
-              <View style={styles.pickerColumnWrapper}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Eur</ThemedText>
-                <WheelPicker 
-                  items={EUROS_ITEMS} 
-                  selectedValue={selectedEuros} 
-                  onValueChange={(val) => handlePricePickerChange(val, selectedCents)} 
-                />
-              </View>
+              <View style={[styles.unifiedPickerContainer, { backgroundColor: theme.backgroundElement }]}>
+                {/* Euros Picker */}
+                <View style={styles.unifiedPickerColumn}>
+                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Eur</ThemedText>
+                  <WheelPicker 
+                    items={EUROS_ITEMS} 
+                    selectedValue={selectedEuros} 
+                    onValueChange={(val) => handlePricePickerChange(val, selectedCents)} 
+                    style={{ backgroundColor: 'transparent' }}
+                  />
+                </View>
 
-              {/* Cents Picker */}
-              <View style={styles.pickerColumnWrapper}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Cent</ThemedText>
-                <WheelPicker 
-                  items={CENTS_ITEMS} 
-                  selectedValue={selectedCents} 
-                  onValueChange={(val) => handlePricePickerChange(selectedEuros, val)} 
-                />
+                <View style={[styles.pickerDivider, { backgroundColor: theme.backgroundSelected }]} />
+
+                {/* Cents Picker */}
+                <View style={styles.unifiedPickerColumn}>
+                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Cent</ThemedText>
+                  <WheelPicker 
+                    items={CENTS_ITEMS} 
+                    selectedValue={selectedCents} 
+                    onValueChange={(val) => handlePricePickerChange(selectedEuros, val)} 
+                    style={{ backgroundColor: 'transparent' }}
+                  />
+                </View>
               </View>
 
               {/* Text Input Column */}
-              <View style={[styles.pickerColumnWrapper, { flex: 1.3 }]}>
+              <View style={[styles.pickerColumnWrapper, { flex: 0.6 }]}>
                 <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Vlastná (€)</ThemedText>
                 <View style={styles.pickerInputWrapper}>
                   <TextInput
@@ -395,34 +401,41 @@ export default function CreateScreen() {
           {/* iOS Style Drum Picker for Expiration (Days, Hours, Minutes) */}
           <View style={styles.formGroup}>
             <ThemedText type="smallBold" style={styles.label}>{t('create.validityLabel')}</ThemedText>
-            <View style={styles.pickerSectionRow}>
+            <View style={[styles.unifiedPickerContainer, { backgroundColor: theme.backgroundElement }]}>
               {/* Days Picker */}
-              <View style={styles.pickerColumnWrapper}>
+              <View style={styles.unifiedPickerColumn}>
                 <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>dni</ThemedText>
                 <WheelPicker 
                   items={DAYS_ITEMS} 
                   selectedValue={selectedDays} 
                   onValueChange={setSelectedDays} 
+                  style={{ backgroundColor: 'transparent' }}
                 />
               </View>
 
+              <View style={[styles.pickerDivider, { backgroundColor: theme.backgroundSelected }]} />
+
               {/* Hours Picker */}
-              <View style={styles.pickerColumnWrapper}>
+              <View style={styles.unifiedPickerColumn}>
                 <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>hod</ThemedText>
                 <WheelPicker 
                   items={HOURS_ITEMS} 
                   selectedValue={selectedHours} 
                   onValueChange={setSelectedHours} 
+                  style={{ backgroundColor: 'transparent' }}
                 />
               </View>
 
+              <View style={[styles.pickerDivider, { backgroundColor: theme.backgroundSelected }]} />
+
               {/* Minutes Picker */}
-              <View style={styles.pickerColumnWrapper}>
+              <View style={styles.unifiedPickerColumn}>
                 <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>min</ThemedText>
                 <WheelPicker 
                   items={MINUTES_ITEMS} 
                   selectedValue={selectedMinutes} 
                   onValueChange={setSelectedMinutes} 
+                  style={{ backgroundColor: 'transparent' }}
                 />
               </View>
             </View>
@@ -689,7 +702,23 @@ const styles = StyleSheet.create({
   pickerSectionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     gap: Spacing.two,
+  },
+  unifiedPickerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  unifiedPickerColumn: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: Spacing.one,
+  },
+  pickerDivider: {
+    width: 1,
+    height: '100%',
   },
   pickerColumnWrapper: {
     flex: 1,

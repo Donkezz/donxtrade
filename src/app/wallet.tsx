@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Pressable, ScrollView, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Pressable, ScrollView, Platform, Alert, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SymbolView } from 'expo-symbols';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withSequence, withTiming } from 'react-native-reanimated';
@@ -129,6 +129,9 @@ export default function WalletScreen() {
 
   const [successVisible, setSuccessVisible] = useState(false);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [langMenuVisible, setLangMenuVisible] = useState(false);
+
+  const currentLang = LANGUAGES.find(l => l.code === appLanguage) || LANGUAGES[0];
 
   // Animation values for Top-up button and card
   const cardScale = useSharedValue(1);
@@ -212,44 +215,29 @@ export default function WalletScreen() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <ThemedText type="title">{t('profile.title')}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {t('profile.subtitle')}
-            </ThemedText>
-          </View>
-
-          {/* Settings Section (Theme & Language) */}
-          <View style={[styles.sectionWrapper, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-            <ThemedText type="smallBold" style={styles.sectionHeader}>{t('profile.settingsSection')}</ThemedText>
-            
-            {/* Language Selection */}
-            <View style={styles.settingsGroup}>
-              <ThemedText type="smallBold" style={styles.settingsLabel}>{t('profile.languageLabel')}</ThemedText>
-              <View style={styles.langGrid}>
-                {LANGUAGES.map((lang) => {
-                  const isSelected = appLanguage === lang.code;
-                  return (
-                    <Pressable
-                      key={lang.code}
-                      onPress={() => setAppLanguage(lang.code)}
-                      style={[
-                        styles.langChip,
-                        { 
-                          backgroundColor: isSelected ? theme.text : theme.backgroundSelected,
-                        }
-                      ]}
-                    >
-                      <ThemedText style={{ fontSize: 13, color: isSelected ? theme.background : theme.text }}>
-                        {lang.flag} {lang.label}
-                      </ThemedText>
-                    </Pressable>
-                  );
-                })}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Pressable 
+                onPress={() => setLangMenuVisible(true)}
+                style={[styles.langFlagBtn, { backgroundColor: theme.backgroundElement }]}
+              >
+                <ThemedText style={{ fontSize: 20 }}>{currentLang.flag}</ThemedText>
+              </Pressable>
+              
+              <View style={{ alignItems: 'flex-end' }}>
+                <ThemedText type="title">{t('profile.title')}</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('profile.subtitle')}
+                </ThemedText>
               </View>
             </View>
+          </View>
+
+          {/* Settings Section (Theme) */}
+          <View style={[styles.sectionWrapper, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+            <ThemedText type="smallBold" style={styles.sectionHeader}>{t('profile.settingsSection')}</ThemedText>
 
             {/* Theme Selection */}
-            <View style={[styles.settingsGroup, { borderTopWidth: 1, borderTopColor: theme.backgroundSelected, paddingTop: Spacing.three, marginTop: Spacing.three }]}>
+            <View style={styles.settingsGroup}>
               <ThemedText type="smallBold" style={styles.settingsLabel}>{t('profile.themeLabel')}</ThemedText>
               <View style={styles.themeGrid}>
                 {THEMES.map((themeItem) => {
@@ -559,6 +547,34 @@ export default function WalletScreen() {
           onClose={() => setActiveChatId(null)}
         />
       )}
+
+      {/* Language Modal */}
+      <Modal visible={langMenuVisible} transparent animationType="fade" onRequestClose={() => setLangMenuVisible(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setLangMenuVisible(false)}>
+          <View style={[styles.langModalContent, { backgroundColor: theme.background, borderColor: theme.backgroundSelected }]}>
+            <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>{t('profile.languageLabel')}</ThemedText>
+            {LANGUAGES.map((lang) => {
+              const isSelected = appLanguage === lang.code;
+              return (
+                <Pressable
+                  key={lang.code}
+                  onPress={() => {
+                    setAppLanguage(lang.code);
+                    setLangMenuVisible(false);
+                  }}
+                  style={[
+                    styles.langModalItem,
+                    isSelected && { backgroundColor: theme.backgroundSelected }
+                  ]}
+                >
+                  <ThemedText style={{ fontSize: 16 }}>{lang.flag} {lang.label}</ThemedText>
+                  {isSelected && <SymbolView tintColor={theme.text} name={{ ios: 'checkmark', web: 'check', android: 'check' } as any} size={16} />}
+                </Pressable>
+              );
+            })}
+          </View>
+        </Pressable>
+      </Modal>
     </ThemedView>
   );
 }
@@ -616,15 +632,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: Spacing.two,
   },
-  langGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-  },
-  langChip: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.three,
+  langFlagBtn: {
+    padding: Spacing.two,
+    borderRadius: Spacing.two,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   themeGrid: {
     flexDirection: 'row',
@@ -680,6 +694,7 @@ const styles = StyleSheet.create({
   cardBalance: {
     fontSize: 32,
     fontWeight: 'bold',
+    lineHeight: 40,
     marginTop: Spacing.one,
   },
   cardFooter: {
@@ -797,6 +812,28 @@ const styles = StyleSheet.create({
   contactVal: {
     marginLeft: Spacing.two,
     fontSize: 13,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.four,
+  },
+  langModalContent: {
+    width: 250,
+    borderRadius: Spacing.three,
+    padding: Spacing.four,
+    borderWidth: 1,
+  },
+  langModalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Spacing.two,
+    marginBottom: Spacing.one,
   },
   onlineDot: {
     width: 8,

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, ScrollView, NativeSyntheticEvent, NativeScrollEvent, Platform } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, NativeSyntheticEvent, NativeScrollEvent, Platform, StyleProp, ViewStyle } from 'react-native';
 import { useTheme } from '@/hooks/use-theme';
 
 interface WheelPickerProps {
@@ -8,6 +8,7 @@ interface WheelPickerProps {
   onValueChange: (value: string) => void;
   height?: number;
   itemHeight?: number;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const WheelPicker: React.FC<WheelPickerProps> = ({
@@ -16,6 +17,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
   onValueChange,
   height = 120,
   itemHeight = 40,
+  style,
 }) => {
   const theme = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -44,7 +46,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
   };
 
   return (
-    <View style={[styles.container, { height, backgroundColor: theme.backgroundElement }]}>
+    <View style={[styles.container, { height, backgroundColor: theme.backgroundElement }, style]}>
       {/* Selected Indicator Highlight Area */}
       <View 
         style={[
