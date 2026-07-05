@@ -190,21 +190,28 @@ export default function WalletScreen() {
               </View>
             </View>
 
-            <Pressable
-              onPress={() => {
-                topUpWallet(50);
-                setSuccessVisible(true);
-                setTimeout(() => setSuccessVisible(false), 3000);
-              }}
-              style={({ pressed }) => [
-                styles.topupButton,
-                { backgroundColor: theme.text },
-                pressed && { opacity: 0.8 }
-              ]}
-            >
-              <SymbolView tintColor={theme.background} name={{ ios: 'plus.circle.fill', android: 'add_circle', web: 'add_circle' } as any} size={20} style={{ marginRight: 8 }} />
-              <ThemedText type="smallBold" style={{ color: theme.background }}>Dobiť Kredity (Zadarmo)</ThemedText>
-            </Pressable>
+            {walletBalance < 1 ? (
+              <Pressable
+                onPress={() => {
+                  topUpWallet(50);
+                  setSuccessVisible(true);
+                  setTimeout(() => setSuccessVisible(false), 3000);
+                }}
+                style={({ pressed }) => [
+                  styles.topupButton,
+                  { backgroundColor: theme.text },
+                  pressed && { opacity: 0.8 }
+                ]}
+              >
+                <SymbolView tintColor={theme.background} name={{ ios: 'plus.circle.fill', android: 'add_circle', web: 'add_circle' } as any} size={20} style={{ marginRight: 8 }} />
+                <ThemedText type="smallBold" style={{ color: theme.background }}>Dobiť Kredity (Zadarmo)</ThemedText>
+              </Pressable>
+            ) : (
+              <View style={[styles.topupButton, { backgroundColor: theme.backgroundSelected, opacity: 0.6 }]}>
+                <SymbolView tintColor={theme.textSecondary} name={{ ios: 'lock.fill', android: 'lock', web: 'lock' } as any} size={20} style={{ marginRight: 8 }} />
+                <ThemedText type="smallBold" themeColor="textSecondary">Máš dostatok kreditov</ThemedText>
+              </View>
+            )}
           </View>
 
           {/* Gamification Banner */}
