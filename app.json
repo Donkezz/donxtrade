@@ -2,13 +2,17 @@
   "expo": {
     "name": "donx",
     "slug": "donx",
+    "owner": "donkezz",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "donx",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.donkezz.donxtrade",
+      "buildNumber": "1",
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -41,6 +45,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8ea7e778-3d71-426b-802f-e775af86feda"
+      }
     }
   }
 }
