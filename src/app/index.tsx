@@ -31,22 +31,22 @@ export default function MarketplaceScreen() {
   const [selectedCategory, setSelectedCategory] = useState<ListingCategory | 'all'>('all');
   const [selectedType, setSelectedType] = useState<ListingType>('supply'); // default: Ponuky
 
-  const CATEGORIES: { labelKey: string; value: ListingCategory | 'all'; icon: string; fallbackIcon: string }[] = [
-    { labelKey: 'common.all', value: 'all', icon: 'square.grid.2x2.fill', fallbackIcon: 'apps' },
-    { labelKey: 'common.anything', value: 'anything', icon: 'square.grid.2x2', fallbackIcon: 'apps' },
-    { labelKey: 'common.clothing', value: 'clothing', icon: 'tshirt', fallbackIcon: 'checkroom' },
-    { labelKey: 'common.material', value: 'material', icon: 'shippingbox', fallbackIcon: 'inventory_2' },
-    { labelKey: 'common.kids', value: 'kids', icon: 'stroller', fallbackIcon: 'child_friendly' },
-    { labelKey: 'common.men', value: 'men', icon: 'figure.stand', fallbackIcon: 'man' },
-    { labelKey: 'common.women', value: 'women', icon: 'figure.dress', fallbackIcon: 'woman' },
-    { labelKey: 'common.service', value: 'service', icon: 'wrench.and.screwdriver', fallbackIcon: 'build' },
-    { labelKey: 'common.meeting', value: 'meeting', icon: 'person.2', fallbackIcon: 'people' },
-    { labelKey: 'common.tickets', value: 'tickets', icon: 'ticket', fallbackIcon: 'local_activity' },
-    { labelKey: 'common.electronics', value: 'electronics', icon: 'desktopcomputer', fallbackIcon: 'devices' },
-    { labelKey: 'common.home', value: 'home', icon: 'house', fallbackIcon: 'home' },
-    { labelKey: 'common.pets', value: 'pets', icon: 'pawprint', fallbackIcon: 'pets' },
-    { labelKey: 'common.sport', value: 'sport', icon: 'figure.run', fallbackIcon: 'sports_soccer' },
-    { labelKey: 'common.auto', value: 'auto', icon: 'car', fallbackIcon: 'directions_car' },
+  const CATEGORIES: { labelKey: string; value: ListingCategory | 'all'; icon: string; fallbackIcon: string; color: string }[] = [
+    { labelKey: 'common.all', value: 'all', icon: 'square.grid.2x2.fill', fallbackIcon: 'apps', color: '#333333' },
+    { labelKey: 'common.anything', value: 'anything', icon: 'square.grid.2x2', fallbackIcon: 'apps', color: '#6c5ce7' },
+    { labelKey: 'common.clothing', value: 'clothing', icon: 'tshirt', fallbackIcon: 'checkroom', color: '#ff7675' },
+    { labelKey: 'common.material', value: 'material', icon: 'shippingbox', fallbackIcon: 'inventory_2', color: '#fdcb6e' },
+    { labelKey: 'common.kids', value: 'kids', icon: 'stroller', fallbackIcon: 'child_friendly', color: '#00b894' },
+    { labelKey: 'common.men', value: 'men', icon: 'figure.stand', fallbackIcon: 'man', color: '#0984e3' },
+    { labelKey: 'common.women', value: 'women', icon: 'figure.dress', fallbackIcon: 'woman', color: '#e84393' },
+    { labelKey: 'common.service', value: 'service', icon: 'wrench.and.screwdriver', fallbackIcon: 'build', color: '#8338EC' },
+    { labelKey: 'common.meeting', value: 'meeting', icon: 'person.2', fallbackIcon: 'people', color: '#38B000' },
+    { labelKey: 'common.tickets', value: 'tickets', icon: 'ticket', fallbackIcon: 'local_activity', color: '#FF006E' },
+    { labelKey: 'common.electronics', value: 'electronics', icon: 'desktopcomputer', fallbackIcon: 'devices', color: '#2d3436' },
+    { labelKey: 'common.home', value: 'home', icon: 'house', fallbackIcon: 'home', color: '#d63031' },
+    { labelKey: 'common.pets', value: 'pets', icon: 'pawprint', fallbackIcon: 'pets', color: '#e17055' },
+    { labelKey: 'common.sport', value: 'sport', icon: 'figure.run', fallbackIcon: 'sports_soccer', color: '#3A86F0' },
+    { labelKey: 'common.auto', value: 'auto', icon: 'car', fallbackIcon: 'directions_car', color: '#b2bec3' },
   ];
 
   // Filter listings based on search, category, type, and expiration
@@ -182,20 +182,20 @@ export default function MarketplaceScreen() {
                   style={[
                     styles.categoryChip,
                     { 
-                      backgroundColor: isSelected ? theme.text : theme.backgroundElement,
-                      borderColor: theme.backgroundSelected
+                      backgroundColor: isSelected ? item.color : item.color + '15', // 15 is hex alpha
+                      borderColor: isSelected ? item.color : 'transparent',
                     }
                   ]}
                 >
                   <SymbolView
-                    tintColor={isSelected ? theme.background : theme.text}
+                    tintColor={isSelected ? '#ffffff' : item.color}
                     name={{ ios: item.icon as any, android: item.fallbackIcon as any, web: item.fallbackIcon as any }}
-                    size={12}
+                    size={20}
                     style={styles.chipIcon}
                   />
                   <ThemedText 
                     type="smallBold" 
-                    style={{ color: isSelected ? theme.background : theme.text }}
+                    style={{ color: isSelected ? '#ffffff' : item.color, marginLeft: Spacing.one }}
                   >
                     {t(item.labelKey)}
                   </ThemedText>
@@ -359,8 +359,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
-    borderRadius: Spacing.three,
+    borderRadius: Spacing.four,
     borderWidth: 1,
+    minHeight: 44,
   },
   chipIcon: {
     marginRight: Spacing.one,

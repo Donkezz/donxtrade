@@ -290,7 +290,11 @@ export default function CreateScreen() {
 
           {/* Category Chips */}
           <ThemedText type="smallBold" style={styles.label}>{t('create.categoryLabel')}</ThemedText>
-          <View style={styles.categoryGrid}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            contentContainerStyle={styles.categoryScroll}
+          >
             {CATEGORY_OPTIONS.map((opt) => {
               const isSelected = category === opt.value;
               return (
@@ -300,27 +304,27 @@ export default function CreateScreen() {
                   style={[
                     styles.categoryChip,
                     { 
-                      backgroundColor: isSelected ? opt.color : theme.backgroundElement,
-                      borderColor: isSelected ? opt.color : theme.backgroundSelected
+                      backgroundColor: isSelected ? opt.color : opt.color + '15',
+                      borderColor: isSelected ? opt.color : 'transparent',
                     }
                   ]}
                 >
                   <SymbolView
                     tintColor={isSelected ? '#ffffff' : opt.color}
                     name={{ ios: opt.icon as any, android: opt.fallbackIcon as any, web: opt.fallbackIcon as any }}
-                    size={14}
+                    size={24}
                     style={styles.chipIcon}
                   />
                   <ThemedText 
                     type="smallBold" 
-                    style={{ color: isSelected ? '#ffffff' : theme.text }}
+                    style={{ color: isSelected ? '#ffffff' : opt.color, marginTop: Spacing.half, textAlign: 'center' }}
                   >
                     {t(opt.labelKey)}
                   </ThemedText>
                 </Pressable>
               );
             })}
-          </View>
+          </ScrollView>
 
           {/* Text Inputs */}
           <View style={styles.formGroup}>
@@ -692,22 +696,23 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
+  categoryScroll: {
+    gap: Spacing.three,
+    paddingRight: Spacing.four,
     marginBottom: Spacing.four,
   },
   categoryChip: {
-    flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.three,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.three,
+    borderRadius: Spacing.four,
     borderWidth: 1,
+    minWidth: 90,
+    minHeight: 90,
   },
   chipIcon: {
-    marginRight: Spacing.one,
+    marginBottom: Spacing.half,
   },
   formGroup: {
     marginBottom: Spacing.four,
