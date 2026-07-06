@@ -11,7 +11,6 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { Listing, useApp } from '@/context/AppContext';
 import { SecureChatModal } from './SecureChatModal';
-import { ScratchCard } from './ScratchCard';
 
 interface ListingCardProps {
   listing: Listing;
@@ -22,9 +21,9 @@ const CATEGORY_MAP: Record<string, { labelKey: string; icon: string; fallbackIco
   anything: { labelKey: 'common.anything', icon: 'square.grid.2x2', fallbackIcon: 'apps', color: '#6c5ce7' },
   clothing: { labelKey: 'common.clothing', icon: 'tshirt', fallbackIcon: 'checkroom', color: '#ff7675' },
   material: { labelKey: 'common.material', icon: 'shippingbox', fallbackIcon: 'inventory_2', color: '#fdcb6e' },
-  kids: { labelKey: 'common.kids', icon: 'stroller', fallbackIcon: 'child_friendly', color: '#00b894' },
-  men: { labelKey: 'common.men', icon: 'figure.stand', fallbackIcon: 'man', color: '#0984e3' },
-  women: { labelKey: 'common.women', icon: 'figure.dress', fallbackIcon: 'woman', color: '#e84393' },
+  kids: { labelKey: 'common.kids', icon: 'face.smiling.fill', fallbackIcon: 'face', color: '#00b894' },
+  men: { labelKey: 'common.men', icon: 'bolt.fill', fallbackIcon: 'bolt', color: '#0984e3' },
+  women: { labelKey: 'common.women', icon: 'heart.fill', fallbackIcon: 'favorite', color: '#e84393' },
   service: { labelKey: 'common.service', icon: 'wrench.and.screwdriver', fallbackIcon: 'build', color: '#8338EC' },
   meeting: { labelKey: 'common.meeting', icon: 'person.2', fallbackIcon: 'people', color: '#38B000' },
   tickets: { labelKey: 'common.tickets', icon: 'ticket', fallbackIcon: 'local_activity', color: '#FF006E' },
@@ -292,56 +291,54 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
 
         <View style={styles.actionContainer}>
           {isUnlocked ? (
-            <ScratchCard>
-              <Animated.View entering={FadeIn} style={styles.unlockedBox}>
-                {listing.contactType === 'chat' ? (
-                  <Pressable
-                    onPress={() => {
-                      requireAuth(() => {
-                        const participantName = listing.isAnonymous ? t('profile.anonymousUser') : listing.ownerName;
-                        startChat(listing.id, listing.title, participantName);
-                        setChatVisible(true);
-                      });
-                    }}
-                    style={({ pressed }) => [
-                      styles.unlockButton,
-                      { backgroundColor: '#38B000' },
-                      pressed && { opacity: 0.8 }
-                    ]}
-                  >
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.one }}>
-                      <SymbolView
-                        tintColor="#ffffff"
-                        name={{ ios: 'lock.bubble.fill' as any, android: 'chat' as any, web: 'chat' as any }}
-                        size={12}
-                      />
-                      <ThemedText type="smallBold" style={{ color: '#ffffff' }}>
-                        {t('listingCard.chatBtn')}
-                      </ThemedText>
-                    </View>
-                  </Pressable>
-                ) : (
-                  <View style={{ alignItems: 'center', width: '100%' }}>
-                    <View style={styles.unlockedHeader}>
-                      <SymbolView
-                        tintColor="#38B000"
-                        name={{ ios: 'checkmark.circle.fill', android: 'check_circle', web: 'check_circle' }}
-                        size={12}
-                      />
-                      <ThemedText type="smallBold" style={{ color: '#38B000', marginLeft: Spacing.one }}>
-                        {listing.isAnonymous ? t('listingCard.unlockedAnonLabel') : t('listingCard.unlockedLabel')}
-                      </ThemedText>
-                    </View>
-                    <ThemedText type="small" style={styles.ownerName}>
-                      {listing.isAnonymous ? t('profile.anonymousUser') : listing.ownerName}
-                    </ThemedText>
-                    <ThemedText type="code" style={[styles.contactValue, { backgroundColor: theme.backgroundSelected, color: theme.text }]} selectable>
-                      {listing.contactInfo}
+            <Animated.View entering={FadeIn} style={styles.unlockedBox}>
+              {listing.contactType === 'chat' ? (
+                <Pressable
+                  onPress={() => {
+                    requireAuth(() => {
+                      const participantName = listing.isAnonymous ? t('profile.anonymousUser') : listing.ownerName;
+                      startChat(listing.id, listing.title, participantName);
+                      setChatVisible(true);
+                    });
+                  }}
+                  style={({ pressed }) => [
+                    styles.unlockButton,
+                    { backgroundColor: '#38B000' },
+                    pressed && { opacity: 0.8 }
+                  ]}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.one }}>
+                    <SymbolView
+                      tintColor="#ffffff"
+                      name={{ ios: 'lock.bubble.fill' as any, android: 'chat' as any, web: 'chat' as any }}
+                      size={12}
+                    />
+                    <ThemedText type="smallBold" style={{ color: '#ffffff' }}>
+                      {t('listingCard.chatBtn')}
                     </ThemedText>
                   </View>
-                )}
-              </Animated.View>
-            </ScratchCard>
+                </Pressable>
+              ) : (
+                <View style={{ alignItems: 'center', width: '100%' }}>
+                  <View style={styles.unlockedHeader}>
+                    <SymbolView
+                      tintColor="#38B000"
+                      name={{ ios: 'checkmark.circle.fill', android: 'check_circle', web: 'check_circle' }}
+                      size={12}
+                    />
+                    <ThemedText type="smallBold" style={{ color: '#38B000', marginLeft: Spacing.one }}>
+                      {listing.isAnonymous ? t('listingCard.unlockedAnonLabel') : t('listingCard.unlockedLabel')}
+                    </ThemedText>
+                  </View>
+                  <ThemedText type="small" style={styles.ownerName}>
+                    {listing.isAnonymous ? t('profile.anonymousUser') : listing.ownerName}
+                  </ThemedText>
+                  <ThemedText type="code" style={[styles.contactValue, { backgroundColor: theme.backgroundSelected, color: theme.text }]} selectable>
+                    {listing.contactInfo}
+                  </ThemedText>
+                </View>
+              )}
+            </Animated.View>
           ) : (
             <Pressable 
               onPress={handleUnlock}

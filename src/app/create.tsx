@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, Pressable, ScrollView, Platform, Alert } from 'react-native';
+import { StyleSheet, View, TextInput, Pressable, ScrollView, Platform, Alert, KeyboardAvoidingView, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
+import * as DocumentPicker from 'expo-document-picker';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -19,9 +20,9 @@ const CATEGORY_OPTIONS: { labelKey: string; value: ListingCategory; icon: string
   { labelKey: 'common.anything', value: 'anything', icon: 'square.grid.2x2', fallbackIcon: 'apps', color: '#6c5ce7' },
   { labelKey: 'common.clothing', value: 'clothing', icon: 'tshirt', fallbackIcon: 'checkroom', color: '#ff7675' },
   { labelKey: 'common.material', value: 'material', icon: 'shippingbox', fallbackIcon: 'inventory_2', color: '#fdcb6e' },
-  { labelKey: 'common.kids', value: 'kids', icon: 'stroller', fallbackIcon: 'child_friendly', color: '#00b894' },
-  { labelKey: 'common.men', value: 'men', icon: 'figure.stand', fallbackIcon: 'man', color: '#0984e3' },
-  { labelKey: 'common.women', value: 'women', icon: 'figure.dress', fallbackIcon: 'woman', color: '#e84393' },
+  { labelKey: 'common.kids', value: 'kids', icon: 'face.smiling.fill', fallbackIcon: 'face', color: '#00b894' },
+  { labelKey: 'common.men', value: 'men', icon: 'bolt.fill', fallbackIcon: 'bolt', color: '#0984e3' },
+  { labelKey: 'common.women', value: 'women', icon: 'heart.fill', fallbackIcon: 'favorite', color: '#e84393' },
   { labelKey: 'common.service', value: 'service', icon: 'wrench.and.screwdriver', fallbackIcon: 'build', color: '#8338EC' },
   { labelKey: 'common.meeting', value: 'meeting', icon: 'person.2', fallbackIcon: 'people', color: '#38B000' },
   { labelKey: 'common.tickets', value: 'tickets', icon: 'ticket', fallbackIcon: 'local_activity', color: '#FF006E' },
@@ -101,8 +102,20 @@ export default function CreateScreen() {
     }
   };
 
-  // Pick media (images/videos)
-  const handlePickMedia = async () => {
+  const [mediaModalVisible, setMediaModalVisible] = useState(false);
+
+  // Trigger modal instead of direct library picking
+  const handlePickMedia = () => {
+    if (media.length >= 5) {
+      showAlert(t('common.warning'), t('create.mediaLimitText'));
+      return;
+    }
+    setMediaModalVisible(true);
+  };
+
+  // 1. Pick from Photo Gallery
+  const handlePickFromGallery = async () => {
+    setMediaModalVisible(false);
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       showAlert(t('common.warning'), t('create.mediaLimitText'));
@@ -122,6 +135,53 @@ export default function CreateScreen() {
         type: asset.type === 'video' ? 'video' : 'image',
       }));
       setMedia(prev => [...prev, ...selected].slice(0, 5));
+    }
+  };
+
+  // 2. Take a photo with Camera (Allows editing/cropping!)
+  const handleTakePhoto = async () => {
+    setMediaModalVisible(false);
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      showAlert(t('common.warning'), "Aplikácia nemá prístup k fotoaparátu.");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true, // system crop/resize
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const asset = result.assets[0];
+      const newPhoto: ListingMedia = {
+        uri: asset.uri,
+        type: 'image',
+      };
+      setMedia(prev => [...prev, newPhoto].slice(0, 5));
+    }
+  };
+
+  // 3. Pick Document/File from device storage
+  const handlePickDocument = async () => {
+    setMediaModalVisible(false);
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['image/*', 'video/*', 'application/pdf'],
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const asset = result.assets[0];
+        const fileMedia: ListingMedia = {
+          uri: asset.uri,
+          type: asset.mimeType?.startsWith('video') ? 'video' : 'image',
+        };
+        setMedia(prev => [...prev, fileMedia].slice(0, 5));
+      }
+    } catch (err) {
+      console.error('Document picking error:', err);
     }
   };
 
@@ -224,13 +284,17 @@ export default function CreateScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <ScrollView 
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: BottomTabInset + Spacing.five }
-          ]}
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+          style={{ flex: 1 }}
         >
+          <ScrollView 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingBottom: BottomTabInset + Spacing.five }
+            ]}
+          >
           {/* Header */}
           <View style={styles.header}>
             <ThemedText type="title">{t('create.title')}</ThemedText>
@@ -402,7 +466,7 @@ export default function CreateScreen() {
                     items={EUROS_ITEMS} 
                     selectedValue={selectedEuros} 
                     onValueChange={(val) => handlePricePickerChange(val, selectedCents)} 
-                    style={{ backgroundColor: 'transparent' }}
+                    style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
                   />
                 </View>
 
@@ -415,7 +479,7 @@ export default function CreateScreen() {
                     items={CENTS_ITEMS} 
                     selectedValue={selectedCents} 
                     onValueChange={(val) => handlePricePickerChange(selectedEuros, val)} 
-                    style={{ backgroundColor: 'transparent' }}
+                    style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
                   />
                 </View>
               </View>
@@ -456,7 +520,7 @@ export default function CreateScreen() {
                   items={DAYS_ITEMS} 
                   selectedValue={selectedDays} 
                   onValueChange={setSelectedDays} 
-                  style={{ backgroundColor: 'transparent' }}
+                  style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
                 />
               </View>
 
@@ -469,7 +533,7 @@ export default function CreateScreen() {
                   items={HOURS_ITEMS} 
                   selectedValue={selectedHours} 
                   onValueChange={setSelectedHours} 
-                  style={{ backgroundColor: 'transparent' }}
+                  style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
                 />
               </View>
 
@@ -482,7 +546,7 @@ export default function CreateScreen() {
                   items={MINUTES_ITEMS} 
                   selectedValue={selectedMinutes} 
                   onValueChange={setSelectedMinutes} 
-                  style={{ backgroundColor: 'transparent' }}
+                  style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
                 />
               </View>
             </View>
@@ -643,19 +707,53 @@ export default function CreateScreen() {
           </>
           )}
         </ScrollView>
-      </SafeAreaView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
 
-      <MapPickerModal
-        visible={mapVisible}
-        onClose={() => setMapVisible(false)}
-        onSelectLocation={(address, lat, lng) => {
-          setLocation(address);
-          setLatitude(lat);
-          setLongitude(lng);
-          setMapVisible(false);
-        }}
-      />
-    </ThemedView>
+    <MapPickerModal
+      visible={mapVisible}
+      onClose={() => setMapVisible(false)}
+      onSelectLocation={(address, lat, lng) => {
+        setLocation(address);
+        setLatitude(lat);
+        setLongitude(lng);
+        setMapVisible(false);
+      }}
+    />
+
+    {/* Media Selection Modal */}
+    <Modal
+      visible={mediaModalVisible}
+      transparent
+      animationType="slide"
+      onRequestClose={() => setMediaModalVisible(false)}
+    >
+      <Pressable style={styles.modalOverlay} onPress={() => setMediaModalVisible(false)}>
+        <View style={[styles.modalContent, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+          <ThemedText type="smallBold" style={styles.modalTitle}>Pridať prílohu</ThemedText>
+          
+          <Pressable style={styles.modalItem} onPress={handleTakePhoto}>
+            <SymbolView tintColor={theme.text} name={{ ios: 'camera.fill', web: 'camera_alt' }} size={20} />
+            <ThemedText type="smallBold" style={styles.modalItemText}>Fotoaparát (odfotiť a orezať)</ThemedText>
+          </Pressable>
+
+          <Pressable style={styles.modalItem} onPress={handlePickFromGallery}>
+            <SymbolView tintColor={theme.text} name={{ ios: 'photo.on.rectangle.angled', web: 'photo_library' }} size={20} />
+            <ThemedText type="smallBold" style={styles.modalItemText}>Galéria fotiek a videí</ThemedText>
+          </Pressable>
+
+          <Pressable style={styles.modalItem} onPress={handlePickDocument}>
+            <SymbolView tintColor={theme.text} name={{ ios: 'doc.text.fill', web: 'insert_drive_file' }} size={20} />
+            <ThemedText type="smallBold" style={styles.modalItemText}>Súbory z pamäte mobilu</ThemedText>
+          </Pressable>
+
+          <Pressable style={[styles.modalItem, { borderBottomWidth: 0, justifyContent: 'center' }]} onPress={() => setMediaModalVisible(false)}>
+            <ThemedText type="smallBold" style={{ color: '#ff6b6b' }}>Zrušiť</ThemedText>
+          </Pressable>
+        </View>
+      </Pressable>
+    </Modal>
+  </ThemedView>
   );
 }
 
@@ -798,7 +896,7 @@ const styles = StyleSheet.create({
   },
   unifiedPickerColumn: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'stretch', // Zmenené z 'center' pre širší dosah posúvania
     paddingVertical: Spacing.one,
   },
   pickerDivider: {
@@ -875,5 +973,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: Spacing.two,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderTopLeftRadius: Spacing.four,
+    borderTopRightRadius: Spacing.four,
+    padding: Spacing.four,
+    borderTopWidth: 1,
+    ...Platform.select({
+      web: {
+        maxWidth: 500,
+        width: '100%',
+        alignSelf: 'center',
+        borderBottomLeftRadius: Spacing.four,
+        borderBottomRightRadius: Spacing.four,
+        marginBottom: '5%',
+      }
+    })
+  },
+  modalTitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: Spacing.four,
+  },
+  modalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.three,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.05)',
+  },
+  modalItemText: {
+    marginLeft: Spacing.three,
+    fontSize: 14,
   },
 });

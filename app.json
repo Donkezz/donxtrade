@@ -12,7 +12,10 @@
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.donkezz.donxtrade",
       "buildNumber": "1",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
