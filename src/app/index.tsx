@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TextInput, Pressable, FlatList, Platform, Modal } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { SymbolView } from 'expo-symbols';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FlatList, Modal, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { GamificationModal } from '@/components/GamificationModal';
+import { ListingCard } from '@/components/ListingCard';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { ListingCard } from '@/components/ListingCard';
-import { GamificationModal } from '@/components/GamificationModal';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { ListingCategory, ListingType, useApp } from '@/context/AppContext';
 import { useTheme } from '@/hooks/use-theme';
-import { useApp, ListingCategory, ListingType } from '@/context/AppContext';
 
 export default function MarketplaceScreen() {
   const { t } = useTranslation();
@@ -45,7 +45,58 @@ export default function MarketplaceScreen() {
 
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ListingCategory | 'all'>('all');
-  const [selectedType, setSelectedType] = useState<ListingType>('supply'); // default: Ponuky
+  const [selectedType, setSelectedType] = useState<ListingType>('supply');
+  const [onboardingVisible, setOnboardingVisible] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
+  const [nowTs, setNowTs] = useState(() => Date.now());
+
+  const QUICK_ACTIONS = [
+    {
+      key: 'marketplace.quickCreate',
+      icon: 'plus.circle.fill',
+      fallbackIcon: 'add_circle',
+      action: () => router.push('/create'),
+      tint: '#6c5ce7',
+    },
+    {
+      key: 'marketplace.quickCredits',
+      icon: 'creditcard.fill',
+      fallbackIcon: 'credit_card',
+      action: () => router.push('/wallet'),
+      tint: '#f4b740',
+    },
+    {
+      key: 'marketplace.quickExplore',
+      icon: 'sparkles',
+      fallbackIcon: 'auto_awesome',
+      action: () => setSelectedCategory('all'),
+      tint: '#2ecc71',
+    },
+  ] as const;
+
+  const heroLine = t('marketplace.heroTitle');
+  const heroSubline = t('marketplace.heroSubtitle');
+
+  const onboardingSteps = [
+    {
+      titleKey: 'marketplace.onboardingStep1Title',
+      textKey: 'marketplace.onboardingStep1Text',
+      icon: 'sparkles',
+      fallbackIcon: 'auto_awesome',
+    },
+    {
+      titleKey: 'marketplace.onboardingStep2Title',
+      textKey: 'marketplace.onboardingStep2Text',
+      icon: 'plus.circle.fill',
+      fallbackIcon: 'add_circle',
+    },
+    {
+      titleKey: 'marketplace.onboardingStep3Title',
+      textKey: 'marketplace.onboardingStep3Text',
+      icon: 'shield.fill',
+      fallbackIcon: 'security',
+    },
+  ] as const;
 
   const CATEGORIES: { labelKey: string; value: ListingCategory | 'all'; icon: string; fallbackIcon: string; color: string }[] = [
     { labelKey: 'common.all', value: 'all', icon: 'square.grid.2x2.fill', fallbackIcon: 'apps', color: '#333333' },
@@ -65,10 +116,35 @@ export default function MarketplaceScreen() {
     { labelKey: 'common.auto', value: 'auto', icon: 'car', fallbackIcon: 'directions_car', color: '#b2bec3' },
   ];
 
+  useEffect(() => {
+    const checkFirstLaunch = async () => {
+      try {
+        const hasSeen = await AsyncStorage.getItem('hasSeenOnboarding');
+        const hasSeenGamification = await AsyncStorage.getItem('hasSeenGamification');
+
+        if (!hasSeen) {
+          setOnboardingVisible(true);
+          await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+        }
+
+        if (!hasSeenGamification) {
+          setGamificationVisible(true);
+          await AsyncStorage.setItem('hasSeenGamification', 'true');
+        }
+      } catch {
+        console.warn('Initial startup state check failed');
+      }
+    };
+
+    void checkFirstLaunch();
+    const timer = setInterval(() => setNowTs(Date.now()), 30000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Filter listings based on search, category, type, and expiration
   const filteredListings = listings.filter((item) => {
     // Hide expired listings from main feed
-    const isExpired = new Date(item.expiresAt).getTime() < Date.now();
+    const isExpired = new Date(item.expiresAt).getTime() < nowTs;
     if (isExpired) return false;
 
     const matchesSearch =
@@ -85,14 +161,9 @@ export default function MarketplaceScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        
-        {/* Header: Title & Balance */}
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Pressable 
-              onPress={() => setLangMenuVisible(true)}
-              style={styles.langFlagBtn}
-            >
+            <Pressable onPress={() => setLangMenuVisible(true)} style={styles.langFlagBtn}>
               <ThemedText style={{ fontSize: 24, marginRight: Spacing.three }}>{currentLang.flag}</ThemedText>
             </Pressable>
             <View>
@@ -101,15 +172,15 @@ export default function MarketplaceScreen() {
             </View>
           </View>
 
-          <Pressable 
+          <Pressable
             onPress={() => router.push('/wallet')}
             style={({ pressed }) => [
               styles.walletBadge,
-              { 
+              {
                 backgroundColor: theme.backgroundElement,
-                borderColor: theme.backgroundSelected
+                borderColor: theme.backgroundSelected,
               },
-              pressed && styles.pressed
+              pressed && styles.pressed,
             ]}
           >
             <SymbolView
@@ -118,12 +189,41 @@ export default function MarketplaceScreen() {
               size={16}
             />
             <ThemedText type="smallBold" style={styles.walletBalanceText}>
-              🪙 {Math.floor(walletBalance)} {t('common.currency')} (Demo)
+              🪙 {Math.floor(walletBalance)}
             </ThemedText>
           </Pressable>
         </View>
 
-        {/* Search Input */}
+        <View style={[styles.heroCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+          <View style={styles.heroTextWrap}>
+            <ThemedText type="smallBold" themeColor="textSecondary">{heroLine}</ThemedText> 
+            <ThemedText type="subtitle" style={styles.heroTitle}>{heroSubline}</ThemedText>           </View>
+          <Pressable onPress={() => setOnboardingVisible(true)} style={styles.helpChip}>             <SymbolView tintColor={theme.text} name={{ ios: 'questionmark.circle.fill', android: 'help', web: 'help' }} size={16} />
+          </Pressable>
+        </View>
+
+        <ThemedText type="smallBold" style={styles.quickActionsLabel}>{t('marketplace.actionsTitle')}</ThemedText>
+        <View style={styles.quickActionsRow}>
+          {QUICK_ACTIONS.map((action) => (
+            <Pressable
+              key={action.key}
+              onPress={action.action}
+              style={({ pressed }) => [
+                styles.quickAction,
+                { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
+                pressed && styles.pressed,
+              ]}
+            >
+              <SymbolView
+                tintColor={action.tint}
+                name={{ ios: action.icon as any, android: action.fallbackIcon as any, web: action.fallbackIcon as any }}
+                size={18}
+              />
+              <ThemedText type="smallBold" style={styles.quickActionText}>{t(action.key)}</ThemedText>
+            </Pressable>
+          ))}
+        </View>
+
         <View style={[styles.searchContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
           <SymbolView
             tintColor={theme.textSecondary}
@@ -148,17 +248,16 @@ export default function MarketplaceScreen() {
           )}
         </View>
 
-        {/* Toggle supply/demand */}
         <View style={[styles.toggleContainer, { backgroundColor: theme.backgroundElement }]}>
           <Pressable
             onPress={() => setSelectedType('supply')}
             style={[
               styles.toggleButton,
-              selectedType === 'supply' && [styles.toggleActiveButton, { backgroundColor: theme.backgroundSelected }]
+              selectedType === 'supply' && [styles.toggleActiveButton, { backgroundColor: theme.backgroundSelected }],
             ]}
           >
-            <ThemedText 
-              type="smallBold" 
+            <ThemedText
+              type="smallBold"
               themeColor={selectedType === 'supply' ? 'text' : 'textSecondary'}
               style={selectedType === 'supply' && styles.activeText}
             >
@@ -169,11 +268,11 @@ export default function MarketplaceScreen() {
             onPress={() => setSelectedType('demand')}
             style={[
               styles.toggleButton,
-              selectedType === 'demand' && [styles.toggleActiveButton, { backgroundColor: theme.backgroundSelected }]
+              selectedType === 'demand' && [styles.toggleActiveButton, { backgroundColor: theme.backgroundSelected }],
             ]}
           >
-            <ThemedText 
-              type="smallBold" 
+            <ThemedText
+              type="smallBold"
               themeColor={selectedType === 'demand' ? 'text' : 'textSecondary'}
               style={selectedType === 'demand' && styles.activeText}
             >
@@ -182,14 +281,16 @@ export default function MarketplaceScreen() {
           </Pressable>
         </View>
 
-        {/* Category Scroll Filter */}
         <View style={styles.categoriesContainer}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 2 }}>
-            <ThemedText type="small" themeColor="textSecondary" style={{ opacity: 0.6, fontSize: 11, marginBottom: 4 }}>Potiahnite pre viac 👉</ThemedText>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <ThemedText type="smallBold" themeColor="textSecondary">{t('marketplace.categoriesLabel')}</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={{ opacity: 0.6, fontSize: 11 }}>
+              {t('marketplace.swipeHint')}
+            </ThemedText>
           </View>
           <FlatList
             horizontal
-            showsHorizontalScrollIndicator={true}
+            showsHorizontalScrollIndicator={false}
             data={CATEGORIES}
             keyExtractor={(item) => item.value}
             contentContainerStyle={styles.categoriesList}
@@ -200,10 +301,10 @@ export default function MarketplaceScreen() {
                   onPress={() => setSelectedCategory(item.value)}
                   style={[
                     styles.categoryChip,
-                    { 
-                      backgroundColor: isSelected ? item.color : item.color + '15', // 15 is hex alpha
+                    {
+                      backgroundColor: isSelected ? item.color : item.color + '15',
                       borderColor: isSelected ? item.color : 'transparent',
-                    }
+                    },
                   ]}
                 >
                   <SymbolView
@@ -212,10 +313,7 @@ export default function MarketplaceScreen() {
                     size={20}
                     style={styles.chipIcon}
                   />
-                  <ThemedText 
-                    type="smallBold" 
-                    style={{ color: isSelected ? '#ffffff' : item.color, marginLeft: Spacing.one }}
-                  >
+                  <ThemedText type="smallBold" style={{ color: isSelected ? '#ffffff' : item.color, marginLeft: Spacing.one }}>
                     {t(item.labelKey)}
                   </ThemedText>
                 </Pressable>
@@ -224,7 +322,6 @@ export default function MarketplaceScreen() {
           />
         </View>
 
-        {/* Listings List */}
         <FlatList
           data={filteredListings}
           keyExtractor={(item) => item.id}
@@ -256,7 +353,6 @@ export default function MarketplaceScreen() {
         />
       </SafeAreaView>
 
-      {/* Language Selection Modal */}
       <Modal
         visible={langMenuVisible}
         transparent
@@ -270,7 +366,7 @@ export default function MarketplaceScreen() {
                 key={lang.code}
                 style={[
                   styles.langModalItem,
-                  appLanguage === lang.code && { backgroundColor: theme.backgroundSelected }
+                  appLanguage === lang.code && { backgroundColor: theme.backgroundSelected },
                 ]}
                 onPress={() => {
                   setAppLanguage(lang.code);
@@ -281,6 +377,74 @@ export default function MarketplaceScreen() {
                 <ThemedText type="smallBold" style={{ marginLeft: Spacing.three }}>{lang.label}</ThemedText>
               </Pressable>
             ))}
+          </View>
+        </Pressable>
+      </Modal>
+
+      <Modal visible={onboardingVisible} transparent animationType="slide" onRequestClose={() => setOnboardingVisible(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setOnboardingVisible(false)}>
+          <View style={[styles.onboardingCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+            <View style={styles.onboardingHeader}>
+              <ThemedText type="smallBold" themeColor="textSecondary">{t('marketplace.onboardingTitle')}</ThemedText>
+              <Pressable onPress={() => setOnboardingVisible(false)}>
+                <SymbolView tintColor={theme.textSecondary} name={{ ios: 'xmark.circle.fill', android: 'close', web: 'close' }} size={20} />
+              </Pressable>
+            </View>
+
+            <View style={styles.onboardingIconContainer}>
+              <SymbolView
+                tintColor="#6c5ce7"
+                name={{
+                  ios: onboardingSteps[onboardingStep].icon as any,
+                  android: onboardingSteps[onboardingStep].fallbackIcon as any,
+                  web: onboardingSteps[onboardingStep].fallbackIcon as any,
+                }}
+                size={32}
+              />
+            </View>
+
+            <ThemedText type="subtitle" style={styles.onboardingTitleText}>
+              {t(onboardingSteps[onboardingStep].titleKey)}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={styles.onboardingText}>
+              {t(onboardingSteps[onboardingStep].textKey)}
+            </ThemedText>
+
+            <View style={styles.stepDots}>
+              {onboardingSteps.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.stepDot,
+                    { backgroundColor: index === onboardingStep ? '#6c5ce7' : theme.backgroundSelected },
+                  ]}
+                />
+              ))}
+            </View>
+
+            <View style={styles.onboardingActions}>
+              {onboardingStep > 0 && (
+                <Pressable onPress={() => setOnboardingStep((current) => Math.max(0, current - 1))} style={[styles.secondaryAction, { borderColor: theme.backgroundSelected }]}>
+                  <ThemedText type="smallBold">{t('common.cancel')}</ThemedText>
+                </Pressable>
+              )}
+
+              <Pressable
+                onPress={() => {
+                  if (onboardingStep === onboardingSteps.length - 1) {
+                    setOnboardingVisible(false);
+                    setOnboardingStep(0);
+                    return;
+                  }
+                  setOnboardingStep((current) => current + 1);
+                }}
+                style={[styles.primaryAction, { backgroundColor: '#6c5ce7' }]}
+              >
+                <ThemedText type="smallBold" style={{ color: '#ffffff' }}>
+                  {onboardingStep === onboardingSteps.length - 1 ? t('common.confirm') : t('marketplace.nextStep')}
+                </ThemedText>
+              </Pressable>
+            </View>
           </View>
         </Pressable>
       </Modal>
@@ -312,6 +476,32 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 24,
   },
+  heroCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: Spacing.three,
+    borderRadius: Spacing.three,
+    borderWidth: 1,
+    marginBottom: Spacing.three,
+  },
+  heroTextWrap: {
+    flex: 1,
+    paddingRight: Spacing.two,
+  },
+  heroTitle: {
+    marginTop: Spacing.one,
+    fontSize: 20,
+    lineHeight: 28,
+  },
+  helpChip: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(108, 92, 231, 0.12)',
+  },
   walletBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -322,6 +512,28 @@ const styles = StyleSheet.create({
     gap: Spacing.one,
   },
   walletBalanceText: {
+    fontSize: 12,
+  },
+  quickActionsLabel: {
+    marginBottom: Spacing.two,
+  },
+  quickActionsRow: {
+    flexDirection: 'row',
+    gap: Spacing.two,
+    marginBottom: Spacing.three,
+  },
+  quickAction: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.one,
+    borderRadius: Spacing.three,
+    borderWidth: 1,
+    paddingVertical: Spacing.three,
+    minHeight: 56,
+  },
+  quickActionText: {
     fontSize: 12,
   },
   pressed: {
@@ -428,5 +640,64 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     borderRadius: Spacing.two,
     marginBottom: Spacing.one,
+  },
+  onboardingCard: {
+    width: '100%',
+    maxWidth: 420,
+    borderRadius: 28,
+    borderWidth: 1,
+    padding: Spacing.four,
+  },
+  onboardingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.three,
+  },
+  onboardingIconContainer: {
+    width: 72,
+    height: 72,
+    borderRadius: 20,
+    backgroundColor: 'rgba(108, 92, 231, 0.12)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.three,
+  },
+  onboardingTitleText: {
+    marginBottom: Spacing.two,
+  },
+  onboardingText: {
+    textAlign: 'center',
+    marginBottom: Spacing.three,
+  },
+  stepDots: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: Spacing.one,
+    marginBottom: Spacing.three,
+  },
+  stepDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 999,
+  },
+  onboardingActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: Spacing.two,
+  },
+  secondaryAction: {
+    flex: 1,
+    paddingVertical: Spacing.two,
+    borderWidth: 1,
+    borderRadius: Spacing.two,
+    alignItems: 'center',
+  },
+  primaryAction: {
+    flex: 1,
+    paddingVertical: Spacing.two,
+    borderRadius: Spacing.two,
+    alignItems: 'center',
   },
 });

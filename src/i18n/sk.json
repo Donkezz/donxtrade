@@ -29,15 +29,32 @@
     "warning": "Upozornenie",
     "playMoneyWarning": "Fiktívne Donx Kredity"
   },
-  "navigation": {
-    "marketplace": "Ponuky",
-    "create": "Pridať",
-    "profile": "Profil"
-  },
   "marketplace": {
     "searchPlaceholder": "Hľadať ponuky a dopyty...",
     "emptyTitle": "Žiadne inzeráty",
-    "emptySub": "Skúste upraviť filter alebo vyhľadávanie."
+    "emptySub": "Skúste upraviť filter alebo vyhľadávanie.",
+    "heroTitle": "Všetko v okolí",
+    "heroSubtitle": "Objav ponuky, dopyty a služby na pár kliknutí.",
+    "actionsTitle": "Rýchle akcie",
+    "quickCreate": "Pridať inzerát",
+    "quickCredits": "Kredity",
+    "quickExplore": "Objaviť",
+    "onboardingTitle": "Rýchlejší bazár pre každého",
+    "onboardingStep1Title": "Objavuj ihneď",
+    "onboardingStep1Text": "Vyhľadávaj ponuky a dopyty bez zbytočných krokov a zložitého nastavovania.",
+    "onboardingStep2Title": "Vytvor inzerát za minú",
+    "onboardingStep2Text": "Pridaj fotky, cenu a lokalitu a zverejni ho hneď.",
+    "onboardingStep3Title": "Dohodni sa bezpečne",
+    "onboardingStep3Text": "Bezpečný chat a odomknutie kontaktu ti dávajú kontrolu a dôveru.",
+    "nextStep": "Ďalej",
+    "categoriesLabel": "Kategórie",
+    "swipeHint": "Potiahnite pre viac"
+  },
+  "navigation": {
+    "marketplace": "Ponuky",
+    "create": "Pridať",
+    "profile": "Profil",
+    "admin": "Admin"
   },
   "create": {
     "title": "Nový inzerát",
