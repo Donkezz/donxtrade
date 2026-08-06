@@ -15,6 +15,7 @@ import { WheelPicker } from '@/components/ui/WheelPicker';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { ContactType, ListingCategory, ListingMedia, ListingType, useApp } from '@/context/AppContext';
 import { useTheme } from '@/hooks/use-theme';
+import { useCurrency } from '@/hooks/use-currency';
 
 const CATEGORY_OPTIONS: { labelKey: string; value: ListingCategory; icon: string; fallbackIcon: string; color: string }[] = [
   { labelKey: 'common.anything', value: 'anything', icon: 'square.grid.2x2', fallbackIcon: 'apps', color: '#6c5ce7' },
@@ -45,6 +46,7 @@ const MINUTES_ITEMS = Array.from({ length: 60 }, (_, i) => i.toString()); // 0 t
 export default function CreateScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { symbol: currencySign } = useCurrency();
   const { createListing, currentUser, setLoginVisible } = useApp();
 
   const [type, setType] = useState<ListingType>('supply');
@@ -462,12 +464,12 @@ export default function CreateScreen() {
 
           {/* iOS Style Drum Picker for Price */}
           <View style={styles.formGroup}>
-            <ThemedText type="smallBold" style={styles.label}>{t('create.priceLabel')} (€)</ThemedText>
+            <ThemedText type="smallBold" style={styles.label}>{t('create.priceLabel')} ({currencySign})</ThemedText>
             <View style={styles.pickerSectionRow}>
               <View style={[styles.unifiedPickerContainer, { backgroundColor: theme.backgroundElement }]}>
                 {/* Euros Picker */}
                 <View style={styles.unifiedPickerColumn}>
-                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Eur</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>{t('create.priceWhole')}</ThemedText>
                   <WheelPicker 
                     items={EUROS_ITEMS} 
                     selectedValue={selectedEuros} 
@@ -480,7 +482,7 @@ export default function CreateScreen() {
 
                 {/* Cents Picker */}
                 <View style={styles.unifiedPickerColumn}>
-                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Cent</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>{t('create.priceFraction')}</ThemedText>
                   <WheelPicker 
                     items={CENTS_ITEMS} 
                     selectedValue={selectedCents} 
@@ -492,7 +494,7 @@ export default function CreateScreen() {
 
               {/* Text Input Column */}
               <View style={[styles.pickerColumnWrapper, { flex: 0.6 }]}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Vlastná (€)</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>{t('create.customPrice', { currency: currencySign })}</ThemedText>
                 <View style={styles.pickerInputWrapper}>
                   <TextInput
                     placeholder="0.00"

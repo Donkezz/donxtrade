@@ -99,7 +99,10 @@
     "duration_1d": "1 deň",
     "duration_3d": "3 dni",
     "duration_7d": "7 dní",
-    "expiresText": "Platnosť: do %s (o %s)"
+    "expiresText": "Platnosť: do %s (o %s)",
+    "customPrice": "Vlastná ({{currency}})",
+    "priceWhole": "Celé",
+    "priceFraction": "Desatiny"
   },
   "profile": {
     "title": "Profil a Peňaženka",
@@ -130,7 +133,10 @@
     "txCreate": "Vytvorenie inzerátu",
     "deleteBtn": "Zmazať",
     "anonymousUser": "Anonymný Lyžiar",
-    "onlineText": "Aktívny"
+    "onlineText": "Aktívny",
+    "winHeader": "Gratulujeme!",
+    "winText": "Vyhrali ste denný bonus +{{amount}}!",
+    "spinError": "Nepodarilo sa pripísať denný bonus."
   },
   "listingCard": {
     "priceLabel": "Cena",
@@ -142,7 +148,8 @@
     "unlockConfirm": "Naozaj chcete odomknúť kontakt za 1 Kredit?",
     "chatBtn": "Spustiť bezpečný chat",
     "unlockedLabel": "Kontakt odomknutý",
-    "unlockedAnonLabel": "Anonym odomknutý"
+    "unlockedAnonLabel": "Anonym odomknutý",
+    "shareMessage": "Pozri na tento inzerát na Donx: „{{title}}\" za {{price}}! Pridaj sa na Donx a dohodni sa."
   },
   "chat": {
     "title": "Bezpečný čet - %s",
@@ -154,5 +161,12 @@
     "unlockedInfoVal": "Kontakt",
     "imageAttachment": "📷 Obrázok",
     "videoAttachment": "🎥 Video"
+  },
+  "admin": {
+    "title": "Prehľad aplikácie",
+    "listings": "Inzeráty",
+    "topups": "Dobitia",
+    "categorySplit": "Rozloženie kategórií",
+    "activityMap": "Mapa aktivity používateľov"
   }
 }

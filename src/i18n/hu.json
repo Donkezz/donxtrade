@@ -99,7 +99,10 @@
     "duration_1d": "1 nap",
     "duration_3d": "3 nap",
     "duration_7d": "7 nap",
-    "expiresText": "Érvényesség: %s-ig (%s múlva)"
+    "expiresText": "Érvényesség: %s-ig (%s múlva)",
+    "customPrice": "Egyéni ({{currency}})",
+    "priceWhole": "Egészek",
+    "priceFraction": "Tizedesek"
   },
   "profile": {
     "title": "Profil és Pénztárca",
@@ -130,7 +133,10 @@
     "txCreate": "Hirdetés létrehozása",
     "deleteBtn": "Törlés",
     "anonymousUser": "Anonim Síelő",
-    "onlineText": "Aktív"
+    "onlineText": "Aktív",
+    "winHeader": "Gratulálunk!",
+    "winText": "Napi bónuszt nyertél: +{{amount}}!",
+    "spinError": "A napi bónuszt nem sikerült jóváírni."
   },
   "listingCard": {
     "priceLabel": "Ár",
@@ -142,7 +148,8 @@
     "unlockConfirm": "Biztosan fel szeretné oldani ezt a kapcsolatot fiktív 0.10 €-ért?",
     "chatBtn": "Biztonságos csevegés indítása",
     "unlockedLabel": "Kapcsolat feloldva",
-    "unlockedAnonLabel": "Anonim feloldva"
+    "unlockedAnonLabel": "Anonim feloldva",
+    "shareMessage": "Nézd meg ezt a hirdetést a Donxon: „{{title}}” ennyiért: {{price}}! Csatlakozz a Donxhoz és egyezzetek meg."
   },
   "chat": {
     "title": "Biztonságos csevegés - %s",
@@ -154,5 +161,12 @@
     "unlockedInfoVal": "Kapcsolat",
     "imageAttachment": "📷 Kép",
     "videoAttachment": "🎥 Videó"
+  },
+  "admin": {
+    "title": "Alkalmazás áttekintése",
+    "listings": "Hirdetések",
+    "topups": "Feltöltések",
+    "categorySplit": "Kategóriák megoszlása",
+    "activityMap": "Felhasználói aktivitás térképe"
   }
 }

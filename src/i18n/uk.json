@@ -99,7 +99,10 @@
     "duration_1d": "1 день",
     "duration_3d": "3 дні",
     "duration_7d": "7 днів",
-    "expiresText": "Дійсно до %s (через %s)"
+    "expiresText": "Дійсно до %s (через %s)",
+    "customPrice": "Власна ({{currency}})",
+    "priceWhole": "Цілі",
+    "priceFraction": "Десяті"
   },
   "profile": {
     "title": "Профіль та Гаманець",
@@ -130,7 +133,10 @@
     "txCreate": "Створення оголошення",
     "deleteBtn": "Видалити",
     "anonymousUser": "Анонімний Лижник",
-    "onlineText": "Активний"
+    "onlineText": "Активний",
+    "winHeader": "Вітаємо!",
+    "winText": "Ви виграли щоденний бонус +{{amount}}!",
+    "spinError": "Не вдалося нарахувати щоденний бонус."
   },
   "listingCard": {
     "priceLabel": "Ціна",
@@ -142,7 +148,8 @@
     "unlockConfirm": "Ви впевнені, що хочете розблокувати цей контакт за віртуальні 0.10 €?",
     "chatBtn": "Почати безпечний чат",
     "unlockedLabel": "Контакт розблоковано",
-    "unlockedAnonLabel": "Анонім розблоковано"
+    "unlockedAnonLabel": "Анонім розблоковано",
+    "shareMessage": "Поглянь на це оголошення в Donx: «{{title}}» за {{price}}! Приєднуйся до Donx і домовляйся."
   },
   "chat": {
     "title": "Безпечний чат - %s",
@@ -154,5 +161,12 @@
     "unlockedInfoVal": "Контакт",
     "imageAttachment": "📷 Фото",
     "videoAttachment": "🎥 Відео"
+  },
+  "admin": {
+    "title": "Огляд застосунку",
+    "listings": "Оголошення",
+    "topups": "Поповнення",
+    "categorySplit": "Розподіл категорій",
+    "activityMap": "Карта активності користувачів"
   }
 }
