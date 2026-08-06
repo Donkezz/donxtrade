@@ -5,10 +5,20 @@
     "supply": "Supply (I Have)",
     "demand": "Demand (I Need)",
     "all": "All",
-    "ski_pass": "Ski passes",
-    "ticket": "Tickets",
+    "anything": "Anything",
+    "clothing": "Clothing",
+    "material": "Material",
+    "kids": "For kids",
+    "men": "For men",
+    "women": "For women",
     "service": "Services",
-    "social": "Meetups",
+    "meeting": "Meetups",
+    "tickets": "Tickets",
+    "electronics": "Electronics",
+    "home": "Home & Garden",
+    "pets": "Pets",
+    "sport": "Sport & Hobby",
+    "auto": "Auto & Moto",
     "free": "Free",
     "currency": "€",
     "anonymous": "Anonymous",
@@ -19,15 +29,32 @@
     "warning": "Warning",
     "playMoneyWarning": "Play Money Demo Only"
   },
-  "navigation": {
-    "marketplace": "Offers",
-    "create": "Add",
-    "profile": "Profile"
-  },
   "marketplace": {
     "searchPlaceholder": "Search listings...",
     "emptyTitle": "No listings found",
-    "emptySub": "Try adjusting your filters or search."
+    "emptySub": "Try adjusting your filters or search.",
+    "heroTitle": "Everything nearby",
+    "heroSubtitle": "Discover offers, requests and services in just a few taps.",
+    "actionsTitle": "Quick actions",
+    "quickCreate": "Add listing",
+    "quickCredits": "Credits",
+    "quickExplore": "Explore",
+    "onboardingTitle": "A faster local marketplace for everyone",
+    "onboardingStep1Title": "Discover instantly",
+    "onboardingStep1Text": "Browse offers and requests without unnecessary steps or complicated setup.",
+    "onboardingStep2Title": "Create a listing in a minute",
+    "onboardingStep2Text": "Add photos, the price, and your location and publish it right away.",
+    "onboardingStep3Title": "Arrange safely",
+    "onboardingStep3Text": "Secure chat and contact unlocking keep the experience safe and trustworthy.",
+    "nextStep": "Next",
+    "categoriesLabel": "Categories",
+    "swipeHint": "Swipe for more"
+  },
+  "navigation": {
+    "marketplace": "Offers",
+    "create": "Add",
+    "profile": "Profile",
+    "admin": "Admin"
   },
   "create": {
     "title": "New Listing",
@@ -72,7 +99,10 @@
     "duration_1d": "1 day",
     "duration_3d": "3 days",
     "duration_7d": "7 days",
-    "expiresText": "Valid until %s (in %s)"
+    "expiresText": "Valid until %s (in %s)",
+    "customPrice": "Custom ({{currency}})",
+    "priceWhole": "Whole",
+    "priceFraction": "Decimals"
   },
   "profile": {
     "title": "Profile & Wallet",
@@ -103,7 +133,10 @@
     "txCreate": "Create Listing",
     "deleteBtn": "Delete",
     "anonymousUser": "Anonymous Skier",
-    "onlineText": "Active"
+    "onlineText": "Active",
+    "winHeader": "Congratulations!",
+    "winText": "You won a daily bonus of +{{amount}}!",
+    "spinError": "The daily bonus could not be credited."
   },
   "listingCard": {
     "priceLabel": "Price",
@@ -115,7 +148,8 @@
     "unlockConfirm": "Are you sure you want to unlock this contact for a simulated 0.10 €?",
     "chatBtn": "Start Secure Chat",
     "unlockedLabel": "Contact Unlocked",
-    "unlockedAnonLabel": "Anonymous Unlocked"
+    "unlockedAnonLabel": "Anonymous Unlocked",
+    "shareMessage": "Check out this listing on Donx: “{{title}}” for {{price}}! Join Donx and make a deal."
   },
   "chat": {
     "title": "Secure Chat - %s",
@@ -127,5 +161,12 @@
     "unlockedInfoVal": "Contact",
     "imageAttachment": "📷 Photo",
     "videoAttachment": "🎥 Video"
+  },
+  "admin": {
+    "title": "App overview",
+    "listings": "Listings",
+    "topups": "Top-ups",
+    "categorySplit": "Category split",
+    "activityMap": "User activity map"
   }
 }

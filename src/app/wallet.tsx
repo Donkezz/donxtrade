@@ -10,6 +10,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useCurrency } from '@/hooks/use-currency';
 import { useApp, Listing, Transaction } from '@/context/AppContext';
 import { SecureChatModal } from '@/components/SecureChatModal';
 import { GamificationModal } from '@/components/GamificationModal';
@@ -31,6 +32,7 @@ const THEMES = [
 const MyListingItem = ({ listing, onDelete }: { listing: Listing; onDelete: () => void }) => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { format: formatPrice } = useCurrency();
   const [timeLeft, setTimeLeft] = useState('');
 
   useEffect(() => {
@@ -60,7 +62,7 @@ const MyListingItem = ({ listing, onDelete }: { listing: Listing; onDelete: () =
           {listing.title} {listing.isDemo && '(Demo)'}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          {listing.price === 0 ? t('common.free') : `${listing.price.toFixed(2)} €`} • {timeLeft}
+          {listing.price === 0 ? t('common.free') : formatPrice(listing.price)} • {timeLeft}
         </ThemedText>
       </View>
       <Pressable onPress={onDelete} style={styles.deleteListingBtn}>
@@ -494,14 +496,15 @@ export default function WalletScreen() {
 
 const ValuesRow = ({ price, originalPrice }: { price: number; originalPrice?: number }) => {
   const { t } = useTranslation();
+  const { format: formatPrice } = useCurrency();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
       <ThemedText type="smallBold" style={styles.unlockedItemPrice}>
-        {price === 0 ? t('common.free') : `${price.toFixed(2)} €`}
+        {price === 0 ? t('common.free') : formatPrice(price)}
       </ThemedText>
       {originalPrice && (
         <ThemedText type="small" style={styles.origPriceText}>
-          {originalPrice.toFixed(2)} €
+          {formatPrice(originalPrice)}
         </ThemedText>
       )}
     </View>

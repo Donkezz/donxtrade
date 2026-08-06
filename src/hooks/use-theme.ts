@@ -1,15 +1,10 @@
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from 'react-native';
 import { useApp } from '@/context/AppContext';
+import { useColorScheme } from 'react-native';
 
 export function useTheme() {
   const systemScheme = useColorScheme();
-  try {
-    const { appTheme } = useApp();
-    const isDark = appTheme === 'dark' || (appTheme === 'system' && systemScheme === 'dark');
-    return Colors[isDark ? 'dark' : 'light'];
-  } catch {
-    const isDark = systemScheme === 'dark';
-    return Colors[isDark ? 'dark' : 'light'];
-  }
+  const { appTheme } = useApp();
+  const isDark = appTheme === 'dark' || (appTheme === 'system' && systemScheme === 'dark');
+  return Colors[isDark ? 'dark' : 'light'];
 }

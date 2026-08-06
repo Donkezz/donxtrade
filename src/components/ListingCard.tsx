@@ -10,6 +10,7 @@ import { ThemedText } from './themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { Listing, useApp } from '@/context/AppContext';
+import { useCurrency } from '@/hooks/use-currency';
 import { SecureChatModal } from './SecureChatModal';
 
 interface ListingCardProps {
@@ -52,6 +53,7 @@ const VideoPlayerItem = ({ uri }: { uri: string }) => {
 export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked }) => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { format: formatPrice } = useCurrency();
   const { unlockContact, walletBalance, unlockFee, startChat, toggleLike, requireAuth } = useApp();
   const [loading, setLoading] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
@@ -133,7 +135,10 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Pozri na tento super inzerát na Donx: "${listing.title}" za ${listing.price === 0 ? 'zadarmo' : listing.price + ' €'}! Pridaj sa na Donx a dohodni sa.`,
+        message: t('listingCard.shareMessage', {
+          title: listing.title,
+          price: listing.price === 0 ? t('common.free') : formatPrice(listing.price),
+        }),
       });
     } catch (error) {
       console.error(error);
@@ -279,11 +284,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
           <ThemedText type="small" themeColor="textSecondary">{t('listingCard.priceLabel')}</ThemedText>
           <View style={styles.priceRow}>
             <ThemedText type="subtitle" style={styles.priceValue}>
-              {listing.price === 0 ? t('common.free') : `${listing.price.toFixed(2)} €`}
+              {listing.price === 0 ? t('common.free') : formatPrice(listing.price)}
             </ThemedText>
             {listing.originalPrice && (
               <ThemedText type="small" style={styles.originalPrice}>
-                {listing.originalPrice.toFixed(2)} €
+                {formatPrice(listing.originalPrice)}
               </ThemedText>
             )}
           </View>

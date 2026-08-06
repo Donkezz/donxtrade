@@ -4,11 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 import { SymbolView } from 'expo-symbols';
+import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useCurrency } from '@/hooks/use-currency';
 import { useApp } from '@/context/AppContext';
 
 // Optional Map import
@@ -25,7 +27,9 @@ if (Platform.OS !== 'web') {
 }
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const theme = useTheme();
+  const { format: formatPrice } = useCurrency();
   const { listings, transactions } = useApp();
   const screenWidth = Dimensions.get('window').width - Spacing.four * 2;
 
@@ -63,19 +67,19 @@ export default function AdminDashboard() {
       <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           
-          <ThemedText type="title" style={{ marginBottom: Spacing.four }}>Prehľad aplikácie</ThemedText>
+          <ThemedText type="title" style={{ marginBottom: Spacing.four }}>{t('admin.title')}</ThemedText>
 
           {/* Summary Cards */}
           <View style={styles.summaryRow}>
             <View style={[styles.summaryCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
               <SymbolView tintColor="#3A86F0" name={{ ios: 'doc.on.doc.fill', web: 'list' } as any} size={20} />
               <ThemedText type="subtitle" style={styles.summaryValue}>{listings.length}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">Inzeráty</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">{t('admin.listings')}</ThemedText>
             </View>
             <View style={[styles.summaryCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
               <SymbolView tintColor="#38B000" name={{ ios: 'eurosign.circle.fill', web: 'euro' } as any} size={20} />
-              <ThemedText type="subtitle" style={styles.summaryValue}>{totalRevenue.toFixed(2)} €</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">Dobitia</ThemedText>
+              <ThemedText type="subtitle" style={styles.summaryValue}>{formatPrice(totalRevenue)}</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">{t('admin.topups')}</ThemedText>
             </View>
           </View>
 
@@ -104,7 +108,7 @@ export default function AdminDashboard() {
           {/* Pie Chart */}
           {pieData.length > 0 && (
             <View style={[styles.chartContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-              <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>Rozloženie kategórií</ThemedText>
+              <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>{t('admin.categorySplit')}</ThemedText>
               <PieChart
                 data={pieData}
                 width={screenWidth - Spacing.four}
@@ -120,7 +124,7 @@ export default function AdminDashboard() {
 
           {/* Map View */}
           <View style={[styles.chartContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected, marginBottom: Spacing.five }]}>
-            <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>Mapa aktivity používateľov</ThemedText>
+            <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>{t('admin.activityMap')}</ThemedText>
             {Platform.OS === 'web' || !MapView ? (
               <View style={[styles.mapFallback, { backgroundColor: theme.backgroundSelected }]}>
                 <ThemedText type="small" themeColor="textSecondary">Mapa nie je dostupná vo webovom zobrazení.</ThemedText>

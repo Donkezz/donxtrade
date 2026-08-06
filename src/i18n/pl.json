@@ -5,10 +5,20 @@
     "supply": "Oferuję (Mam)",
     "demand": "Szukam (Chcę)",
     "all": "Wszystko",
-    "ski_pass": "Skipassy",
-    "ticket": "Bilety",
+    "anything": "Wszystko",
+    "clothing": "Ubrania",
+    "material": "Materiały",
+    "kids": "Dla dzieci",
+    "men": "Dla mężczyzn",
+    "women": "Dla kobiet",
     "service": "Usługi",
-    "social": "Spotkania",
+    "meeting": "Spotkania",
+    "tickets": "Bilety",
+    "electronics": "Elektronika",
+    "home": "Dom i ogród",
+    "pets": "Zwierzęta",
+    "sport": "Sport i hobby",
+    "auto": "Motoryzacja",
     "free": "Za darmo",
     "currency": "€",
     "anonymous": "Anonim",
@@ -19,15 +29,32 @@
     "warning": "Ostrzeżenie",
     "playMoneyWarning": "Wirtualne Demo Pieniądze"
   },
-  "navigation": {
-    "marketplace": "Oferty",
-    "create": "Dodaj",
-    "profile": "Profil"
-  },
   "marketplace": {
     "searchPlaceholder": "Szukaj ofert i zapytań...",
     "emptyTitle": "Brak ogłoszeń",
-    "emptySub": "Spróbuj zmienić filtry lub wyszukiwanie."
+    "emptySub": "Spróbuj zmienić filtry lub wyszukiwanie.",
+    "heroTitle": "Wszystko w pobliżu",
+    "heroSubtitle": "Odkrywaj oferty, zapytania i usługi w kilku kliknięciach.",
+    "actionsTitle": "Szybkie akcje",
+    "quickCreate": "Dodaj ogłoszenie",
+    "quickCredits": "Kredyty",
+    "quickExplore": "Odkrywaj",
+    "onboardingTitle": "Szybszy lokalny rynek dla każdego",
+    "onboardingStep1Title": "Odkrywaj od razu",
+    "onboardingStep1Text": "Przeglądaj oferty i zapytania bez zbędnych kroków i skomplikowanego ustawiania.",
+    "onboardingStep2Title": "Dodaj ogłoszenie w minucie",
+    "onboardingStep2Text": "Dodaj zdjęcia, cenę i lokalizację oraz opublikuj je od razu.",
+    "onboardingStep3Title": "Umów się bezpiecznie",
+    "onboardingStep3Text": "Bezpieczny czat i odblokowanie kontaktu zapewniają kontrolę i zaufanie.",
+    "nextStep": "Dalej",
+    "categoriesLabel": "Kategorie",
+    "swipeHint": "Przesuń dalej"
+  },
+  "navigation": {
+    "marketplace": "Oferty",
+    "create": "Dodaj",
+    "profile": "Profil",
+    "admin": "Admin"
   },
   "create": {
     "title": "Nowe ogłoszenie",
@@ -72,7 +99,10 @@
     "duration_1d": "1 dzień",
     "duration_3d": "3 dni",
     "duration_7d": "7 dni",
-    "expiresText": "Ważne do %s (za %s)"
+    "expiresText": "Ważne do %s (za %s)",
+    "customPrice": "Własna ({{currency}})",
+    "priceWhole": "Całości",
+    "priceFraction": "Części dziesiętne"
   },
   "profile": {
     "title": "Profil i Portfel",
@@ -103,7 +133,10 @@
     "txCreate": "Utworzenie ogłoszenia",
     "deleteBtn": "Usuń",
     "anonymousUser": "Anonimowy Narciarz",
-    "onlineText": "Aktywny"
+    "onlineText": "Aktywny",
+    "winHeader": "Gratulacje!",
+    "winText": "Wygrałeś dzienny bonus +{{amount}}!",
+    "spinError": "Nie udało się przyznać dziennego bonusu."
   },
   "listingCard": {
     "priceLabel": "Cena",
@@ -115,7 +148,8 @@
     "unlockConfirm": "Czy na pewno chcesz odblokować kontakt za wirtualną kwotę 0.10 €?",
     "chatBtn": "Rozpocznij bezpieczny czat",
     "unlockedLabel": "Kontakt odblokowany",
-    "unlockedAnonLabel": "Anonim odblokowany"
+    "unlockedAnonLabel": "Anonim odblokowany",
+    "shareMessage": "Zobacz to ogłoszenie na Donx: „{{title}}” za {{price}}! Dołącz do Donx i dogadaj się."
   },
   "chat": {
     "title": "Bezpieczny czat - %s",
@@ -127,5 +161,12 @@
     "unlockedInfoVal": "Kontakt",
     "imageAttachment": "📷 Zdjęcie",
     "videoAttachment": "🎥 Wideo"
+  },
+  "admin": {
+    "title": "Przegląd aplikacji",
+    "listings": "Ogłoszenia",
+    "topups": "Doładowania",
+    "categorySplit": "Podział kategorii",
+    "activityMap": "Mapa aktywności użytkowników"
   }
 }

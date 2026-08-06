@@ -29,15 +29,32 @@
     "warning": "Upozornenie",
     "playMoneyWarning": "Fiktívne Donx Kredity"
   },
-  "navigation": {
-    "marketplace": "Ponuky",
-    "create": "Pridať",
-    "profile": "Profil"
-  },
   "marketplace": {
     "searchPlaceholder": "Hľadať ponuky a dopyty...",
     "emptyTitle": "Žiadne inzeráty",
-    "emptySub": "Skúste upraviť filter alebo vyhľadávanie."
+    "emptySub": "Skúste upraviť filter alebo vyhľadávanie.",
+    "heroTitle": "Všetko v okolí",
+    "heroSubtitle": "Objav ponuky, dopyty a služby na pár kliknutí.",
+    "actionsTitle": "Rýchle akcie",
+    "quickCreate": "Pridať inzerát",
+    "quickCredits": "Kredity",
+    "quickExplore": "Objaviť",
+    "onboardingTitle": "Rýchlejší bazár pre každého",
+    "onboardingStep1Title": "Objavuj ihneď",
+    "onboardingStep1Text": "Vyhľadávaj ponuky a dopyty bez zbytočných krokov a zložitého nastavovania.",
+    "onboardingStep2Title": "Vytvor inzerát za minú",
+    "onboardingStep2Text": "Pridaj fotky, cenu a lokalitu a zverejni ho hneď.",
+    "onboardingStep3Title": "Dohodni sa bezpečne",
+    "onboardingStep3Text": "Bezpečný chat a odomknutie kontaktu ti dávajú kontrolu a dôveru.",
+    "nextStep": "Ďalej",
+    "categoriesLabel": "Kategórie",
+    "swipeHint": "Potiahnite pre viac"
+  },
+  "navigation": {
+    "marketplace": "Ponuky",
+    "create": "Pridať",
+    "profile": "Profil",
+    "admin": "Admin"
   },
   "create": {
     "title": "Nový inzerát",
@@ -82,7 +99,10 @@
     "duration_1d": "1 deň",
     "duration_3d": "3 dni",
     "duration_7d": "7 dní",
-    "expiresText": "Platnosť: do %s (o %s)"
+    "expiresText": "Platnosť: do %s (o %s)",
+    "customPrice": "Vlastná ({{currency}})",
+    "priceWhole": "Celé",
+    "priceFraction": "Desatiny"
   },
   "profile": {
     "title": "Profil a Peňaženka",
@@ -113,7 +133,10 @@
     "txCreate": "Vytvorenie inzerátu",
     "deleteBtn": "Zmazať",
     "anonymousUser": "Anonymný Lyžiar",
-    "onlineText": "Aktívny"
+    "onlineText": "Aktívny",
+    "winHeader": "Gratulujeme!",
+    "winText": "Vyhrali ste denný bonus +{{amount}}!",
+    "spinError": "Nepodarilo sa pripísať denný bonus."
   },
   "listingCard": {
     "priceLabel": "Cena",
@@ -125,7 +148,8 @@
     "unlockConfirm": "Naozaj chcete odomknúť kontakt za 1 Kredit?",
     "chatBtn": "Spustiť bezpečný chat",
     "unlockedLabel": "Kontakt odomknutý",
-    "unlockedAnonLabel": "Anonym odomknutý"
+    "unlockedAnonLabel": "Anonym odomknutý",
+    "shareMessage": "Pozri na tento inzerát na Donx: „{{title}}\" za {{price}}! Pridaj sa na Donx a dohodni sa."
   },
   "chat": {
     "title": "Bezpečný čet - %s",
@@ -137,5 +161,12 @@
     "unlockedInfoVal": "Kontakt",
     "imageAttachment": "📷 Obrázok",
     "videoAttachment": "🎥 Video"
+  },
+  "admin": {
+    "title": "Prehľad aplikácie",
+    "listings": "Inzeráty",
+    "topups": "Dobitia",
+    "categorySplit": "Rozloženie kategórií",
+    "activityMap": "Mapa aktivity používateľov"
   }
 }

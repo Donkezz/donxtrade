@@ -5,10 +5,20 @@
     "supply": "Kínálat (Van)",
     "demand": "Kereslet (Keresek)",
     "all": "Mind",
-    "ski_pass": "Síbérletek",
-    "ticket": "Jegyek",
+    "anything": "Bármi",
+    "clothing": "Ruházat",
+    "material": "Anyagok",
+    "kids": "Gyermekeknek",
+    "men": "Férfiaknak",
+    "women": "Nőknek",
     "service": "Szolgáltatások",
-    "social": "Találkozók",
+    "meeting": "Találkozók",
+    "tickets": "Jegyek",
+    "electronics": "Elektronika",
+    "home": "Otthon és kert",
+    "pets": "Állatok",
+    "sport": "Sport és hobbi",
+    "auto": "Autó-motor",
     "free": "Ingyenes",
     "currency": "€",
     "anonymous": "Anonim",
@@ -19,15 +29,32 @@
     "warning": "Figyelem",
     "playMoneyWarning": "Fiktív Demo Pénz"
   },
-  "navigation": {
-    "marketplace": "Ajánlatok",
-    "create": "Hozzáadás",
-    "profile": "Profil"
-  },
   "marketplace": {
     "searchPlaceholder": "Keresés a hirdetések között...",
     "emptyTitle": "Nincsenek hirdetések",
-    "emptySub": "Próbálja meg módosítani a szűrőket vagy a keresést."
+    "emptySub": "Próbálja meg módosítani a szűrőket vagy a keresést.",
+    "heroTitle": "Minden a közelben",
+    "heroSubtitle": "Fedezzen fel ajánlatokat, keresleteket és szolgáltatásokat néhány érintéssel.",
+    "actionsTitle": "Gyors műveletek",
+    "quickCreate": "Hirdetés létrehozása",
+    "quickCredits": "Kreditek",
+    "quickExplore": "Felfedezés",
+    "onboardingTitle": "Gyorsabb helyi piac mindenkinek",
+    "onboardingStep1Title": "Fedezzen fel azonnal",
+    "onboardingStep1Text": "Böngésszen ajánlatokat és keresleteket felesleges lépések nélkül.",
+    "onboardingStep2Title": "Hirdetés létrehozása perc alatt",
+    "onboardingStep2Text": "Adjon hozzá fényképeket, árat és helyszínt, és tegye közzé azonnal.",
+    "onboardingStep3Title": "Biztonságos egyeztetés",
+    "onboardingStep3Text": "A biztonságos csevegés és az elérhetőség feloldása kontrollt és bizalmat ad.",
+    "nextStep": "Tovább",
+    "categoriesLabel": "Kategóriák",
+    "swipeHint": "Húzz tovább"
+  },
+  "navigation": {
+    "marketplace": "Ajánlatok",
+    "create": "Hozzáadás",
+    "profile": "Profil",
+    "admin": "Admin"
   },
   "create": {
     "title": "Új hirdetés",
@@ -72,7 +99,10 @@
     "duration_1d": "1 nap",
     "duration_3d": "3 nap",
     "duration_7d": "7 nap",
-    "expiresText": "Érvényesség: %s-ig (%s múlva)"
+    "expiresText": "Érvényesség: %s-ig (%s múlva)",
+    "customPrice": "Egyéni ({{currency}})",
+    "priceWhole": "Egészek",
+    "priceFraction": "Tizedesek"
   },
   "profile": {
     "title": "Profil és Pénztárca",
@@ -103,7 +133,10 @@
     "txCreate": "Hirdetés létrehozása",
     "deleteBtn": "Törlés",
     "anonymousUser": "Anonim Síelő",
-    "onlineText": "Aktív"
+    "onlineText": "Aktív",
+    "winHeader": "Gratulálunk!",
+    "winText": "Napi bónuszt nyertél: +{{amount}}!",
+    "spinError": "A napi bónuszt nem sikerült jóváírni."
   },
   "listingCard": {
     "priceLabel": "Ár",
@@ -115,7 +148,8 @@
     "unlockConfirm": "Biztosan fel szeretné oldani ezt a kapcsolatot fiktív 0.10 €-ért?",
     "chatBtn": "Biztonságos csevegés indítása",
     "unlockedLabel": "Kapcsolat feloldva",
-    "unlockedAnonLabel": "Anonim feloldva"
+    "unlockedAnonLabel": "Anonim feloldva",
+    "shareMessage": "Nézd meg ezt a hirdetést a Donxon: „{{title}}” ennyiért: {{price}}! Csatlakozz a Donxhoz és egyezzetek meg."
   },
   "chat": {
     "title": "Biztonságos csevegés - %s",
@@ -127,5 +161,12 @@
     "unlockedInfoVal": "Kapcsolat",
     "imageAttachment": "📷 Kép",
     "videoAttachment": "🎥 Videó"
+  },
+  "admin": {
+    "title": "Alkalmazás áttekintése",
+    "listings": "Hirdetések",
+    "topups": "Feltöltések",
+    "categorySplit": "Kategóriák megoszlása",
+    "activityMap": "Felhasználói aktivitás térképe"
   }
 }

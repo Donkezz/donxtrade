@@ -39,7 +39,7 @@ export default function AppTabs() {
 
       {currentUser?.role === 'admin' && (
         <NativeTabs.Trigger name="admin">
-          <NativeTabs.Trigger.Label>Admin</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label>{t('navigation.admin')}</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon
             src={require('@/assets/images/tabIcons/wallet.png')}
             renderingMode="template"

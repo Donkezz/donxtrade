@@ -5,10 +5,20 @@
     "supply": "Пропозиція (Маю)",
     "demand": "Попит (Шукаю)",
     "all": "Усе",
-    "ski_pass": "Скі-паси",
-    "ticket": "Квитки",
+    "anything": "Усе",
+    "clothing": "Одяг",
+    "material": "Матеріали",
+    "kids": "Для дітей",
+    "men": "Для чоловіків",
+    "women": "Для жінок",
     "service": "Послуги",
-    "social": "Зустрічі",
+    "meeting": "Зустрічі",
+    "tickets": "Квитки",
+    "electronics": "Електроніка",
+    "home": "Дім і сад",
+    "pets": "Тварини",
+    "sport": "Спорт і хобі",
+    "auto": "Авто і мото",
     "free": "Безкоштовно",
     "currency": "€",
     "anonymous": "Анонімно",
@@ -19,15 +29,32 @@
     "warning": "Попередження",
     "playMoneyWarning": "Демонстраційні Віртуальні Гроші"
   },
-  "navigation": {
-    "marketplace": "Пропозиції",
-    "create": "Додати",
-    "profile": "Профіль"
-  },
   "marketplace": {
     "searchPlaceholder": "Шукати пропозиції та попити...",
     "emptyTitle": "Немає оголошень",
-    "emptySub": "Спробуйте змінити фільтри або пошуковий запит."
+    "emptySub": "Спробуйте змінити фільтри або пошуковий запит.",
+    "heroTitle": "Усе поруч",
+    "heroSubtitle": "Відкривайте пропозиції, запити та послуги за кілька натискань.",
+    "actionsTitle": "Швидкі дії",
+    "quickCreate": "Додати оголошення",
+    "quickCredits": "Кредити",
+    "quickExplore": "Досліджувати",
+    "onboardingTitle": "Швидший локальний ринок для всіх",
+    "onboardingStep1Title": "Відкривайте відразу",
+    "onboardingStep1Text": "Переглядайте пропозиції та запити без зайвих кроків і складних налаштувань.",
+    "onboardingStep2Title": "Створіть оголошення за хвилину",
+    "onboardingStep2Text": "Додайте фото, ціну та місце і опублікуйте його відразу.",
+    "onboardingStep3Title": "Узгоджуйте безпечно",
+    "onboardingStep3Text": "Безпечний чат і розблокування контакту забезпечують контроль і довіру.",
+    "nextStep": "Далі",
+    "categoriesLabel": "Категорії",
+    "swipeHint": "Проведіть для більшого"
+  },
+  "navigation": {
+    "marketplace": "Пропозиції",
+    "create": "Додати",
+    "profile": "Профіль",
+    "admin": "Адмін"
   },
   "create": {
     "title": "Нове оголошення",
@@ -72,7 +99,10 @@
     "duration_1d": "1 день",
     "duration_3d": "3 дні",
     "duration_7d": "7 днів",
-    "expiresText": "Дійсно до %s (через %s)"
+    "expiresText": "Дійсно до %s (через %s)",
+    "customPrice": "Власна ({{currency}})",
+    "priceWhole": "Цілі",
+    "priceFraction": "Десяті"
   },
   "profile": {
     "title": "Профіль та Гаманець",
@@ -103,7 +133,10 @@
     "txCreate": "Створення оголошення",
     "deleteBtn": "Видалити",
     "anonymousUser": "Анонімний Лижник",
-    "onlineText": "Активний"
+    "onlineText": "Активний",
+    "winHeader": "Вітаємо!",
+    "winText": "Ви виграли щоденний бонус +{{amount}}!",
+    "spinError": "Не вдалося нарахувати щоденний бонус."
   },
   "listingCard": {
     "priceLabel": "Ціна",
@@ -115,7 +148,8 @@
     "unlockConfirm": "Ви впевнені, що хочете розблокувати цей контакт за віртуальні 0.10 €?",
     "chatBtn": "Почати безпечний чат",
     "unlockedLabel": "Контакт розблоковано",
-    "unlockedAnonLabel": "Анонім розблоковано"
+    "unlockedAnonLabel": "Анонім розблоковано",
+    "shareMessage": "Поглянь на це оголошення в Donx: «{{title}}» за {{price}}! Приєднуйся до Donx і домовляйся."
   },
   "chat": {
     "title": "Безпечний чат - %s",
@@ -127,5 +161,12 @@
     "unlockedInfoVal": "Контакт",
     "imageAttachment": "📷 Фото",
     "videoAttachment": "🎥 Відео"
+  },
+  "admin": {
+    "title": "Огляд застосунку",
+    "listings": "Оголошення",
+    "topups": "Поповнення",
+    "categorySplit": "Розподіл категорій",
+    "activityMap": "Карта активності користувачів"
   }
 }

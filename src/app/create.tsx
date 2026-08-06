@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, Pressable, ScrollView, Platform, Alert, KeyboardAvoidingView, Modal } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { SymbolView } from 'expo-symbols';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import * as ImagePicker from 'expo-image-picker';
-import { Image } from 'expo-image';
 import * as DocumentPicker from 'expo-document-picker';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { MapPickerModal } from '@/components/MapPickerModal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
-import { useApp, ListingCategory, ListingType, ContactType, ListingMedia } from '@/context/AppContext';
 import { WheelPicker } from '@/components/ui/WheelPicker';
-import { MapPickerModal } from '@/components/MapPickerModal';
+import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { ContactType, ListingCategory, ListingMedia, ListingType, useApp } from '@/context/AppContext';
+import { useTheme } from '@/hooks/use-theme';
+import { useCurrency } from '@/hooks/use-currency';
 
 const CATEGORY_OPTIONS: { labelKey: string; value: ListingCategory; icon: string; fallbackIcon: string; color: string }[] = [
   { labelKey: 'common.anything', value: 'anything', icon: 'square.grid.2x2', fallbackIcon: 'apps', color: '#6c5ce7' },
@@ -45,6 +46,7 @@ const MINUTES_ITEMS = Array.from({ length: 60 }, (_, i) => i.toString()); // 0 t
 export default function CreateScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { symbol: currencySign } = useCurrency();
   const { createListing, currentUser, setLoginVisible } = useApp();
 
   const [type, setType] = useState<ListingType>('supply');
@@ -56,6 +58,7 @@ export default function CreateScreen() {
   const [selectedEuros, setSelectedEuros] = useState('0');
   const [selectedCents, setSelectedCents] = useState('.00');
   const [customPriceText, setCustomPriceText] = useState('0.00');
+  const [nowTs, setNowTs] = useState(() => Date.now());
 
   const [location, setLocation] = useState('');
   const [latitude, setLatitude] = useState<number | undefined>();
@@ -75,6 +78,11 @@ export default function CreateScreen() {
   // Media uploads state
   const [media, setMedia] = useState<ListingMedia[]>([]);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => setNowTs(Date.now()), 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Sync Price Pickers to Custom Text Input
   const handlePricePickerChange = (euros: string, cents: string) => {
@@ -205,7 +213,7 @@ export default function CreateScreen() {
   };
 
   const getFormattedExpiryPreview = () => {
-    const expiryDate = new Date(Date.now() + getComputedDurationMs());
+    const expiryDate = new Date(nowTs + getComputedDurationMs());
     const timeStr = expiryDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const dateStr = expiryDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
     return `${dateStr} o ${timeStr}`;
@@ -456,12 +464,12 @@ export default function CreateScreen() {
 
           {/* iOS Style Drum Picker for Price */}
           <View style={styles.formGroup}>
-            <ThemedText type="smallBold" style={styles.label}>{t('create.priceLabel')} (€)</ThemedText>
+            <ThemedText type="smallBold" style={styles.label}>{t('create.priceLabel')} ({currencySign})</ThemedText>
             <View style={styles.pickerSectionRow}>
               <View style={[styles.unifiedPickerContainer, { backgroundColor: theme.backgroundElement }]}>
                 {/* Euros Picker */}
                 <View style={styles.unifiedPickerColumn}>
-                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Eur</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>{t('create.priceWhole')}</ThemedText>
                   <WheelPicker 
                     items={EUROS_ITEMS} 
                     selectedValue={selectedEuros} 
@@ -474,7 +482,7 @@ export default function CreateScreen() {
 
                 {/* Cents Picker */}
                 <View style={styles.unifiedPickerColumn}>
-                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Cent</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>{t('create.priceFraction')}</ThemedText>
                   <WheelPicker 
                     items={CENTS_ITEMS} 
                     selectedValue={selectedCents} 
@@ -486,7 +494,7 @@ export default function CreateScreen() {
 
               {/* Text Input Column */}
               <View style={[styles.pickerColumnWrapper, { flex: 0.6 }]}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>Vlastná (€)</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>{t('create.customPrice', { currency: currencySign })}</ThemedText>
                 <View style={styles.pickerInputWrapper}>
                   <TextInput
                     placeholder="0.00"
