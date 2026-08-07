@@ -1,56 +1,117 @@
 # DonX
 
-A local classifieds app — offers and requests between people nearby. The scope is
-deliberately broad: from selling used items to dating. Users are ordinary people,
-not power users, so **simplicity and speed beat feature count**. When a feature can
-be shipped as one screen or three, pick one. When in doubt, cut it.
+Expo / React Native aplikácia. iOS bundle: `com.donkezz.donxtrade`
 
-Expo / React Native, file-based routing via expo-router. Source lives in `src/`.
+DonX je aplikácia na lokálnu ponuku a dopyt — inzeráty medzi ľuďmi v okolí.
+Rozsah je široko definovaný: od predaja vecí až po zoznamovanie. Cieľová skupina
+sú bežní používatelia, nie odborníci, takže priorita je **jednoduchosť a rýchlosť
+pred množstvom funkcií**. Keď sa funkcia dá spraviť na jednej obrazovke alebo na
+troch, ber jednu. Pri pochybnosti škrtaj.
 
 ## Expo HAS CHANGED
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v56.0.0/ before
-writing any code. Do not rely on memory of older Expo or React Native APIs.
+Pred písaním kódu si prečítaj presne verziované docs na
+https://docs.expo.dev/versions/v56.0.0/ — nespoliehaj sa na pamäť starších Expo
+alebo React Native API.
 
-## Built for many countries from day one
+## Verzie
 
-The app is multilingual by design and meant to expand to new countries quickly.
-Never assume one language, one country, one currency, or one date format.
+Expo SDK 56 · expo-router 56 · React 19.2 · React Native 0.85 · TypeScript 6.0
 
-- **No user-facing string in code.** Everything goes through `t()` and all five
-  locale files in `src/i18n/` (`sk`, `en`, `pl`, `hu`, `uk`). Adding a key to one
-  file and not the rest is an incomplete change.
-- **No hardcoded currency.** No `€` literals, no assumed decimal places. Amounts
-  are a value plus a currency code, formatted through `Intl.NumberFormat` with the
-  active locale.
-- **No hardcoded date, time, or number formats.** Use `Intl` / locale-aware
-  formatting, never a fixed `DD.MM.YYYY` or a comma decimal separator.
-- **Don't assume the country from the language**, or the language from the country.
-  They are separate settings.
-- Leave room for text expansion in layouts — translations are often much longer
-  than the Slovak or English original.
+Nepoužívaj vzory zo starších SDK. Pri neistote over v docs vyššie.
 
-Existing code does not fully honour this yet (hardcoded `€` and some Slovak strings
-remain). Follow the rules in new code, and fix what you touch as you pass through.
+## Od začiatku pre viac krajín
 
-## After changing code
+Aplikácia je navrhnutá ako multijazyčná a určená na rýchle rozšírenie do ďalších
+krajín. Nikdy nepredpokladaj jeden jazyk, jednu krajinu, jednu menu ani jeden
+formát dátumu.
 
-Run both, and fix what they report:
+- **Žiadny text pre používateľa priamo v kóde.** Všetko cez `t()` a do všetkých
+  piatich locale súborov v `src/i18n/` (`sk`, `en`, `pl`, `hu`, `uk`). Kľúč
+  doplnený len do jedného súboru je nedokončená zmena.
+- **Žiadna natvrdo napísaná mena.** Žiadne `€`, žiadny predpokladaný počet
+  desatinných miest. Suma je hodnota plus kód meny, formátovaná cez
+  `src/utils/currency.ts`, ktoré berie menu z regiónu zariadenia a formát
+  z aktívneho jazyka.
+- **Žiadne natvrdo napísané formáty dátumu, času a čísel.** Používaj `Intl` —
+  nikdy pevné `DD.MM.YYYY` ani predpokladanú desatinnú čiarku.
+- **Neodvodzuj krajinu z jazyka ani jazyk z krajiny.** Sú to samostatné veci.
+- **Neskloňuj skladaním** `{počet} {slovo}`. Slovenčina, poľština a ukrajinčina
+  menia tvar podľa čísla — „1 dni" je nesprávne. Pri pevnej sade hodnôt daj
+  každej vlastný kľúč, inak použi nemenné skratky (`d`, `h`, `min`).
+- V layoutoch nechaj miesto na dlhší text — preklady bývajú výrazne dlhšie ako
+  slovenský alebo anglický originál.
 
-```bash
-npm run lint
-npx tsc --noEmit
-```
+## Príkazy
 
-There is no test suite. If a change is worth verifying visually, build and run it
-in the iOS Simulator rather than asking the user to check.
+| Čo | Príkaz |
+|---|---|
+| Typecheck | `npm run typecheck` |
+| Lint | `npm run lint` |
+| Oboje naraz | `npm run release:check` |
+| Dev server | `npm start` |
+| Build | `eas build --profile <development\|preview\|production>` |
 
-## Ask before doing
+Po každej zmene kódu spusti `npm run typecheck` a `npm run lint`. Neohlasuj úlohu
+za dokončenú, kým oba neprejdú.
 
-Never do these without explicit approval in the conversation:
+## Overovanie
 
-- `git commit`, `git push`, creating branches or pull requests
-- Any EAS build, submit, or TestFlight / store release
-- Adding, removing, or upgrading dependencies
-- Deleting files or data, or any other change that is hard to undo
-- Anything that leaves the machine — publishing, sending, posting
+Projekt nemá testy. Automatická verifikácia = typecheck + lint. Nikdy netvrď, že
+„testy prešli".
+
+Typecheck a lint ale nechytia chyby za behu. Pri zmene, ktorá sa dá vidieť, ju
+spusti v iOS simulátore — nepýtaj používateľa, nech to overí za teba.
+
+- **Appka nebeží v Expo Go** (natívne moduly: mapy, glass effect, `@expo/ui`).
+  Potrebuje vlastný dev build: `npx expo run:ios`.
+- **Neoveruj správanie za behu v Node.** Node má plné ICU, appka beží na Hermese,
+  kde je `Intl` osekaný — `formatToParts`, `resolvedOptions` či `PluralRules`
+  nemusia existovať. Čo prejde v Node, môže na zariadení spadnúť.
+- **Nikdy neposielaj do TestFlightu zmenu, ktorú si nespustil.** Stalo sa to a
+  build padal používateľovi hneď po otvorení.
+
+## Štruktúra
+
+- `src/app/` — expo-router routes (file-based routing)
+- `src/components/` — komponenty
+- `src/components/ui/` — základné UI prvky
+- `src/context/` — React Context, stav aplikácie
+- `src/hooks/` — custom hooks
+- `src/constants/` — konštanty
+- `src/utils/` — pomocné funkcie bez väzby na React
+- `src/i18n/` — lokalizácia
+
+Routing je file-based — nové obrazovky vznikajú vytvorením súboru v `src/app/`,
+nie registráciou v konfigu.
+
+## Konvencie
+
+- TypeScript, žiadne `any` bez komentára prečo
+- Stav cez React Context (`src/context/`), nepridávaj state manažér
+- Nové texty do `src/i18n/`, nie natvrdo do komponentov
+- Drž existujúci štýl súboru, ktorý upravuješ
+- Pozor na medzery medzi JSX elementmi na jednom riadku — JSX ich zachová ako
+  textový uzol a React Native spadne na „Text strings must be rendered within
+  a `<Text>` component"
+
+## Nikdy bez opýtania
+
+- `npm run reset-project` — maže štartovací app adresár, NIKDY nespúšťať
+- `eas build`, `eas submit`, čokoľvek do TestFlightu alebo store
+- `git commit`, `git push`, `git reset --hard`, prepisovanie histórie, vetvy, PR
+- Pridávanie, odoberanie alebo upgrade závislostí
+- Zmeny v `eas.json`, `app.json`, `.env*`
+- Mazanie súborov alebo dát a čokoľvek ťažko vratné
+- Čokoľvek, čo odchádza zo stroja — publikovanie, odosielanie, postovanie
+
+## Nedokončené
+
+- `android.package` v `app.json` nie je nastavený → Android build zlyhá
+- Kredity a odmeny sú v kóde eurové hodnoty. Formátovanie je správne, ale pri
+  mene bez desatinných miest (HUF) sa výhry kolesa zobrazia ako `0 Ft`. Rieši sa
+  to produktovým rozhodnutím — kredity ako vlastná jednotka — nie formátovaním.
+- `src/components/ui/WheelPicker.tsx` už nikto nepoužíva
+- V `src/app/create.tsx` zostáva sedem slovenských textov mimo i18n
+- `src/components/animated-icon.web.tsx` a `src/constants/theme.ts` majú
+  zastubované importy CSS súborov, ktoré existujú → rozbité štýly na webe
