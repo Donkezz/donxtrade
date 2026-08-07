@@ -3,15 +3,14 @@ import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, InputAccessoryView, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MapPickerModal } from '@/components/MapPickerModal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { WheelPicker } from '@/components/ui/WheelPicker';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { ContactType, ListingCategory, ListingMedia, ListingType, useApp } from '@/context/AppContext';
 import { useTheme } from '@/hooks/use-theme';
@@ -34,30 +33,78 @@ const CATEGORY_OPTIONS: { labelKey: string; value: ListingCategory; icon: string
   { labelKey: 'common.auto', value: 'auto', icon: 'car', fallbackIcon: 'directions_car', color: '#b2bec3' },
 ];
 
-// Price Picker constants
-const EUROS_ITEMS = Array.from({ length: 201 }, (_, i) => i.toString()); // 0 to 200
-const CENTS_ITEMS = ['.00', '.10', '.20', '.30', '.40', '.50', '.60', '.70', '.80', '.90'];
+/** iOS numeric keyboards have no return key, so every number field shares one accessory bar. */
+const NUMBER_PAD_ACCESSORY = 'donx-number-pad';
 
-// Duration Picker constants
-const DAYS_ITEMS = Array.from({ length: 31 }, (_, i) => i.toString()); // 0 to 30 days
-const HOURS_ITEMS = Array.from({ length: 24 }, (_, i) => i.toString()); // 0 to 23 hours
-const MINUTES_ITEMS = Array.from({ length: 60 }, (_, i) => i.toString()); // 0 to 59 minutes
+/** One-tap prices. 0 means "free", which is a common case here. */
+const PRICE_PRESETS = [0, 5, 10, 20, 50];
+
+/**
+ * One-tap durations, from "rest of the day" to a week. Each carries its own
+ * label key rather than composing "{count} {unit}" — Slovak, Polish and Ukrainian
+ * inflect the noun by the number, and the set is small and fixed anyway.
+ */
+const DURATION_PRESETS = [
+  { days: 0, hours: 4, labelKey: 'create.preset4Hours' },
+  { days: 0, hours: 12, labelKey: 'create.preset12Hours' },
+  { days: 1, hours: 0, labelKey: 'create.preset1Day' },
+  { days: 3, hours: 0, labelKey: 'create.preset3Days' },
+  { days: 7, hours: 0, labelKey: 'create.preset7Days' },
+];
+
+const MAX_DAYS = 30;
+const MAX_HOURS = 23;
+const MAX_MINUTES = 59;
+
+/**
+ * Keeps only digits and at most one separator, and accepts both `.` and `,` so a
+ * user on a comma-decimal locale can type what their keyboard offers.
+ * `decimals: 0` (HUF, JPY) drops the fractional part entirely.
+ */
+function sanitizeAmount(text: string, decimals: number): string {
+  const unified = text.replace(',', '.');
+  const cleaned = unified.replace(/[^0-9.]/g, '');
+  const [whole, ...rest] = cleaned.split('.');
+
+  if (decimals === 0 || rest.length === 0) {
+    return whole;
+  }
+  return `${whole}.${rest.join('').slice(0, decimals)}`;
+}
+
+/** Digits only, clamped to a maximum. Empty stays empty so the field can be cleared. */
+function sanitizeUnit(text: string, max: number): string {
+  const digits = text.replace(/[^0-9]/g, '');
+  if (digits === '') {
+    return '';
+  }
+  return Math.min(max, parseInt(digits, 10)).toString();
+}
+
+/** Empty or partial input counts as zero when we need a number. */
+function toNumber(text: string): number {
+  const parsed = parseFloat(text);
+  return isNaN(parsed) ? 0 : parsed;
+}
 
 export default function CreateScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { symbol: currencySign } = useCurrency();
+  const { symbol: currencySign, decimals: currencyDecimals } = useCurrency();
   const { createListing, currentUser, setLoginVisible } = useApp();
+
+  const scrollRef = useRef<ScrollView>(null);
+  /** y offset of each number field group, captured on layout so we can scroll it clear of the keyboard. */
+  const fieldOffsets = useRef<Record<string, number>>({});
+  const [activeField, setActiveField] = useState<string | null>(null);
 
   const [type, setType] = useState<ListingType>('supply');
   const [category, setCategory] = useState<ListingCategory>('anything');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   
-  // Price state using Pickers + Manual input
-  const [selectedEuros, setSelectedEuros] = useState('0');
-  const [selectedCents, setSelectedCents] = useState('.00');
-  const [customPriceText, setCustomPriceText] = useState('0.00');
+  // A single amount, typed. Empty means "not set yet" and counts as free.
+  const [priceText, setPriceText] = useState('');
   const [nowTs, setNowTs] = useState(() => Date.now());
 
   const [location, setLocation] = useState('');
@@ -65,10 +112,10 @@ export default function CreateScreen() {
   const [longitude, setLongitude] = useState<number | undefined>();
   const [mapVisible, setMapVisible] = useState(false);
   
-  // Expiry duration state (Days, Hours, Minutes)
-  const [selectedDays, setSelectedDays] = useState('0');
-  const [selectedHours, setSelectedHours] = useState('4'); // Default 4 hours
-  const [selectedMinutes, setSelectedMinutes] = useState('0');
+  // Expiry duration, typed as days / hours / minutes
+  const [daysText, setDaysText] = useState('0');
+  const [hoursText, setHoursText] = useState('4'); // Default 4 hours
+  const [minutesText, setMinutesText] = useState('0');
 
   const [isAnonymous, setIsAnonymous] = useState(true); // Default to true (recommended)
   const [ownerName, setOwnerName] = useState('');
@@ -84,30 +131,29 @@ export default function CreateScreen() {
     return () => clearInterval(timer);
   }, []);
 
-  // Sync Price Pickers to Custom Text Input
-  const handlePricePickerChange = (euros: string, cents: string) => {
-    setSelectedEuros(euros);
-    setSelectedCents(cents);
-    const combinedVal = parseFloat(`${euros}${cents}`).toFixed(2);
-    setCustomPriceText(combinedVal);
+  const price = toNumber(priceText);
+  const durationMinutes =
+    toNumber(daysText) * 1440 + toNumber(hoursText) * 60 + toNumber(minutesText);
+
+  /**
+   * Lifts the focused field above the keyboard. `KeyboardAvoidingView` alone only
+   * shrinks the scroll area — it does not bring the field the user tapped into view.
+   */
+  const focusField = (key: string, groupKey: string = key) => {
+    setActiveField(key);
+    const y = fieldOffsets.current[groupKey];
+    if (y === undefined) {
+      return;
+    }
+    // Leave the label and a little breathing room visible above the field.
+    scrollRef.current?.scrollTo({ y: Math.max(0, y - Spacing.four * 2), animated: true });
   };
 
-  // Sync Text Input back to Price Pickers (snapping to nearest values)
-  const handleCustomPriceTextChange = (text: string) => {
-    setCustomPriceText(text);
-    const parsed = parseFloat(text);
-    if (!isNaN(parsed) && parsed >= 0) {
-      const euros = Math.floor(parsed);
-      const remainingCents = parsed - euros;
-      // Round to nearest ten cents (.00, .10, etc)
-      const centsIndex = Math.min(9, Math.max(0, Math.round(remainingCents * 10)));
-      
-      const matchedEurosStr = Math.min(200, euros).toString();
-      const matchedCentsStr = CENTS_ITEMS[centsIndex];
-      
-      setSelectedEuros(matchedEurosStr);
-      setSelectedCents(matchedCentsStr);
-    }
+
+  const applyDurationPreset = (preset: { days: number; hours: number }) => {
+    setDaysText(preset.days.toString());
+    setHoursText(preset.hours.toString());
+    setMinutesText('0');
   };
 
   const [mediaModalVisible, setMediaModalVisible] = useState(false);
@@ -198,10 +244,7 @@ export default function CreateScreen() {
   };
 
   const getComputedDurationMs = () => {
-    const d = parseInt(selectedDays, 10) || 0;
-    const h = parseInt(selectedHours, 10) || 0;
-    const m = parseInt(selectedMinutes, 10) || 0;
-    let totalMs = (d * 24 * 3600 + h * 3600 + m * 60) * 1000;
+    let totalMs = durationMinutes * 60 * 1000;
     if (totalMs === 0) {
       totalMs = 15 * 60 * 1000; // minimum fallback is 15 minutes
     }
@@ -216,11 +259,11 @@ export default function CreateScreen() {
     const expiryDate = new Date(nowTs + getComputedDurationMs());
     const timeStr = expiryDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const dateStr = expiryDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    return `${dateStr} o ${timeStr}`;
+    return t('create.expiryPreview', { date: dateStr, time: timeStr });
   };
 
   const handleSubmit = async () => {
-    const finalPrice = parseFloat(customPriceText) || 0;
+    const finalPrice = price;
 
     // Validation
     if (!title.trim()) return showAlert(t('common.error'), t('create.validationTitle'));
@@ -252,15 +295,13 @@ export default function CreateScreen() {
       // Reset Form
       setTitle('');
       setDescription('');
-      setSelectedEuros('0');
-      setSelectedCents('.00');
-      setCustomPriceText('0.00');
+      setPriceText('');
       setLocation('');
       setLatitude(undefined);
       setLongitude(undefined);
-      setSelectedDays('0');
-      setSelectedHours('4');
-      setSelectedMinutes('0');
+      setDaysText('0');
+      setHoursText('4');
+      setMinutesText('0');
       setIsAnonymous(true);
       setOwnerName('');
       setContactInfo('');
@@ -296,11 +337,15 @@ export default function CreateScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
           style={{ flex: 1 }}
         >
-          <ScrollView 
+          <ScrollView
+            ref={scrollRef}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
             contentContainerStyle={[
               styles.scrollContent,
-              { paddingBottom: BottomTabInset + Spacing.five }
+              // Room to scroll the last fields clear of the keyboard.
+              { paddingBottom: BottomTabInset + Spacing.five * 3 }
             ]}
           >
           {/* Header */}
@@ -462,104 +507,150 @@ export default function CreateScreen() {
             )}
           </View>
 
-          {/* iOS Style Drum Picker for Price */}
-          <View style={styles.formGroup}>
-            <ThemedText type="smallBold" style={styles.label}>{t('create.priceLabel')} ({currencySign})</ThemedText>
-            <View style={styles.pickerSectionRow}>
-              <View style={[styles.unifiedPickerContainer, { backgroundColor: theme.backgroundElement }]}>
-                {/* Euros Picker */}
-                <View style={styles.unifiedPickerColumn}>
-                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>{t('create.priceWhole')}</ThemedText>
-                  <WheelPicker 
-                    items={EUROS_ITEMS} 
-                    selectedValue={selectedEuros} 
-                    onValueChange={(val) => handlePricePickerChange(val, selectedCents)} 
-                    style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
-                  />
-                </View>
+          {/* Price — one typed amount, so it works for currencies without decimals too */}
+          <View
+            style={styles.formGroup}
+            onLayout={(event) => {
+              fieldOffsets.current.price = event.nativeEvent.layout.y;
+            }}
+          >
+            <ThemedText type="smallBold" style={styles.label}>{t('create.priceLabel')}</ThemedText>
 
-                <View style={[styles.pickerDivider, { backgroundColor: theme.backgroundSelected }]} />
-
-                {/* Cents Picker */}
-                <View style={styles.unifiedPickerColumn}>
-                  <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>{t('create.priceFraction')}</ThemedText>
-                  <WheelPicker 
-                    items={CENTS_ITEMS} 
-                    selectedValue={selectedCents} 
-                    onValueChange={(val) => handlePricePickerChange(selectedEuros, val)} 
-                    style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
-                  />
-                </View>
-              </View>
-
-              {/* Text Input Column */}
-              <View style={[styles.pickerColumnWrapper, { flex: 0.6 }]}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>{t('create.customPrice', { currency: currencySign })}</ThemedText>
-                <View style={styles.pickerInputWrapper}>
-                  <TextInput
-                    placeholder="0.00"
-                    placeholderTextColor={theme.textSecondary}
-                    value={customPriceText}
-                    onChangeText={handleCustomPriceTextChange}
-                    keyboardType="numeric"
-                    style={[
-                      styles.input, 
-                      styles.pickerTextInput, 
-                      { 
-                        backgroundColor: theme.backgroundElement, 
-                        color: theme.text, 
-                        borderColor: theme.backgroundSelected 
-                      }
-                    ]}
-                  />
-                </View>
-              </View>
+            <View
+              style={[
+                styles.amountField,
+                {
+                  backgroundColor: theme.backgroundElement,
+                  borderColor: activeField === 'price' ? theme.text : theme.backgroundSelected,
+                },
+              ]}
+            >
+              <TextInput
+                placeholder={currencyDecimals === 0 ? '0' : '0.00'}
+                placeholderTextColor={theme.textSecondary}
+                value={priceText}
+                onChangeText={(text) => setPriceText(sanitizeAmount(text, currencyDecimals))}
+                onFocus={() => focusField('price')}
+                onBlur={() => setActiveField(null)}
+                keyboardType="decimal-pad"
+                inputAccessoryViewID={NUMBER_PAD_ACCESSORY}
+                selectTextOnFocus
+                style={[styles.amountInput, { color: theme.text }]}
+              />
+              <ThemedText type="subtitle" themeColor="textSecondary" style={styles.amountSuffix}>
+                {currencySign}
+              </ThemedText>
             </View>
+
+            <View style={styles.presetRow}>
+              {PRICE_PRESETS.map((preset) => {
+                const selected = priceText !== '' && toNumber(priceText) === preset;
+                return (
+                  <Pressable
+                    key={preset}
+                    onPress={() => setPriceText(preset === 0 ? '0' : preset.toString())}
+                    style={({ pressed }) => [
+                      styles.presetChip,
+                      {
+                        backgroundColor: selected ? theme.text : theme.backgroundElement,
+                        borderColor: selected ? theme.text : theme.backgroundSelected,
+                      },
+                      pressed && { opacity: 0.7 },
+                    ]}
+                  >
+                    <ThemedText
+                      type="small"
+                      style={{ color: selected ? theme.background : theme.text }}
+                    >
+                      {preset === 0 ? t('common.free') : `${preset} ${currencySign}`}
+                    </ThemedText>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <ThemedText type="small" themeColor="textSecondary" style={styles.helpText}>
+              {t('create.priceHint')}
+            </ThemedText>
           </View>
 
-          {/* iOS Style Drum Picker for Expiration (Days, Hours, Minutes) */}
-          <View style={styles.formGroup}>
+          {/* Validity — three small typed fields plus one-tap presets */}
+          <View
+            style={styles.formGroup}
+            onLayout={(event) => {
+              fieldOffsets.current.duration = event.nativeEvent.layout.y;
+            }}
+          >
             <ThemedText type="smallBold" style={styles.label}>{t('create.validityLabel')}</ThemedText>
-            <View style={[styles.unifiedPickerContainer, { backgroundColor: theme.backgroundElement }]}>
-              {/* Days Picker */}
-              <View style={styles.unifiedPickerColumn}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>dni</ThemedText>
-                <WheelPicker 
-                  items={DAYS_ITEMS} 
-                  selectedValue={selectedDays} 
-                  onValueChange={setSelectedDays} 
-                  style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
-                />
-              </View>
 
-              <View style={[styles.pickerDivider, { backgroundColor: theme.backgroundSelected }]} />
-
-              {/* Hours Picker */}
-              <View style={styles.unifiedPickerColumn}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>hod</ThemedText>
-                <WheelPicker 
-                  items={HOURS_ITEMS} 
-                  selectedValue={selectedHours} 
-                  onValueChange={setSelectedHours} 
-                  style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
-                />
-              </View>
-
-              <View style={[styles.pickerDivider, { backgroundColor: theme.backgroundSelected }]} />
-
-              {/* Minutes Picker */}
-              <View style={styles.unifiedPickerColumn}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.pickerLabelInline}>min</ThemedText>
-                <WheelPicker 
-                  items={MINUTES_ITEMS} 
-                  selectedValue={selectedMinutes} 
-                  onValueChange={setSelectedMinutes} 
-                  style={{ backgroundColor: 'transparent', alignSelf: 'stretch' }}
-                />
-              </View>
+            <View style={styles.durationRow}>
+              {([
+                { key: 'days', value: daysText, setter: setDaysText, max: MAX_DAYS, label: t('create.durationDays') },
+                { key: 'hours', value: hoursText, setter: setHoursText, max: MAX_HOURS, label: t('create.durationHours') },
+                { key: 'minutes', value: minutesText, setter: setMinutesText, max: MAX_MINUTES, label: t('create.durationMinutes') },
+              ] as const).map((unit) => (
+                <View
+                  key={unit.key}
+                  style={[
+                    styles.durationField,
+                    {
+                      backgroundColor: theme.backgroundElement,
+                      borderColor: activeField === unit.key ? theme.text : theme.backgroundSelected,
+                    },
+                  ]}
+                >
+                  <TextInput
+                    value={unit.value}
+                    onChangeText={(text) => unit.setter(sanitizeUnit(text, unit.max))}
+                    onFocus={() => focusField(unit.key, 'duration')}
+                    onBlur={() => {
+                      setActiveField(null);
+                      if (unit.value === '') unit.setter('0');
+                    }}
+                    keyboardType="number-pad"
+                    inputAccessoryViewID={NUMBER_PAD_ACCESSORY}
+                    selectTextOnFocus
+                    style={[styles.durationInput, { color: theme.text }]}
+                  />
+                  <ThemedText type="small" themeColor="textSecondary" style={styles.durationUnit}>
+                    {unit.label}
+                  </ThemedText>
+                </View>
+              ))}
             </View>
+
+            <View style={styles.presetRow}>
+              {DURATION_PRESETS.map((preset) => {
+                const selected =
+                  toNumber(daysText) === preset.days &&
+                  toNumber(hoursText) === preset.hours &&
+                  toNumber(minutesText) === 0;
+                return (
+                  <Pressable
+                    key={`${preset.days}-${preset.hours}`}
+                    onPress={() => applyDurationPreset(preset)}
+                    style={({ pressed }) => [
+                      styles.presetChip,
+                      {
+                        backgroundColor: selected ? theme.text : theme.backgroundElement,
+                        borderColor: selected ? theme.text : theme.backgroundSelected,
+                      },
+                      pressed && { opacity: 0.7 },
+                    ]}
+                  >
+                    <ThemedText
+                      type="small"
+                      style={{ color: selected ? theme.background : theme.text }}
+                    >
+                      {t(preset.labelKey)}
+                    </ThemedText>
+                  </Pressable>
+                );
+              })}
+            </View>
+
             <ThemedText type="small" themeColor="textSecondary" style={styles.helpText}>
-              {t('create.expiresText').replace('%s', getFormattedExpiryPreview()).replace('%s', '')}
+              {t('create.expiresText', { expiry: getFormattedExpiryPreview() })}
             </ThemedText>
           </View>
 
@@ -717,6 +808,40 @@ export default function CreateScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+
+    {/*
+      Numeric keyboards on iOS have no return key, so the user has no way to confirm
+      or clear without this bar. Android's number pad already has both.
+    */}
+    {Platform.OS === 'ios' && (
+      <InputAccessoryView nativeID={NUMBER_PAD_ACCESSORY}>
+        <View style={[styles.keyboardBar, { backgroundColor: theme.backgroundElement, borderTopColor: theme.backgroundSelected }]}>
+          <Pressable
+            onPress={() => {
+              if (activeField === 'price') setPriceText('');
+              else if (activeField === 'days') setDaysText('');
+              else if (activeField === 'hours') setHoursText('');
+              else if (activeField === 'minutes') setMinutesText('');
+            }}
+            style={({ pressed }) => [styles.keyboardBarBtn, pressed && { opacity: 0.6 }]}
+          >
+            <SymbolView tintColor={theme.text} name={{ ios: 'delete.left', android: 'backspace', web: 'backspace' } as any} size={18} />
+            <ThemedText type="small" style={styles.keyboardBarLabel}>{t('common.clear')}</ThemedText>
+          </Pressable>
+
+          <Pressable
+            onPress={() => Keyboard.dismiss()}
+            style={({ pressed }) => [
+              styles.keyboardBarConfirm,
+              { backgroundColor: theme.text },
+              pressed && { opacity: 0.8 },
+            ]}
+          >
+            <ThemedText type="smallBold" style={{ color: theme.background }}>{t('common.done')}</ThemedText>
+          </Pressable>
+        </View>
+      </InputAccessoryView>
+    )}
 
     <MapPickerModal
       visible={mapVisible}
@@ -890,47 +1015,91 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 2,
   },
-  pickerSectionRow: {
+  amountField: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    borderWidth: 1.5,
+    borderRadius: Spacing.three,
+    paddingHorizontal: Spacing.three,
+  },
+  amountInput: {
+    flex: 1,
+    height: 56,
+    fontSize: 28,
+    fontWeight: '600',
+    padding: 0,
+    ...Platform.select({
+      web: {
+        outlineStyle: 'none',
+      } as any,
+    }),
+  },
+  amountSuffix: {
+    marginLeft: Spacing.two,
+  },
+  durationRow: {
+    flexDirection: 'row',
     gap: Spacing.two,
   },
-  unifiedPickerContainer: {
+  durationField: {
     flex: 1,
     flexDirection: 'row',
-    borderRadius: 8,
-    overflow: 'hidden',
+    alignItems: 'baseline',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderRadius: Spacing.three,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.two,
   },
-  unifiedPickerColumn: {
-    flex: 1,
-    alignItems: 'stretch', // Zmenené z 'center' pre širší dosah posúvania
+  durationInput: {
+    minWidth: 28,
+    textAlign: 'right',
+    fontSize: 22,
+    fontWeight: '600',
+    padding: 0,
+    ...Platform.select({
+      web: {
+        outlineStyle: 'none',
+      } as any,
+    }),
+  },
+  durationUnit: {
+    marginLeft: 4,
+    fontSize: 12,
+  },
+  presetRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+    marginTop: Spacing.two,
+  },
+  presetChip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.one,
   },
-  pickerDivider: {
-    width: 1,
-    height: '100%',
-  },
-  pickerColumnWrapper: {
-    flex: 1,
+  keyboardBar: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
   },
-  pickerLabelInline: {
-    fontSize: 11,
-    marginBottom: 4,
-    textTransform: 'uppercase',
+  keyboardBarBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.one,
+    paddingHorizontal: Spacing.two,
   },
-  pickerInputWrapper: {
-    height: 120,
-    width: '100%',
-    justifyContent: 'center',
+  keyboardBarLabel: {
+    marginLeft: Spacing.one,
   },
-  pickerTextInput: {
-    width: '100%',
-    textAlign: 'center',
-    height: 48,
-    fontSize: 16,
-    fontWeight: 'bold',
+  keyboardBarConfirm: {
+    borderRadius: Spacing.two,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
   },
   anonymBox: {
     flexDirection: 'row',
