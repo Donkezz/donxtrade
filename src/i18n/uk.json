@@ -27,7 +27,9 @@
     "error": "Помилка",
     "success": "Успіх",
     "warning": "Попередження",
-    "playMoneyWarning": "Демонстраційні Віртуальні Гроші"
+    "playMoneyWarning": "Демонстраційні Віртуальні Гроші",
+    "done": "Готово",
+    "clear": "Очистити"
   },
   "marketplace": {
     "searchPlaceholder": "Шукати пропозиції та попити...",
@@ -99,10 +101,17 @@
     "duration_1d": "1 день",
     "duration_3d": "3 дні",
     "duration_7d": "7 днів",
-    "expiresText": "Дійсно до %s (через %s)",
-    "customPrice": "Власна ({{currency}})",
-    "priceWhole": "Цілі",
-    "priceFraction": "Десяті"
+    "expiresText": "Дійсне до: {{expiry}}",
+    "priceHint": "Залиште 0, якщо віддаєте безкоштовно.",
+    "durationDays": "д",
+    "durationHours": "год",
+    "durationMinutes": "хв",
+    "expiryPreview": "{{date}} о {{time}}",
+    "preset4Hours": "4 години",
+    "preset12Hours": "12 годин",
+    "preset1Day": "1 день",
+    "preset3Days": "3 дні",
+    "preset7Days": "7 днів"
   },
   "profile": {
     "title": "Профіль та Гаманець",

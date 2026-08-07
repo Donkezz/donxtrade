@@ -27,7 +27,9 @@
     "error": "Hiba",
     "success": "Siker",
     "warning": "Figyelem",
-    "playMoneyWarning": "Fiktív Demo Pénz"
+    "playMoneyWarning": "Fiktív Demo Pénz",
+    "done": "Kész",
+    "clear": "Törlés"
   },
   "marketplace": {
     "searchPlaceholder": "Keresés a hirdetések között...",
@@ -99,10 +101,17 @@
     "duration_1d": "1 nap",
     "duration_3d": "3 nap",
     "duration_7d": "7 nap",
-    "expiresText": "Érvényesség: %s-ig (%s múlva)",
-    "customPrice": "Egyéni ({{currency}})",
-    "priceWhole": "Egészek",
-    "priceFraction": "Tizedesek"
+    "expiresText": "Érvényes eddig: {{expiry}}",
+    "priceHint": "Hagyd 0-n, ha ingyen adod.",
+    "durationDays": "n",
+    "durationHours": "ó",
+    "durationMinutes": "p",
+    "expiryPreview": "{{date}} {{time}}",
+    "preset4Hours": "4 óra",
+    "preset12Hours": "12 óra",
+    "preset1Day": "1 nap",
+    "preset3Days": "3 nap",
+    "preset7Days": "7 nap"
   },
   "profile": {
     "title": "Profil és Pénztárca",

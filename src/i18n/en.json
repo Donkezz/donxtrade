@@ -27,7 +27,9 @@
     "error": "Error",
     "success": "Success",
     "warning": "Warning",
-    "playMoneyWarning": "Play Money Demo Only"
+    "playMoneyWarning": "Play Money Demo Only",
+    "done": "Done",
+    "clear": "Clear"
   },
   "marketplace": {
     "searchPlaceholder": "Search listings...",
@@ -99,10 +101,17 @@
     "duration_1d": "1 day",
     "duration_3d": "3 days",
     "duration_7d": "7 days",
-    "expiresText": "Valid until %s (in %s)",
-    "customPrice": "Custom ({{currency}})",
-    "priceWhole": "Whole",
-    "priceFraction": "Decimals"
+    "expiresText": "Valid until: {{expiry}}",
+    "priceHint": "Leave 0 if you are giving it away.",
+    "durationDays": "d",
+    "durationHours": "h",
+    "durationMinutes": "min",
+    "expiryPreview": "{{date}} at {{time}}",
+    "preset4Hours": "4 hours",
+    "preset12Hours": "12 hours",
+    "preset1Day": "1 day",
+    "preset3Days": "3 days",
+    "preset7Days": "7 days"
   },
   "profile": {
     "title": "Profile & Wallet",

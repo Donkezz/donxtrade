@@ -196,9 +196,11 @@ export default function MarketplaceScreen() {
 
         <View style={[styles.heroCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
           <View style={styles.heroTextWrap}>
-            <ThemedText type="smallBold" themeColor="textSecondary">{heroLine}</ThemedText> 
-            <ThemedText type="subtitle" style={styles.heroTitle}>{heroSubline}</ThemedText>           </View>
-          <Pressable onPress={() => setOnboardingVisible(true)} style={styles.helpChip}>             <SymbolView tintColor={theme.text} name={{ ios: 'questionmark.circle.fill', android: 'help', web: 'help' }} size={16} />
+            <ThemedText type="smallBold" themeColor="textSecondary">{heroLine}</ThemedText>
+            <ThemedText type="subtitle" style={styles.heroTitle}>{heroSubline}</ThemedText>
+          </View>
+          <Pressable onPress={() => setOnboardingVisible(true)} style={styles.helpChip}>
+            <SymbolView tintColor={theme.text} name={{ ios: 'questionmark.circle.fill', android: 'help', web: 'help' }} size={16} />
           </Pressable>
         </View>
 
