@@ -67,6 +67,9 @@ function getFormatter(locale: string, currency: string): Intl.NumberFormat | nul
   if (cached) {
     return cached;
   }
+  if (typeof Intl === 'undefined' || typeof Intl.NumberFormat !== 'function') {
+    return null;
+  }
   try {
     const formatter = new Intl.NumberFormat(locale, { style: 'currency', currency });
     formatterCache.set(cacheKey, formatter);
@@ -76,6 +79,18 @@ function getFormatter(locale: string, currency: string): Intl.NumberFormat | nul
     return null;
   }
 }
+
+/**
+ * Decimal places per currency, used when the engine cannot tell us. Covers the
+ * zero-decimal currencies we are likely to meet; everything else uses two.
+ */
+const ZERO_DECIMAL_CURRENCIES = new Set(['HUF', 'JPY', 'KRW', 'ISK', 'CLP', 'VND']);
+
+/** Symbols used when the engine cannot produce one. The ISO code is a fine fallback. */
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  EUR: '€', CZK: 'Kč', PLN: 'zł', HUF: 'Ft', UAH: '₴', GBP: '£',
+  USD: '$', CHF: 'CHF', RON: 'lei', BGN: 'лв', DKK: 'kr', SEK: 'kr', NOK: 'kr',
+};
 
 export interface FormatMoneyOptions {
   /** BCP 47 tag, e.g. `sk-SK`. Defaults to `DEFAULT_LOCALE`. */
@@ -102,30 +117,57 @@ export function formatMoney(amount: number, options: FormatMoneyOptions = {}): s
   }
 
   // Last resort on runtimes without full Intl support.
-  return `${amount.toFixed(2)} ${currency}`;
+  return `${amount.toFixed(currencyDecimals({ locale, currency }))} ${currencySymbol({ locale, currency })}`;
 }
 
 /**
- * Symbol for a currency in the given locale, e.g. `€`, `zł`, `Ft`. Falls back to
- * the ISO code, which is a valid thing to show a user.
+ * Symbol for a currency in the given locale, e.g. `€`, `zł`, `Ft`.
+ *
+ * `formatToParts` is missing on some React Native engines, so every step here is
+ * optional and falls through to a static symbol, then to the ISO code — which is
+ * itself a perfectly readable thing to show a user.
  */
 export function currencySymbol(options: FormatMoneyOptions = {}): string {
   const locale = options.locale || DEFAULT_LOCALE;
   const currency = options.currency || DEFAULT_CURRENCY;
   const formatter = getFormatter(locale, currency);
 
-  const part = formatter?.formatToParts(0).find((p) => p.type === 'currency');
-  return part?.value ?? currency;
+  if (formatter && typeof formatter.formatToParts === 'function') {
+    try {
+      const part = formatter.formatToParts(0).find((p) => p.type === 'currency');
+      if (part?.value) {
+        return part.value;
+      }
+    } catch {
+      // Engine claims the method but cannot run it — fall through.
+    }
+  }
+
+  return CURRENCY_SYMBOLS[currency] ?? currency;
 }
 
 /**
  * Number of decimal places a currency uses — 2 for `EUR`, 0 for `HUF`. Needed
  * because the price picker splits an amount into major and minor units.
+ *
+ * Guarded the same way as `currencySymbol`: `resolvedOptions` is not guaranteed
+ * to exist on every engine.
  */
 export function currencyDecimals(options: FormatMoneyOptions = {}): number {
   const locale = options.locale || DEFAULT_LOCALE;
   const currency = options.currency || DEFAULT_CURRENCY;
   const formatter = getFormatter(locale, currency);
 
-  return formatter?.resolvedOptions().maximumFractionDigits ?? 2;
+  if (formatter && typeof formatter.resolvedOptions === 'function') {
+    try {
+      const digits = formatter.resolvedOptions().maximumFractionDigits;
+      if (typeof digits === 'number') {
+        return digits;
+      }
+    } catch {
+      // Fall through to the static table.
+    }
+  }
+
+  return ZERO_DECIMAL_CURRENCIES.has(currency) ? 0 : 2;
 }
