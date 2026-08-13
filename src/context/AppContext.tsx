@@ -271,7 +271,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const locales = Localization.getLocales();
         const systemLanguage = locales && locales.length > 0 ? locales[0].languageCode : 'sk';
         const activeLanguage = storedLanguage || systemLanguage || 'sk';
-        const supportedLanguage = ['sk', 'en', 'pl', 'hu', 'uk'].includes(activeLanguage) ? activeLanguage : 'sk';
+        const supportedLanguage = ['sk', 'en', 'pl', 'hu', 'uk', 'de'].includes(activeLanguage) ? activeLanguage : 'sk';
         
         setAppLanguageState(supportedLanguage);
         await i18n.changeLanguage(supportedLanguage);

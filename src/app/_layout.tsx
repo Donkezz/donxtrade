@@ -1,8 +1,7 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { LoginModal } from '@/components/LoginModal';
 
@@ -13,20 +12,28 @@ function InnerLayout() {
   const systemColorScheme = useColorScheme();
   const { appTheme } = useApp();
 
-  const isDark = 
-    appTheme === 'dark' || 
+  const isDark =
+    appTheme === 'dark' ||
     (appTheme === 'system' && systemColorScheme === 'dark');
 
   return (
     <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <AnimatedSplashOverlay />
-      <AppTabs />
+      {/*
+        A Stack wraps the tabs so screens outside the tab bar can be pushed over
+        it. The tabs themselves live in the (tabs) group, which is a grouping
+        folder only — it does not change any route's URL.
+      */}
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="listing/[id]" options={{ headerShown: true }} />
+      </Stack>
       <LoginModal />
     </ThemeProvider>
   );
 }
 
-export default function TabLayout() {
+export default function RootLayout() {
   return (
     <AppProvider>
       <InnerLayout />

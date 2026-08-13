@@ -7,7 +7,7 @@ import { FlatList, Modal, Platform, Pressable, StyleSheet, TextInput, View } fro
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GamificationModal } from '@/components/GamificationModal';
-import { ListingCard } from '@/components/ListingCard';
+import { ListingPreview } from '@/components/ListingPreview';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
@@ -17,7 +17,7 @@ import { useTheme } from '@/hooks/use-theme';
 export default function MarketplaceScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { listings, unlockedListings, walletBalance, appLanguage, setAppLanguage } = useApp();
+  const { listings, walletBalance, appLanguage, setAppLanguage } = useApp();
 
   const [langMenuVisible, setLangMenuVisible] = useState(false);
   const [gamificationVisible, setGamificationVisible] = useState(false);
@@ -40,6 +40,7 @@ export default function MarketplaceScreen() {
     { code: 'pl', label: 'PL', flag: '🇵🇱' },
     { code: 'hu', label: 'HU', flag: '🇭🇺' },
     { code: 'uk', label: 'UK', flag: '🇺🇦' },
+    { code: 'de', label: 'DE', flag: '🇩🇪' },
   ];
   const currentLang = LANGUAGES.find(l => l.code === appLanguage) || LANGUAGES[0];
 
@@ -49,33 +50,6 @@ export default function MarketplaceScreen() {
   const [onboardingVisible, setOnboardingVisible] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [nowTs, setNowTs] = useState(() => Date.now());
-
-  const QUICK_ACTIONS = [
-    {
-      key: 'marketplace.quickCreate',
-      icon: 'plus.circle.fill',
-      fallbackIcon: 'add_circle',
-      action: () => router.push('/create'),
-      tint: '#6c5ce7',
-    },
-    {
-      key: 'marketplace.quickCredits',
-      icon: 'creditcard.fill',
-      fallbackIcon: 'credit_card',
-      action: () => router.push('/wallet'),
-      tint: '#f4b740',
-    },
-    {
-      key: 'marketplace.quickExplore',
-      icon: 'sparkles',
-      fallbackIcon: 'auto_awesome',
-      action: () => setSelectedCategory('all'),
-      tint: '#2ecc71',
-    },
-  ] as const;
-
-  const heroLine = t('marketplace.heroTitle');
-  const heroSubline = t('marketplace.heroSubtitle');
 
   const onboardingSteps = [
     {
@@ -162,13 +136,17 @@ export default function MarketplaceScreen() {
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <View style={styles.header}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {/* The brand block gives up width first — the subtitle is far longer in
+              German and Polish and would otherwise push the wallet off screen. */}
+          <View style={styles.headerBrand}>
             <Pressable onPress={() => setLangMenuVisible(true)} style={styles.langFlagBtn}>
               <ThemedText style={{ fontSize: 24, marginRight: Spacing.three }}>{currentLang.flag}</ThemedText>
             </Pressable>
-            <View>
+            <View style={{ flexShrink: 1 }}>
               <ThemedText type="title" style={styles.brandTitle}>{t('common.brand')}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">{t('common.subtitle')}</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary" numberOfLines={2}>
+                {t('common.subtitle')}
+              </ThemedText>
             </View>
           </View>
 
@@ -194,139 +172,114 @@ export default function MarketplaceScreen() {
           </Pressable>
         </View>
 
-        <View style={[styles.heroCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-          <View style={styles.heroTextWrap}>
-            <ThemedText type="smallBold" themeColor="textSecondary">{heroLine}</ThemedText>
-            <ThemedText type="subtitle" style={styles.heroTitle}>{heroSubline}</ThemedText>
-          </View>
-          <Pressable onPress={() => setOnboardingVisible(true)} style={styles.helpChip}>
-            <SymbolView tintColor={theme.text} name={{ ios: 'questionmark.circle.fill', android: 'help', web: 'help' }} size={16} />
-          </Pressable>
-        </View>
-
-        <ThemedText type="smallBold" style={styles.quickActionsLabel}>{t('marketplace.actionsTitle')}</ThemedText>
-        <View style={styles.quickActionsRow}>
-          {QUICK_ACTIONS.map((action) => (
-            <Pressable
-              key={action.key}
-              onPress={action.action}
-              style={({ pressed }) => [
-                styles.quickAction,
-                { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
-                pressed && styles.pressed,
-              ]}
-            >
-              <SymbolView
-                tintColor={action.tint}
-                name={{ ios: action.icon as any, android: action.fallbackIcon as any, web: action.fallbackIcon as any }}
-                size={18}
-              />
-              <ThemedText type="smallBold" style={styles.quickActionText}>{t(action.key)}</ThemedText>
-            </Pressable>
-          ))}
-        </View>
-
-        <View style={[styles.searchContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-          <SymbolView
-            tintColor={theme.textSecondary}
-            name={{ ios: 'magnifyingglass', android: 'search', web: 'search' }}
-            size={16}
-          />
-          <TextInput
-            placeholder={t('marketplace.searchPlaceholder')}
-            placeholderTextColor={theme.textSecondary}
-            value={search}
-            onChangeText={setSearch}
-            style={[styles.searchInput, { color: theme.text }]}
-          />
-          {search.length > 0 && (
-            <Pressable onPress={() => setSearch('')}>
-              <SymbolView
-                tintColor={theme.textSecondary}
-                name={{ ios: 'xmark.circle.fill', android: 'clear', web: 'clear' }}
-                size={16}
-              />
-            </Pressable>
-          )}
-        </View>
-
-        <View style={[styles.toggleContainer, { backgroundColor: theme.backgroundElement }]}>
-          <Pressable
-            onPress={() => setSelectedType('supply')}
-            style={[
-              styles.toggleButton,
-              selectedType === 'supply' && [styles.toggleActiveButton, { backgroundColor: theme.backgroundSelected }],
-            ]}
-          >
-            <ThemedText
-              type="smallBold"
-              themeColor={selectedType === 'supply' ? 'text' : 'textSecondary'}
-              style={selectedType === 'supply' && styles.activeText}
-            >
-              {t('common.supply')}
-            </ThemedText>
-          </Pressable>
-          <Pressable
-            onPress={() => setSelectedType('demand')}
-            style={[
-              styles.toggleButton,
-              selectedType === 'demand' && [styles.toggleActiveButton, { backgroundColor: theme.backgroundSelected }],
-            ]}
-          >
-            <ThemedText
-              type="smallBold"
-              themeColor={selectedType === 'demand' ? 'text' : 'textSecondary'}
-              style={selectedType === 'demand' && styles.activeText}
-            >
-              {t('common.demand')}
-            </ThemedText>
-          </Pressable>
-        </View>
-
-        <View style={styles.categoriesContainer}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <ThemedText type="smallBold" themeColor="textSecondary">{t('marketplace.categoriesLabel')}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary" style={{ opacity: 0.6, fontSize: 11 }}>
-              {t('marketplace.swipeHint')}
-            </ThemedText>
-          </View>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={CATEGORIES}
-            keyExtractor={(item) => item.value}
-            contentContainerStyle={styles.categoriesList}
-            renderItem={({ item }) => {
-              const isSelected = selectedCategory === item.value;
-              return (
-                <Pressable
-                  onPress={() => setSelectedCategory(item.value)}
-                  style={[
-                    styles.categoryChip,
-                    {
-                      backgroundColor: isSelected ? item.color : item.color + '15',
-                      borderColor: isSelected ? item.color : 'transparent',
-                    },
-                  ]}
-                >
-                  <SymbolView
-                    tintColor={isSelected ? '#ffffff' : item.color}
-                    name={{ ios: item.icon as any, android: item.fallbackIcon as any, web: item.fallbackIcon as any }}
-                    size={20}
-                    style={styles.chipIcon}
-                  />
-                  <ThemedText type="smallBold" style={{ color: isSelected ? '#ffffff' : item.color, marginLeft: Spacing.one }}>
-                    {t(item.labelKey)}
-                  </ThemedText>
-                </Pressable>
-              );
-            }}
-          />
-        </View>
-
         <FlatList
           data={filteredListings}
           keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          // The filters scroll away with the list, so listings get the full screen
+          // instead of the sliver that was left over between fixed blocks.
+          ListHeaderComponent={
+            <>
+            <View style={[styles.searchContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+              <SymbolView
+                tintColor={theme.textSecondary}
+                name={{ ios: 'magnifyingglass', android: 'search', web: 'search' }}
+                size={16}
+              />
+              <TextInput
+                placeholder={t('marketplace.searchPlaceholder')}
+                placeholderTextColor={theme.textSecondary}
+                value={search}
+                onChangeText={setSearch}
+                style={[styles.searchInput, { color: theme.text }]}
+              />
+              {search.length > 0 && (
+                <Pressable onPress={() => setSearch('')}>
+                  <SymbolView
+                    tintColor={theme.textSecondary}
+                    name={{ ios: 'xmark.circle.fill', android: 'clear', web: 'clear' }}
+                    size={16}
+                  />
+                </Pressable>
+              )}
+            </View>
+
+            <View style={[styles.toggleContainer, { backgroundColor: theme.backgroundElement }]}>
+              <Pressable
+                onPress={() => setSelectedType('supply')}
+                style={[
+                  styles.toggleButton,
+                  selectedType === 'supply' && [styles.toggleActiveButton, { backgroundColor: theme.backgroundSelected }],
+                ]}
+              >
+                <ThemedText
+                  type="smallBold"
+                  themeColor={selectedType === 'supply' ? 'text' : 'textSecondary'}
+                  style={selectedType === 'supply' && styles.activeText}
+                >
+                  {t('common.supply')}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => setSelectedType('demand')}
+                style={[
+                  styles.toggleButton,
+                  selectedType === 'demand' && [styles.toggleActiveButton, { backgroundColor: theme.backgroundSelected }],
+                ]}
+              >
+                <ThemedText
+                  type="smallBold"
+                  themeColor={selectedType === 'demand' ? 'text' : 'textSecondary'}
+                  style={selectedType === 'demand' && styles.activeText}
+                >
+                  {t('common.demand')}
+                </ThemedText>
+              </Pressable>
+            </View>
+
+            <View style={styles.categoriesContainer}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <ThemedText type="smallBold" themeColor="textSecondary">{t('marketplace.categoriesLabel')}</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" style={{ opacity: 0.6, fontSize: 11 }}>
+                  {t('marketplace.swipeHint')}
+                </ThemedText>
+              </View>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={CATEGORIES}
+                keyExtractor={(item) => item.value}
+                contentContainerStyle={styles.categoriesList}
+                renderItem={({ item }) => {
+                  const isSelected = selectedCategory === item.value;
+                  return (
+                    <Pressable
+                      onPress={() => setSelectedCategory(item.value)}
+                      style={[
+                        styles.categoryChip,
+                        {
+                          backgroundColor: isSelected ? item.color : item.color + '15',
+                          borderColor: isSelected ? item.color : 'transparent',
+                        },
+                      ]}
+                    >
+                      <SymbolView
+                        tintColor={isSelected ? '#ffffff' : item.color}
+                        name={{ ios: item.icon as any, android: item.fallbackIcon as any, web: item.fallbackIcon as any }}
+                        size={20}
+                        style={styles.chipIcon}
+                      />
+                      <ThemedText type="smallBold" style={{ color: isSelected ? '#ffffff' : item.color, marginLeft: Spacing.one }}>
+                        {t(item.labelKey)}
+                      </ThemedText>
+                    </Pressable>
+                  );
+                }}
+              />
+            </View>
+            </>
+          }
           contentContainerStyle={[
             styles.listContent, 
             { paddingBottom: BottomTabInset + Spacing.five }
@@ -346,12 +299,7 @@ export default function MarketplaceScreen() {
               </ThemedText>
             </View>
           }
-          renderItem={({ item }) => (
-            <ListingCard 
-              listing={item} 
-              isUnlocked={unlockedListings.includes(item.id)} 
-            />
-          )}
+          renderItem={({ item }) => <ListingPreview listing={item} />}
         />
       </SafeAreaView>
 
@@ -474,39 +422,20 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three,
     marginTop: Spacing.two,
   },
+  headerBrand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 1,
+    marginRight: Spacing.two,
+  },
   brandTitle: {
     fontWeight: 'bold',
     fontSize: 24,
   },
-  heroCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.three,
-    borderRadius: Spacing.three,
-    borderWidth: 1,
-    marginBottom: Spacing.three,
-  },
-  heroTextWrap: {
-    flex: 1,
-    paddingRight: Spacing.two,
-  },
-  heroTitle: {
-    marginTop: Spacing.one,
-    fontSize: 20,
-    lineHeight: 28,
-  },
-  helpChip: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(108, 92, 231, 0.12)',
-  },
   walletBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 0,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     borderRadius: Spacing.four,
@@ -514,28 +443,6 @@ const styles = StyleSheet.create({
     gap: Spacing.one,
   },
   walletBalanceText: {
-    fontSize: 12,
-  },
-  quickActionsLabel: {
-    marginBottom: Spacing.two,
-  },
-  quickActionsRow: {
-    flexDirection: 'row',
-    gap: Spacing.two,
-    marginBottom: Spacing.three,
-  },
-  quickAction: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.one,
-    borderRadius: Spacing.three,
-    borderWidth: 1,
-    paddingVertical: Spacing.three,
-    minHeight: 56,
-  },
-  quickActionText: {
     fontSize: 12,
   },
   pressed: {
