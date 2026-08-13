@@ -31,6 +31,7 @@ const LANGUAGE_LOCALE: Record<string, string> = {
   pl: 'pl-PL',
   hu: 'hu-HU',
   uk: 'uk-UA',
+  de: 'de-DE',
 };
 
 /** Currency of the user's device region, `EUR` when it cannot be determined. */

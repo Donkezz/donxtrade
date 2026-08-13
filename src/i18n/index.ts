@@ -7,6 +7,7 @@ import en from './en.json';
 import pl from './pl.json';
 import hu from './hu.json';
 import uk from './uk.json';
+import de from './de.json';
 
 // Get device locale language code
 const locales = Localization.getLocales();
@@ -18,6 +19,7 @@ const resources = {
   pl: { translation: pl },
   hu: { translation: hu },
   uk: { translation: uk },
+  de: { translation: de },
 };
 
 // Check if system language is supported, otherwise fallback to Slovak
