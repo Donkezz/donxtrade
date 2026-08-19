@@ -95,15 +95,37 @@ nie registráciou v konfigu.
   textový uzol a React Native spadne na „Text strings must be rendered within
   a `<Text>` component"
 
+## TestFlight je vopred odsúhlasený
+
+Majiteľ projektu dal trvalý súhlas na buildy do TestFlightu. Nepýtaj sa naň
+zakaždým — po zmene, ktorá má ísť testerom, build spusti:
+
+```
+npx eas-cli@latest build --platform ios --profile production --auto-submit --non-interactive
+```
+
+Platí to za týchto podmienok, a tie nie sú na dohodnutie:
+
+- **`npm run release:check` musí prejsť.** Lint aj typecheck, bez errorov.
+- **Zmenu si spustil.** Čo sa dá vidieť, over v iOS simulátore. Build 6 išiel
+  testerom s pádom práve preto, že sa to preskočilo.
+- **Buduje sa z `main`.** Cez čistý worktree na `origin/main`, nie z rozrobenej
+  vetvy. Do `main` sa ide cez PR, takže bránou je merge, nie otázka pred buildom.
+- **Ak čokoľvek z toho neplatí, build nespúšťaj** a povedz prečo. To nie je
+  žiadosť o povolenie, je to odmietnutie poslať von rozbitú vec.
+
+Vydanie do App Store pre verejnosť odsúhlasené **nie je** a pýta sa zvlášť —
+TestFlight ide interným testerom, App Store komukoľvek.
+
 ## Nikdy bez opýtania
 
 - `npm run reset-project` — maže štartovací app adresár, NIKDY nespúšťať
-- `eas build`, `eas submit`, čokoľvek do TestFlightu alebo store
-- `git commit`, `git push`, `git reset --hard`, prepisovanie histórie, vetvy, PR
+- Vydanie do App Store a čokoľvek do App Review (TestFlight je výnimka vyššie)
+- `git reset --hard`, prepisovanie histórie, force push
 - Pridávanie, odoberanie alebo upgrade závislostí
 - Zmeny v `eas.json`, `app.json`, `.env*`
 - Mazanie súborov alebo dát a čokoľvek ťažko vratné
-- Čokoľvek, čo odchádza zo stroja — publikovanie, odosielanie, postovanie
+- Čokoľvek iné, čo odchádza zo stroja — publikovanie, odosielanie, postovanie
 
 ## Nedokončené
 
