@@ -130,9 +130,12 @@ TestFlight ide interným testerom, App Store komukoľvek.
 ## Nedokončené
 
 - `android.package` v `app.json` nie je nastavený → Android build zlyhá
-- Kredity a odmeny sú v kóde eurové hodnoty. Formátovanie je správne, ale pri
-  mene bez desatinných miest (HUF) sa výhry kolesa zobrazia ako `0 Ft`. Rieši sa
-  to produktovým rozhodnutím — kredity ako vlastná jednotka — nie formátovaním.
+- Mince sa nepredávajú a predávať sa nebudú, kým na to nie je živnosť. Žiadne
+  in-app purchase, žiadne reálne platby. Označenie „fiktívne kredity" v textoch
+  je pravdivé a má tam zostať.
+- Nekonečné dobitie zadarmo v profile (`topUpWallet`) je dočasná barla. Kým
+  neexistuje zarábanie mincí za aktivitu, je to jediný zdroj — a zároveň dôvod,
+  prečo mince nemajú hodnotu. Nahradiť, nie len odobrať.
 - `src/components/ui/WheelPicker.tsx` už nikto nepoužíva
 - V `src/app/create.tsx` zostáva sedem slovenských textov mimo i18n
 - `src/components/animated-icon.web.tsx` a `src/constants/theme.ts` majú
