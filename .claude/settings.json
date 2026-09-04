@@ -1,5 +1,57 @@
 {
   "enabledPlugins": {
     "expo@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run typecheck)",
+      "Bash(npm run lint)",
+      "Bash(npm run release:check)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git fetch:*)",
+      "Bash(git push origin:*)",
+      "Bash(gh pr:*)",
+      "Bash(npx expo:*)",
+      "Bash(xcrun simctl:*)",
+      "Bash(npx eas-cli@latest build:*)",
+      "Bash(npx eas-cli@latest whoami)",
+      "Bash(npx eas-cli@latest build:list:*)"
+    ],
+    "deny": [
+      "Bash(npm run reset-project)",
+      "Bash(node ./scripts/reset-project.js)",
+      "Bash(*reset-project*)",
+
+      "Bash(*eas submit*)",
+      "Bash(*eas-cli* submit*)",
+
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(*push --force*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git rebase:*)",
+      "Bash(git filter-branch:*)",
+
+      "Bash(rm -rf:*)",
+      "Bash(*rm -rf /*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(curl:* -d *)",
+
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/*.p8)",
+      "Read(**/*.p12)",
+      "Read(**/*.jks)",
+      "Read(**/*.keystore)",
+      "Read(**/*.mobileprovision)"
+    ]
   }
 }
