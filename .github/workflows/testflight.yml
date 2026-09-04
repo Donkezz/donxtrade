@@ -5,11 +5,20 @@ name: TestFlight
 on:
   push:
     branches: [main]
+    # Docs and agent config don't ship in the app, so a merge that only touches
+    # these shouldn't spend EAS build minutes. workflow_dispatch still runs
+    # regardless of what changed.
+    paths-ignore:
+      - '**.md'
+      - '.claude/**'
+      - '.github/**'
+      - 'LICENSE'
   workflow_dispatch:
 
 concurrency:
-  # A newer commit on main makes an in-flight build obsolete. Do not burn EAS
-  # build quota on a version nobody will install.
+  # Only cancels the GitHub Actions job, not the EAS build itself — that keeps
+  # running on Expo's servers and still gets submitted. This just stops two
+  # workflow runs from racing each other; it does not save EAS build minutes.
   group: testflight
   cancel-in-progress: true
 
