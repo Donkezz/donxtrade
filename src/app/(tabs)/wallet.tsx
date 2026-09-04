@@ -11,6 +11,7 @@ import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useCurrency } from '@/hooks/use-currency';
+import { formatCoins } from '@/utils/coins';
 import { useApp, Listing, Transaction } from '@/context/AppContext';
 import { SecureChatModal } from '@/components/SecureChatModal';
 import { GamificationModal } from '@/components/GamificationModal';
@@ -151,9 +152,9 @@ export default function WalletScreen() {
           <View style={styles.header}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <View>
-                <ThemedText type="title">Môj Profil</ThemedText>
+                <ThemedText type="title">{t('profile.profileTitle')}</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
-                  Tvoje údaje a nastavenia
+                  {t('profile.profileSubtitle')}
                 </ThemedText>
               </View>
             </View>
@@ -163,7 +164,7 @@ export default function WalletScreen() {
             <View style={{ alignItems: 'flex-end', marginBottom: Spacing.four }}>
               <ThemedText type="smallBold" themeColor="textSecondary">Prihlásený ako: {currentUser.name}</ThemedText>
               <Pressable onPress={logout} style={{ marginTop: Spacing.one }}>
-                <ThemedText type="smallBold" style={{ color: '#ff6b6b' }}>Odhlásiť sa</ThemedText>
+                <ThemedText type="smallBold" style={{ color: '#ff6b6b' }}>{t('profile.logout')}</ThemedText>
               </Pressable>
             </View>
           )}
@@ -171,23 +172,23 @@ export default function WalletScreen() {
           {/* Gamification Dashboard */}
           <View style={[styles.dashboardCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
             <View style={styles.dashboardHeader}>
-              <ThemedText type="smallBold" themeColor="textSecondary">Môj Zostatok</ThemedText>
-              <ThemedText type="subtitle" style={{ fontSize: 32, marginTop: Spacing.one }}>🪙 {Math.floor(walletBalance)}</ThemedText>
+              <ThemedText type="smallBold" themeColor="textSecondary">{t('profile.balanceLabel')}</ThemedText>
+              <ThemedText type="subtitle" style={{ fontSize: 32, marginTop: Spacing.one }}>{formatCoins(walletBalance)}</ThemedText>
             </View>
 
             <View style={styles.statsRow}>
               <View style={styles.statBox}>
-                <ThemedText type="small" themeColor="textSecondary">Zarobené</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.statLabel} numberOfLines={2}>{t('profile.statEarned')}</ThemedText>
                 <ThemedText type="smallBold" style={{ color: '#00b894', marginTop: 2 }}>+{Math.floor(earnedCredits)}</ThemedText>
               </View>
               <View style={[styles.statDivider, { backgroundColor: theme.backgroundSelected }]} />
               <View style={styles.statBox}>
-                <ThemedText type="small" themeColor="textSecondary">Odomknuté</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.statLabel} numberOfLines={2}>{t('profile.statUnlocked')}</ThemedText>
                 <ThemedText type="smallBold" style={{ marginTop: 2 }}>{unlockedItems.length}</ThemedText>
               </View>
               <View style={[styles.statDivider, { backgroundColor: theme.backgroundSelected }]} />
               <View style={styles.statBox}>
-                <ThemedText type="small" themeColor="textSecondary">Moje inzeráty</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.statLabel} numberOfLines={2}>{t('profile.statMyListings')}</ThemedText>
                 <ThemedText type="smallBold" style={{ marginTop: 2 }}>{myItems.length}</ThemedText>
               </View>
             </View>
@@ -206,12 +207,12 @@ export default function WalletScreen() {
                 ]}
               >
                 <SymbolView tintColor={theme.background} name={{ ios: 'plus.circle.fill', android: 'add_circle', web: 'add_circle' } as any} size={20} style={{ marginRight: 8 }} />
-                <ThemedText type="smallBold" style={{ color: theme.background }}>Dobiť Kredity (Zadarmo)</ThemedText>
+                <ThemedText type="smallBold" style={{ color: theme.background }}>{t('profile.topupBtn')}</ThemedText>
               </Pressable>
             ) : (
               <View style={[styles.topupButton, { backgroundColor: theme.backgroundSelected, opacity: 0.6 }]}>
                 <SymbolView tintColor={theme.textSecondary} name={{ ios: 'lock.fill', android: 'lock', web: 'lock' } as any} size={20} style={{ marginRight: 8 }} />
-                <ThemedText type="smallBold" themeColor="textSecondary">Máš dostatok kreditov</ThemedText>
+                <ThemedText type="smallBold" themeColor="textSecondary">{t('profile.enoughCoins')}</ThemedText>
               </View>
             )}
           </View>
@@ -229,8 +230,8 @@ export default function WalletScreen() {
               <SymbolView tintColor="#FFD700" name={{ ios: 'star.circle.fill', android: 'star', web: 'star' } as any} size={28} />
             </View>
             <View style={styles.bannerText}>
-              <ThemedText type="smallBold">🌟 Ako získať viac Kreditov?</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: 2 }}>Zisti ako si zarobiť na odomykanie kontaktov zadarmo.</ThemedText>
+              <ThemedText type="smallBold">🌟 {t('profile.earnMoreTitle')}</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: 2 }}>{t('profile.earnMoreSub')}</ThemedText>
             </View>
             <SymbolView tintColor={theme.textSecondary} name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' } as any} size={20} />
           </Pressable>
@@ -289,7 +290,7 @@ export default function WalletScreen() {
                   pressed && { opacity: 0.8 }
                 ]}
               >
-                <ThemedText type="smallBold" style={{ color: theme.background }}>Prihlásiť sa</ThemedText>
+                <ThemedText type="smallBold" style={{ color: theme.background }}>{t('profile.login')}</ThemedText>
               </Pressable>
             </View>
           ) : (
@@ -611,6 +612,11 @@ const styles = StyleSheet.create({
   statBox: {
     flex: 1,
     alignItems: 'center',
+    paddingHorizontal: Spacing.one,
+  },
+  statLabel: {
+    fontSize: 11,
+    textAlign: 'center',
   },
   statDivider: {
     width: 1,

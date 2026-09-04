@@ -211,6 +211,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoginVisible, setLoginVisible] = useState(false);
   
+  /**
+   * Coins are a whole-number unit of their own, not a money amount. One coin buys
+   * one contact. Keeping them integer is what makes them work in a currency with
+   * no decimal places, and what stops them reading as euros to the user.
+   */
   const unlockFee = 1;
 
   // Load state from AsyncStorage
@@ -414,7 +419,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     try {
       const targetListing = listings.find((l) => l.id === id);
-      const newBalance = Math.max(0, parseFloat((walletBalance - unlockFee).toFixed(2)));
+      const newBalance = Math.max(0, walletBalance - unlockFee);
       const newUnlocked = [...unlockedListings, id];
 
       setWalletBalance(newBalance);
@@ -443,9 +448,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Action: Top-up Wallet Balance
-  const topUpWallet = async (amount = 5.00) => {
+  const topUpWallet = async (amount = 50) => {
     try {
-      const newBalance = parseFloat((walletBalance + amount).toFixed(2));
+      const newBalance = walletBalance + Math.round(amount);
       setWalletBalance(newBalance);
       await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, newBalance.toString());
 
@@ -586,7 +591,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     }
  
-    const newBalance = parseFloat((walletBalance + amount).toFixed(2));
+    const newBalance = walletBalance + Math.round(amount);
     const bonusTimeString = now.toISOString();
  
     setWalletBalance(newBalance);

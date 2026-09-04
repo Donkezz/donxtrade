@@ -13,6 +13,7 @@ import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { ListingCategory, ListingType, useApp } from '@/context/AppContext';
 import { useTheme } from '@/hooks/use-theme';
+import { formatCoins } from '@/utils/coins';
 
 export default function MarketplaceScreen() {
   const { t } = useTranslation();
@@ -167,7 +168,7 @@ export default function MarketplaceScreen() {
               size={16}
             />
             <ThemedText type="smallBold" style={styles.walletBalanceText}>
-              🪙 {Math.floor(walletBalance)}
+              {formatCoins(walletBalance)}
             </ThemedText>
           </Pressable>
         </View>

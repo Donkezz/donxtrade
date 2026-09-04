@@ -8,18 +8,18 @@ import { useTranslation } from 'react-i18next';
 import { ThemedText } from './themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { useCurrency } from '@/hooks/use-currency';
+import { formatCoins } from '@/utils/coins';
 import { useApp } from '@/context/AppContext';
 
-// Labels are derived from `value` at render time so the wheel shows the
-// player's own currency and number format, not a fixed euro string.
+// Prizes are whole coins, not money. One coin buys one contact, so the smallest
+// prize here is already worth something concrete to the player.
 const SLICES = [
-  { value: 0.05, color: '#3A86F0' },
-  { value: 0.10, color: '#8338EC' },
-  { value: 0.15, color: '#FF006E' },
-  { value: 0.20, color: '#38B000' },
-  { value: 0.50, color: '#FFB703' },
-  { value: 1.00, color: '#D4AF37', jackpot: true }
+  { value: 1, color: '#3A86F0' },
+  { value: 2, color: '#8338EC' },
+  { value: 3, color: '#FF006E' },
+  { value: 5, color: '#38B000' },
+  { value: 8, color: '#FFB703' },
+  { value: 15, color: '#D4AF37', jackpot: true }
 ];
 
 const getSlicePath = (index: number) => {
@@ -52,7 +52,6 @@ const getLabelCoords = (index: number) => {
 export const FortuneWheel: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { format: formatPrice } = useCurrency();
   const { claimDailyBonus, lastClaimedBonus } = useApp();
   const [spinning, setSpinning] = useState(false);
   const [rewardWon, setRewardWon] = useState<number | null>(null);
@@ -107,7 +106,7 @@ export const FortuneWheel: React.FC = () => {
     setSpinning(false);
     if (success) {
       setRewardWon(prizeValue);
-      const winMessage = t('profile.winText', { amount: formatPrice(prizeValue) });
+      const winMessage = t('profile.winText', { amount: formatCoins(prizeValue) });
       if (Platform.OS === 'web') {
         window.alert(winMessage);
       } else {
@@ -176,7 +175,7 @@ export const FortuneWheel: React.FC = () => {
                           textAnchor="middle"
                           alignmentBaseline="middle"
                         >
-                          {formatPrice(slice.value)}{slice.jackpot ? ' 👑' : ''}
+                          {slice.value}{slice.jackpot ? ' 👑' : ''}
                         </SvgText>
                       </G>
                     </G>
@@ -222,7 +221,7 @@ export const FortuneWheel: React.FC = () => {
           <View style={styles.countdownContainer}>
             {rewardWon && (
               <ThemedText type="smallBold" style={styles.wonAmountText}>
-                +{formatPrice(rewardWon)}
+                {formatCoins(rewardWon)}
               </ThemedText>
             )}
             <ThemedText type="small" themeColor="textSecondary" style={styles.nextSpinText}>
