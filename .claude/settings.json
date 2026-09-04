@@ -22,15 +22,19 @@
       "Bash(xcrun simctl:*)",
       "Bash(npx eas-cli@latest build:*)",
       "Bash(npx eas-cli@latest whoami)",
-      "Bash(npx eas-cli@latest build:list:*)"
+      "Bash(npx eas-cli@latest build:list:*)",
+      "Bash(npx eas-cli@latest submit:list:*)",
+      "Bash(npx eas-cli@latest submit:view:*)"
     ],
     "deny": [
       "Bash(npm run reset-project)",
       "Bash(node ./scripts/reset-project.js)",
       "Bash(*reset-project*)",
 
-      "Bash(*eas submit*)",
-      "Bash(*eas-cli* submit*)",
+      "Bash(*eas submit)",
+      "Bash(*eas submit *)",
+      "Bash(*eas-cli* submit)",
+      "Bash(*eas-cli* submit *)",
 
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
