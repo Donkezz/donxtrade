@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 
 import { Colors, Spacing } from '@/constants/theme';
@@ -18,8 +18,12 @@ export function AppErrorScreen({ error, retry }: { error: Error; retry: () => vo
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const colors = Colors[scheme];
 
-  // Single place to forward to a crash reporter once one is wired up.
-  console.error('[AppErrorScreen]', error);
+  // Single place to forward to a crash reporter once one is wired up. In an effect, not
+  // the render body: this component re-renders on theme and language changes, and a
+  // side effect in render would report the same crash again each time.
+  useEffect(() => {
+    console.error('[AppErrorScreen]', error);
+  }, [error]);
 
   const tr = (key: string, fallback: string) => i18n.t(key, { defaultValue: fallback });
 
