@@ -85,7 +85,7 @@ export default function AdminDashboard() {
 
           {/* Line Chart */}
           <View style={[styles.chartContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-            <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>Týždenná aktivita (Počet akcií)</ThemedText>
+            <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>{t('admin.weeklyActivity')}</ThemedText>
             <LineChart
               data={lineData}
               width={screenWidth - Spacing.four}
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
             <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>{t('admin.activityMap')}</ThemedText>
             {Platform.OS === 'web' || !MapView ? (
               <View style={[styles.mapFallback, { backgroundColor: theme.backgroundSelected }]}>
-                <ThemedText type="small" themeColor="textSecondary">Mapa nie je dostupná vo webovom zobrazení.</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">{t('admin.mapUnavailable')}</ThemedText>
               </View>
             ) : (
               <View style={styles.mapWrapper}>

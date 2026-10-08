@@ -30,14 +30,27 @@ const THEMES = [
   { value: 'system', labelKey: 'profile.themeSystem', icon: 'laptopcomputer', fallbackIcon: 'settings_suggest' },
 ];
 
-const MyListingItem = ({ listing, onDelete }: { listing: Listing; onDelete: () => void }) => {
+const MyListingItem = ({
+  listing,
+  onDelete,
+  onBoost,
+  onResolve,
+}: {
+  listing: Listing;
+  onDelete: () => void;
+  onBoost: () => void;
+  onResolve: () => void;
+}) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { format: formatPrice } = useCurrency();
   const [timeLeft, setTimeLeft] = useState('');
+  // Kept in state, not read during render, and refreshed by the same timer as the countdown.
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     const calc = () => {
+      setNow(Date.now());
       const diff = new Date(listing.expiresAt).getTime() - Date.now();
       if (diff <= 0) {
         setTimeLeft(t('listingCard.expired'));
@@ -48,27 +61,71 @@ const MyListingItem = ({ listing, onDelete }: { listing: Listing; onDelete: () =
       const hours = Math.floor((totalMin % 1440) / 60);
       const mins = totalMin % 60;
       if (days > 0) setTimeLeft(`${days}d ${hours}h`);
-      else if (hours > 0) setTimeLeft(`${hours}h ${mins}m`);
-      else setTimeLeft(`${mins}m`);
+      else if (hours > 0) setTimeLeft(`${hours}h ${mins}min`);
+      else setTimeLeft(`${mins}min`);
     };
     calc();
     const inv = setInterval(calc, 30000);
     return () => clearInterval(inv);
   }, [listing.expiresAt, t]);
 
+  const boosted = !!listing.boostedUntil && new Date(listing.boostedUntil).getTime() > now;
+  const boostedTime = boosted
+    ? new Date(listing.boostedUntil as string).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : '';
+
   return (
-    <View style={[styles.myListingCard, { backgroundColor: theme.backgroundSelected, borderColor: theme.backgroundSelected }]}>
-      <View style={{ flex: 1 }}>
-        <ThemedText type="smallBold" numberOfLines={1}>
-          {listing.title} {listing.isDemo && '(Demo)'}
-        </ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">
-          {listing.price === 0 ? t('common.free') : formatPrice(listing.price)} • {timeLeft}
-        </ThemedText>
+    <View style={[styles.myListingCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+      <View style={styles.myListingTop}>
+        <View style={{ flex: 1 }}>
+          <ThemedText type="smallBold" numberOfLines={1}>
+            {listing.title}
+          </ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            {listing.price === 0 ? t('common.free') : formatPrice(listing.price)} • {timeLeft}
+          </ThemedText>
+        </View>
+        <Pressable
+          onPress={onDelete}
+          style={styles.deleteListingBtn}
+          accessibilityRole="button"
+          accessibilityLabel={t('a11y.deleteListing')}
+        >
+          <SymbolView tintColor="#ff6b6b" name={{ ios: 'trash.fill', android: 'delete', web: 'delete' }} size={16} />
+        </Pressable>
       </View>
-      <Pressable onPress={onDelete} style={styles.deleteListingBtn}>
-        <SymbolView tintColor="#ff6b6b" name={{ ios: 'trash.fill', web: 'delete' }} size={16} />
-      </Pressable>
+
+      <View style={styles.myListingActions}>
+        {boosted ? (
+          <View style={[styles.actionChip, { backgroundColor: '#FFB70333', borderColor: '#FFB703' }]}>
+            <ThemedText type="smallBold">{t('profile.boostedUntil', { time: boostedTime })}</ThemedText>
+          </View>
+        ) : (
+          <Pressable
+            onPress={onBoost}
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              styles.actionChip,
+              { backgroundColor: theme.backgroundSelected, borderColor: theme.backgroundSelected },
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <ThemedText type="smallBold">{t('profile.boostBtn')}</ThemedText>
+          </Pressable>
+        )}
+
+        <Pressable
+          onPress={onResolve}
+          accessibilityRole="button"
+          style={({ pressed }) => [
+            styles.actionChip,
+            { backgroundColor: 'transparent', borderColor: theme.backgroundSelected },
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <ThemedText type="smallBold">{t('profile.resolveBtn')}</ThemedText>
+        </Pressable>
+      </View>
     </View>
   );
 };
@@ -79,12 +136,13 @@ export default function WalletScreen() {
   const theme = useTheme();
   const { 
     walletBalance, 
-    topUpWallet, 
     resetAllData, 
     listings, 
     unlockedListings, 
     chats,
     deleteListing,
+    boostListing,
+    resolveListing,
     appLanguage,
     setAppLanguage,
     appTheme,
@@ -95,7 +153,6 @@ export default function WalletScreen() {
     transactions
   } = useApp();
 
-  const [successVisible, setSuccessVisible] = useState(false);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [langMenuVisible, setLangMenuVisible] = useState(false);
   const [gamificationVisible, setGamificationVisible] = useState(false);
@@ -103,8 +160,11 @@ export default function WalletScreen() {
 
 
   const unlockedItems = listings.filter((item) => unlockedListings.includes(item.id));
-  const myItems = listings.filter((item) => item.isMine === true);
-  const earnedCredits = transactions.filter(t => t.type === 'bonus' || t.type === 'create').reduce((acc, t) => acc + t.amount, 0);
+  // Demo listings are never the user's own, and resolved ones have left the board.
+  const myItems = listings.filter((item) => item.isMine === true && !item.isDemo && !item.resolvedAt);
+  const earnedCredits = transactions
+    .filter((tx) => tx.amount > 0 && (tx.type === 'bonus' || tx.type === 'create' || tx.type === 'resolve'))
+    .reduce((acc, tx) => acc + tx.amount, 0);
 
   const handleReset = () => {
     const confirmMessage = t('profile.resetConfirm');
@@ -126,17 +186,57 @@ export default function WalletScreen() {
     }
   };
 
-  const handleDeleteListing = (id: string) => {
+  const notify = (title: string, message: string) => {
     if (Platform.OS === 'web') {
-      const ok = window.confirm('Naozaj zmazať inzerát?');
-      if (ok) deleteListing(id);
+      window.alert(`${title}: ${message}`);
     } else {
-      Alert.alert('Zmazať inzerát', 'Naozaj chcete natrvalo odstrániť tento inzerát?', [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('profile.deleteBtn'), style: 'destructive', onPress: () => deleteListing(id) }
-      ]);
+      Alert.alert(title, message);
     }
   };
+
+  const confirmAction = (
+    title: string,
+    message: string,
+    confirmLabel: string,
+    onConfirm: () => void,
+    destructive = false
+  ) => {
+    if (Platform.OS === 'web') {
+      if (window.confirm(`${title}\n${message}`)) onConfirm();
+      return;
+    }
+    Alert.alert(title, message, [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: confirmLabel, style: destructive ? 'destructive' : 'default', onPress: onConfirm },
+    ]);
+  };
+
+  const handleDeleteListing = (id: string) =>
+    confirmAction(
+      t('profile.deleteConfirmTitle'),
+      t('profile.deleteConfirmBody'),
+      t('profile.deleteBtn'),
+      () => deleteListing(id),
+      true
+    );
+
+  const handleBoost = (id: string) =>
+    confirmAction(t('profile.boostBtn'), t('profile.boostConfirm'), t('profile.boostBtn'), async () => {
+      const result = await boostListing(id);
+      if (result === 'no-coins') {
+        notify(t('listingCard.insufficientFundsTitle'), t('profile.boostNoCoins'));
+      } else if (result === 'ok') {
+        notify(t('common.success'), t('profile.boostDone'));
+      }
+    });
+
+  const handleResolve = (id: string) =>
+    confirmAction(t('profile.resolveBtn'), t('profile.resolveConfirm'), t('profile.resolveBtn'), async () => {
+      const result = await resolveListing(id);
+      if (result.ok) {
+        notify(t('common.success'), result.rewarded ? t('profile.resolveRewarded') : t('profile.resolveNoReward'));
+      }
+    });
 
   return (
     <ThemedView style={styles.container}>
@@ -162,7 +262,7 @@ export default function WalletScreen() {
 
           {currentUser && (
             <View style={{ alignItems: 'flex-end', marginBottom: Spacing.four }}>
-              <ThemedText type="smallBold" themeColor="textSecondary">Prihlásený ako: {currentUser.name}</ThemedText>
+              <ThemedText type="smallBold" themeColor="textSecondary">{t('auth.loggedInAs', { name: currentUser.name })}</ThemedText>
               <Pressable onPress={logout} style={{ marginTop: Spacing.one }}>
                 <ThemedText type="smallBold" style={{ color: '#ff6b6b' }}>{t('profile.logout')}</ThemedText>
               </Pressable>
@@ -192,29 +292,6 @@ export default function WalletScreen() {
                 <ThemedText type="smallBold" style={{ marginTop: 2 }}>{myItems.length}</ThemedText>
               </View>
             </View>
-
-            {walletBalance < 1 ? (
-              <Pressable
-                onPress={() => {
-                  topUpWallet(50);
-                  setSuccessVisible(true);
-                  setTimeout(() => setSuccessVisible(false), 3000);
-                }}
-                style={({ pressed }) => [
-                  styles.topupButton,
-                  { backgroundColor: theme.text },
-                  pressed && { opacity: 0.8 }
-                ]}
-              >
-                <SymbolView tintColor={theme.background} name={{ ios: 'plus.circle.fill', android: 'add_circle', web: 'add_circle' } as any} size={20} style={{ marginRight: 8 }} />
-                <ThemedText type="smallBold" style={{ color: theme.background }}>{t('profile.topupBtn')}</ThemedText>
-              </Pressable>
-            ) : (
-              <View style={[styles.topupButton, { backgroundColor: theme.backgroundSelected, opacity: 0.6 }]}>
-                <SymbolView tintColor={theme.textSecondary} name={{ ios: 'lock.fill', android: 'lock', web: 'lock' } as any} size={20} style={{ marginRight: 8 }} />
-                <ThemedText type="smallBold" themeColor="textSecondary">{t('profile.enoughCoins')}</ThemedText>
-              </View>
-            )}
           </View>
 
           {/* Gamification Banner */}
@@ -277,10 +354,10 @@ export default function WalletScreen() {
             <View style={[styles.loginPrompt, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
               <SymbolView tintColor={theme.text} name={{ ios: 'lock.circle.fill', android: 'lock', web: 'lock' } as any} size={48} />
               <ThemedText type="subtitle" style={{ marginTop: Spacing.three, textAlign: 'center' }}>
-                Prihláste sa
+                {t('auth.loginRequiredTitle')}
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary" style={{ textAlign: 'center', marginTop: Spacing.one, marginBottom: Spacing.four }}>
-                Pre využívanie peňaženky Donx Pay a správu inzerátov sa musíte prihlásiť.
+                {t('auth.loginRequiredWallet')}
               </ThemedText>
               <Pressable
                 onPress={() => setLoginVisible(true)}
@@ -311,11 +388,12 @@ export default function WalletScreen() {
                 size={16}
               />
               <ThemedText type="smallBold" style={{ color: '#ff6b6b', marginLeft: Spacing.one }}>
-                Obnoviť dáta
+                {t('profile.resetData')}
               </ThemedText>
             </Pressable>
           </View>
 
+          {currentUser?.role === 'admin' && (
           <Pressable
             onPress={() => router.push('/admin')}
             style={({ pressed }) => [
@@ -330,11 +408,44 @@ export default function WalletScreen() {
               size={18}
             />
             <ThemedText type="smallBold" style={{ marginLeft: Spacing.one }}>
-              {t('profile.adminDashboardBtn') || 'Admin Dashboard'}
+              {t('profile.adminDashboardBtn')}
             </ThemedText>
           </Pressable>
+          )}
 
-          {/* My Active Listings Section */}
+          {/* Your own listings: boost, mark as handled, delete */}
+          <View style={[styles.unlockedSection, { marginTop: Spacing.four }]}>
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              {t('profile.myListingsSection').replace('%s', String(myItems.length))}
+            </ThemedText>
+
+            {myItems.length === 0 ? (
+              <View style={[styles.emptyBox, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+                <SymbolView
+                  tintColor={theme.textSecondary}
+                  name={{ ios: 'tray.fill', android: 'inbox', web: 'inbox' }}
+                  size={24}
+                />
+                <ThemedText type="smallBold" style={styles.emptyTitle}>
+                  {t('profile.noListings')}
+                </ThemedText>
+              </View>
+            ) : (
+              <View style={{ gap: Spacing.two }}>
+                {myItems.map((item) => (
+                  <MyListingItem
+                    key={item.id}
+                    listing={item}
+                    onDelete={() => handleDeleteListing(item.id)}
+                    onBoost={() => handleBoost(item.id)}
+                    onResolve={() => handleResolve(item.id)}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+
+          {/* Contacts you have unlocked */}
           <View style={[styles.unlockedSection, { marginTop: Spacing.four }]}>
             <ThemedText type="subtitle" style={styles.sectionTitle}>
               {t('profile.unlockedContactsSection').replace('%s', String(unlockedItems.length))}
@@ -442,7 +553,7 @@ export default function WalletScreen() {
                     </ThemedText>
                     <View style={[styles.contactBox, { backgroundColor: theme.backgroundSelected, marginTop: Spacing.two }]}>
                       <ThemedText type="small" numberOfLines={1} style={{ fontStyle: 'italic' }}>
-                        {lastMsg ? `${lastMsg.sender === 'me' ? 'Ja' : 'Predajca'}: ${lastMsg.mediaUri ? (lastMsg.mediaType === 'image' ? t('chat.imageAttachment') : t('chat.videoAttachment')) : lastMsg.text}` : 'Žiadne správy'}
+                        {lastMsg ? `${lastMsg.sender === 'me' ? t('profile.meLabel') : t('profile.sellerLabel')}: ${lastMsg.mediaUri ? (lastMsg.mediaType === 'image' ? t('chat.imageAttachment') : t('chat.videoAttachment')) : lastMsg.text}` : t('profile.noMessages')}
                       </ThemedText>
                     </View>
                   </Pressable>
@@ -621,13 +732,6 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     height: 40,
-  },
-  topupButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Spacing.three,
-    borderRadius: Spacing.three,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -821,13 +925,27 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   myListingCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     borderWidth: 1,
     borderRadius: Spacing.three,
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
+    gap: Spacing.two,
+  },
+  myListingTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  myListingActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+  },
+  actionChip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
   },
   deleteListingBtn: {
     padding: Spacing.two,

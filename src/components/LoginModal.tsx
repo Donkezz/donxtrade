@@ -40,47 +40,41 @@ export const LoginModal = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ThemedView style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            // Without this the first tap while the keyboard is up only dismisses the keyboard,
+            // so the login button needed two taps.
+            keyboardShouldPersistTaps="handled"
+          >
             <View style={styles.header}>
-              <ThemedText type="subtitle">{mode === 'login' ? 'Prihlásenie' : 'Vytvoriť účet'}</ThemedText>
-              <Pressable onPress={() => setLoginVisible(false)} style={styles.closeBtn}>
+              <ThemedText type="subtitle">{mode === 'login' ? t('auth.loginTitle') : t('auth.registerTitle')}</ThemedText>
+              <Pressable
+                onPress={() => setLoginVisible(false)}
+                style={styles.closeBtn}
+                accessibilityRole="button"
+                accessibilityLabel={t('a11y.close')}
+              >
                 <SymbolView tintColor={theme.textSecondary} name={{ ios: 'xmark.circle.fill', android: 'cancel', web: 'cancel' } as any} size={24} />
               </Pressable>
             </View>
 
             <View style={styles.content}>
-              {/* Social Logins */}
-              <View style={styles.socialContainer}>
-                {Platform.OS === 'ios' && (
-                  <Pressable style={[styles.socialBtn, { backgroundColor: '#000000' }]}>
-                    <SymbolView tintColor="#ffffff" name={{ ios: 'applelogo', android: 'person', web: 'person' } as any} size={20} />
-                    <ThemedText style={{ color: '#ffffff', marginLeft: Spacing.two, fontWeight: 'bold' }}>Pokračovať s Apple</ThemedText>
-                  </Pressable>
-                )}
-
-                <Pressable style={[styles.socialBtn, { backgroundColor: '#ffffff', borderColor: '#e0e0e0', borderWidth: 1 }]}>
-                  <ThemedText style={{ color: '#000000', fontWeight: 'bold' }}>G  Pokračovať s Google</ThemedText>
-                </Pressable>
-
-                <Pressable style={[styles.socialBtn, { backgroundColor: '#1877F2' }]}>
-                  <ThemedText style={{ color: '#ffffff', fontWeight: 'bold' }}>f  Pokračovať s Facebook</ThemedText>
-                </Pressable>
-              </View>
-
-              <View style={styles.dividerContainer}>
-                <View style={[styles.dividerLine, { backgroundColor: theme.backgroundSelected }]} />
-                <ThemedText style={{ marginHorizontal: Spacing.two }} themeColor="textSecondary">alebo</ThemedText>
-                <View style={[styles.dividerLine, { backgroundColor: theme.backgroundSelected }]} />
+              {/* There is no server yet — be upfront that this is a local demo profile. */}
+              <View style={[styles.demoNotice, { backgroundColor: theme.backgroundElement }]}>
+                <ThemedText type="small" themeColor="textSecondary" style={{ textAlign: 'center' }}>
+                  {t('auth.demoNotice')}
+                </ThemedText>
               </View>
 
               {/* Email / Password */}
               <ThemedText style={{ textAlign: 'center', marginBottom: Spacing.three }} themeColor="textSecondary" type="small">
-                Použiť e-mail alebo telefónne číslo
+                {t('auth.useEmail')}
               </ThemedText>
 
               <TextInput
                 style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
-                placeholder="E-mail alebo telefón (Demo: admin)"
+                placeholder={t('auth.emailPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 value={email}
                 onChangeText={setEmail}
@@ -89,7 +83,7 @@ export const LoginModal = () => {
 
               <TextInput
                 style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
-                placeholder="Heslo (Demo: hocičo)"
+                placeholder={t('auth.passwordPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 value={password}
                 onChangeText={setPassword}
@@ -105,7 +99,7 @@ export const LoginModal = () => {
                 ]}
               >
                 <ThemedText type="smallBold" style={{ color: theme.background }}>
-                  {mode === 'login' ? 'Prihlásiť sa' : 'Vytvoriť účet'}
+                  {mode === 'login' ? t('auth.loginBtn') : t('auth.registerBtn')}
                 </ThemedText>
               </Pressable>
 
@@ -115,9 +109,9 @@ export const LoginModal = () => {
                 onPress={() => setMode(mode === 'login' ? 'register' : 'login')}
               >
                 <ThemedText type="small" themeColor="textSecondary">
-                  {mode === 'login' ? 'Nemáte účet? ' : 'Už máte účet? '}
+                  {mode === 'login' ? `${t('auth.noAccount')} ` : `${t('auth.haveAccount')} `}
                   <ThemedText type="smallBold" themeColor="text">
-                    {mode === 'login' ? 'Vytvoriť' : 'Prihlásiť sa'}
+                    {mode === 'login' ? t('auth.toggleRegister') : t('auth.toggleLogin')}
                   </ThemedText>
                 </ThemedText>
               </Pressable>
@@ -151,25 +145,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  socialContainer: {
-    gap: Spacing.three,
-    marginBottom: Spacing.four,
-  },
-  socialBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 50,
+  demoNotice: {
     borderRadius: Spacing.two,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    padding: Spacing.three,
     marginBottom: Spacing.four,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
   },
   input: {
     height: 50,

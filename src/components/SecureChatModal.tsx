@@ -113,6 +113,8 @@ export const SecureChatModal: React.FC<SecureChatModalProps> = ({ visible, listi
 
           <Pressable 
             onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel={t('a11y.close')}
             style={({ pressed }) => [styles.closeButton, { backgroundColor: theme.backgroundElement }, pressed && styles.pressed]}
           >
             <SymbolView
@@ -132,7 +134,7 @@ export const SecureChatModal: React.FC<SecureChatModalProps> = ({ visible, listi
             style={{ marginRight: Spacing.two }}
           />
           <ThemedText type="small" themeColor="textSecondary" style={styles.securityText}>
-            {t('chat.securityBanner', 'Tento chat je bezpečne šifrovaný. Nikto iný nemá prístup k vašej komunikácii.')}
+            {t('chat.securityBanner')}
           </ThemedText>
         </View>
 
@@ -230,6 +232,8 @@ export const SecureChatModal: React.FC<SecureChatModalProps> = ({ visible, listi
             </View>
             <Pressable
               onPress={() => setSelectedMedia(null)}
+              accessibilityRole="button"
+              accessibilityLabel={t('a11y.removeMedia')}
               style={({ pressed }) => [styles.previewCloseBtn, pressed && { opacity: 0.7 }]}
             >
               <SymbolView tintColor={theme.textSecondary} name={{ ios: 'xmark.circle.fill', web: 'cancel' }} size={20} />
@@ -241,6 +245,8 @@ export const SecureChatModal: React.FC<SecureChatModalProps> = ({ visible, listi
         <View style={[styles.inputBar, { borderTopColor: theme.backgroundSelected, backgroundColor: theme.background }]}>
           <Pressable
             onPress={handlePickMedia}
+            accessibilityRole="button"
+            accessibilityLabel={t('a11y.attach')}
             style={({ pressed }) => [styles.attachButton, pressed && { opacity: 0.7 }]}
           >
             <SymbolView
@@ -260,6 +266,8 @@ export const SecureChatModal: React.FC<SecureChatModalProps> = ({ visible, listi
           />
           <Pressable
             onPress={handleSend}
+            accessibilityRole="button"
+            accessibilityLabel={t('a11y.send')}
             disabled={!inputText.trim() && !selectedMedia}
             style={({ pressed }) => [
               styles.sendButton,

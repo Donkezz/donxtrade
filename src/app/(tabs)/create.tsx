@@ -197,7 +197,7 @@ export default function CreateScreen() {
     setMediaModalVisible(false);
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      showAlert(t('common.warning'), "Aplikácia nemá prístup k fotoaparátu.");
+      showAlert(t('common.warning'), t('create.cameraDenied'));
       return;
     }
 
@@ -275,7 +275,7 @@ export default function CreateScreen() {
     setSubmitting(true);
 
     try {
-      await createListing({
+      const rewarded = await createListing({
         title: title.trim(),
         description: description.trim(),
         price: finalPrice,
@@ -307,11 +307,12 @@ export default function CreateScreen() {
       setContactInfo('');
       setMedia([]);
 
+      const successMessage = rewarded ? t('create.successRewarded') : t('create.successAlert');
       if (Platform.OS === 'web') {
-        window.alert(t('create.successAlert'));
+        window.alert(successMessage);
         router.push('/');
       } else {
-        Alert.alert(t('common.success'), t('create.successAlert'), [
+        Alert.alert(t('common.success'), successMessage, [
           { text: 'OK', onPress: () => router.push('/') }
         ]);
       }
@@ -333,8 +334,12 @@ export default function CreateScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        {/*
+          On iOS the ScrollView below adjusts for the keyboard itself, so padding here would
+          shrink the area twice. Android still needs the container to resize.
+        */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? undefined : 'height'}
           style={{ flex: 1 }}
         >
           <ScrollView
@@ -342,6 +347,9 @@ export default function CreateScreen() {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="interactive"
+            // Scrolls whichever field has focus above the keyboard — text fields included,
+            // not just the number fields that have a hand-written scroll below.
+            automaticallyAdjustKeyboardInsets
             contentContainerStyle={[
               styles.scrollContent,
               // Room to scroll the last fields clear of the keyboard.
@@ -360,10 +368,10 @@ export default function CreateScreen() {
             <View style={[styles.loginPrompt, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
               <SymbolView tintColor={theme.text} name={{ ios: 'lock.circle.fill', android: 'lock', web: 'lock' } as any} size={48} />
               <ThemedText type="subtitle" style={{ marginTop: Spacing.three, textAlign: 'center' }}>
-                Prihláste sa
+                {t('auth.loginRequiredTitle')}
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary" style={{ textAlign: 'center', marginTop: Spacing.one, marginBottom: Spacing.four }}>
-                Pre pridávanie nových inzerátov sa musíte prihlásiť.
+                {t('auth.loginRequiredCreate')}
               </ThemedText>
               <Pressable
                 onPress={() => setLoginVisible(true)}
@@ -373,7 +381,7 @@ export default function CreateScreen() {
                   pressed && { opacity: 0.8 }
                 ]}
               >
-                <ThemedText type="smallBold" style={{ color: theme.background }}>Prihlásiť sa</ThemedText>
+                <ThemedText type="smallBold" style={{ color: theme.background }}>{t('auth.loginBtn')}</ThemedText>
               </Pressable>
             </View>
           ) : (
@@ -408,7 +416,7 @@ export default function CreateScreen() {
           {/* Category Chips */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 2 }}>
             <ThemedText type="smallBold" style={styles.label}>{t('create.categoryLabel')}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary" style={{ opacity: 0.6, fontSize: 11, marginBottom: 8 }}>Potiahnite pre viac 👉</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={{ opacity: 0.6, fontSize: 11, marginBottom: 8 }}>{t('marketplace.swipeHint')} 👉</ThemedText>
           </View>
           <ScrollView 
             horizontal 
@@ -447,24 +455,36 @@ export default function CreateScreen() {
           </ScrollView>
 
           {/* Text Inputs */}
-          <View style={styles.formGroup}>
+          <View
+            style={styles.formGroup}
+            onLayout={(event) => {
+              fieldOffsets.current.title = event.nativeEvent.layout.y;
+            }}
+          >
             <ThemedText type="smallBold" style={styles.label}>{t('create.titleLabel')}</ThemedText>
             <TextInput
               placeholder={t('create.titlePlaceholder')}
               placeholderTextColor={theme.textSecondary}
               value={title}
               onChangeText={setTitle}
+              onFocus={() => focusField('title')}
               style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
             />
           </View>
 
-          <View style={styles.formGroup}>
+          <View
+            style={styles.formGroup}
+            onLayout={(event) => {
+              fieldOffsets.current.description = event.nativeEvent.layout.y;
+            }}
+          >
             <ThemedText type="smallBold" style={styles.label}>{t('create.descLabel')}</ThemedText>
             <TextInput
               placeholder={t('create.descPlaceholder')}
               placeholderTextColor={theme.textSecondary}
               value={description}
               onChangeText={setDescription}
+              onFocus={() => focusField('description')}
               multiline
               numberOfLines={3}
               style={[styles.input, styles.textArea, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
@@ -493,7 +513,7 @@ export default function CreateScreen() {
                 {media.map((item, idx) => (
                   <View key={idx} style={[styles.thumbnailWrapper, { borderColor: theme.backgroundSelected }]}>
                     <Image source={{ uri: item.uri }} style={styles.thumbnail} />
-                    <Pressable onPress={() => removeMedia(idx)} style={styles.deleteBadge}>
+                    <Pressable onPress={() => removeMedia(idx)} style={styles.deleteBadge} accessibilityRole="button" accessibilityLabel={t('a11y.removeMedia')}>
                       <SymbolView tintColor="#ffffff" name={{ ios: 'xmark.circle.fill', web: 'cancel' }} size={16} />
                     </Pressable>
                     {item.type === 'video' && (
@@ -655,7 +675,12 @@ export default function CreateScreen() {
           </View>
 
           {/* Location */}
-          <View style={styles.formGroup}>
+          <View
+            style={styles.formGroup}
+            onLayout={(event) => {
+              fieldOffsets.current.location = event.nativeEvent.layout.y;
+            }}
+          >
             <ThemedText type="smallBold" style={styles.label}>{t('create.locationLabel')}</ThemedText>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TextInput
@@ -663,10 +688,13 @@ export default function CreateScreen() {
                 placeholderTextColor={theme.textSecondary}
                 value={location}
                 onChangeText={setLocation}
+                onFocus={() => focusField('location')}
                 style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
               />
               <Pressable
                 onPress={() => setMapVisible(true)}
+                accessibilityRole="button"
+                accessibilityLabel={t('map.title')}
                 style={({ pressed }) => [
                   styles.mapIconBtn,
                   { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
@@ -688,6 +716,9 @@ export default function CreateScreen() {
             </View>
             <Pressable
               onPress={() => setIsAnonymous(!isAnonymous)}
+              accessibilityRole="checkbox"
+              accessibilityLabel={t('create.anonymLabel')}
+              accessibilityState={{ checked: isAnonymous }}
               style={[
                 styles.checkbox,
                 { borderColor: theme.textSecondary },
@@ -715,7 +746,7 @@ export default function CreateScreen() {
               ]}
             >
               <ThemedText type="smallBold" themeColor={contactType === 'chat' ? 'text' : 'textSecondary'}>
-                🔒 Súkromný čet
+                {t('create.contactChat')}
               </ThemedText>
             </Pressable>
             <Pressable
@@ -726,33 +757,45 @@ export default function CreateScreen() {
               ]}
             >
               <ThemedText type="smallBold" themeColor={contactType === 'phone' ? 'text' : 'textSecondary'}>
-                Telefón / E-mail
+                {t('create.contactPhone')}
               </ThemedText>
             </Pressable>
           </View>
 
           {/* Contact Details */}
           {!isAnonymous && (
-            <View style={styles.formGroup}>
+            <View
+              style={styles.formGroup}
+              onLayout={(event) => {
+                fieldOffsets.current.ownerName = event.nativeEvent.layout.y;
+              }}
+            >
               <ThemedText type="smallBold" style={styles.label}>{t('create.myRealNameLabel')}</ThemedText>
               <TextInput
                 placeholder={t('create.myRealNamePlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 value={ownerName}
                 onChangeText={setOwnerName}
+                onFocus={() => focusField('ownerName')}
                 style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
               />
             </View>
           )}
 
           {contactType === 'phone' ? (
-            <View style={styles.formGroup}>
+            <View
+              style={styles.formGroup}
+              onLayout={(event) => {
+                fieldOffsets.current.contactInfo = event.nativeEvent.layout.y;
+              }}
+            >
               <ThemedText type="smallBold" style={styles.label}>{t('create.contactInfoLabel')}</ThemedText>
               <TextInput
                 placeholder={t('create.contactInfoPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 value={contactInfo}
                 onChangeText={setContactInfo}
+                onFocus={() => focusField('contactInfo')}
                 style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
               />
               <ThemedText type="small" themeColor="textSecondary" style={styles.helpText}>
@@ -794,12 +837,12 @@ export default function CreateScreen() {
             </Pressable>
           ) : (
             <View style={[styles.loginPrompt, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-              <ThemedText style={{ marginBottom: Spacing.two }}>Na vytvorenie inzerátu sa musíte prihlásiť.</ThemedText>
+              <ThemedText style={{ marginBottom: Spacing.two }}>{t('auth.loginRequiredCreate')}</ThemedText>
               <Pressable
                 onPress={() => setLoginVisible(true)}
                 style={[styles.primaryButton, { backgroundColor: theme.text }]}
               >
-                <ThemedText style={{ color: theme.background, fontWeight: 'bold' }}>Prihlásiť sa</ThemedText>
+                <ThemedText style={{ color: theme.background, fontWeight: 'bold' }}>{t('auth.loginBtn')}</ThemedText>
               </Pressable>
             </View>
           )}
@@ -863,25 +906,25 @@ export default function CreateScreen() {
     >
       <Pressable style={styles.modalOverlay} onPress={() => setMediaModalVisible(false)}>
         <View style={[styles.modalContent, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-          <ThemedText type="smallBold" style={styles.modalTitle}>Pridať prílohu</ThemedText>
+          <ThemedText type="smallBold" style={styles.modalTitle}>{t('create.attachTitle')}</ThemedText>
           
           <Pressable style={styles.modalItem} onPress={handleTakePhoto}>
             <SymbolView tintColor={theme.text} name={{ ios: 'camera.fill', web: 'camera_alt' }} size={20} />
-            <ThemedText type="smallBold" style={styles.modalItemText}>Fotoaparát (odfotiť a orezať)</ThemedText>
+            <ThemedText type="smallBold" style={styles.modalItemText}>{t('create.attachCamera')}</ThemedText>
           </Pressable>
 
           <Pressable style={styles.modalItem} onPress={handlePickFromGallery}>
             <SymbolView tintColor={theme.text} name={{ ios: 'photo.on.rectangle.angled', web: 'photo_library' }} size={20} />
-            <ThemedText type="smallBold" style={styles.modalItemText}>Galéria fotiek a videí</ThemedText>
+            <ThemedText type="smallBold" style={styles.modalItemText}>{t('create.attachGallery')}</ThemedText>
           </Pressable>
 
           <Pressable style={styles.modalItem} onPress={handlePickDocument}>
             <SymbolView tintColor={theme.text} name={{ ios: 'doc.text.fill', web: 'insert_drive_file' }} size={20} />
-            <ThemedText type="smallBold" style={styles.modalItemText}>Súbory z pamäte mobilu</ThemedText>
+            <ThemedText type="smallBold" style={styles.modalItemText}>{t('create.attachFiles')}</ThemedText>
           </Pressable>
 
           <Pressable style={[styles.modalItem, { borderBottomWidth: 0, justifyContent: 'center' }]} onPress={() => setMediaModalVisible(false)}>
-            <ThemedText type="smallBold" style={{ color: '#ff6b6b' }}>Zrušiť</ThemedText>
+            <ThemedText type="smallBold" style={{ color: '#ff6b6b' }}>{t('common.cancel')}</ThemedText>
           </Pressable>
         </View>
       </Pressable>

@@ -47,7 +47,10 @@
     "onboardingStep3Text": "Secure chat and contact unlocking keep the experience safe and trustworthy.",
     "nextStep": "Next",
     "categoriesLabel": "Categories",
-    "swipeHint": "Swipe for more"
+    "swipeHint": "Swipe for more",
+    "nearMe": "Near me",
+    "nearMeDenied": "We need your location to sort by distance. You can allow it in Settings.",
+    "topBadge": "TOP"
   },
   "navigation": {
     "marketplace": "Offers",
@@ -108,7 +111,15 @@
     "preset12Hours": "12 hours",
     "preset1Day": "1 day",
     "preset3Days": "3 days",
-    "preset7Days": "7 days"
+    "preset7Days": "7 days",
+    "attachTitle": "Add attachment",
+    "attachCamera": "Camera (take and crop a photo)",
+    "attachGallery": "Photo and video library",
+    "attachFiles": "Files on this phone",
+    "cameraDenied": "The app has no access to the camera.",
+    "contactChat": "🔒 Private chat",
+    "contactPhone": "Phone / Email",
+    "successRewarded": "Listing published. +1 🪙 added"
   },
   "profile": {
     "title": "Profile & Wallet",
@@ -116,7 +127,6 @@
     "demoCardLabel": "Demo User",
     "demoBalanceLabel": "Play Balance",
     "dailyBonusTitle": "Wheel of Fortune (Daily Bonus)",
-    "topupBtn": "Add coins",
     "resetBtn": "Reset All Data",
     "resetConfirm": "Clear history and your listings, and reset the balance to 50 🪙?",
     "myListingsSection": "My Active Listings (%s)",
@@ -132,7 +142,6 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "themeSystem": "System",
-    "topupSuccess": "Coins added (+50 🪙)",
     "txBonus": "Daily Bonus",
     "txTopup": "Coins added",
     "txUnlock": "Unlock Contact",
@@ -150,13 +159,31 @@
     "statEarned": "Earned",
     "statUnlocked": "Unlocked",
     "statMyListings": "My listings",
-    "enoughCoins": "You have enough coins",
     "logout": "Log out",
     "profileTitle": "My profile",
     "profileSubtitle": "Your details and settings",
     "earnMoreTitle": "How to earn more coins?",
     "earnMoreSub": "Find out how to unlock contacts without paying.",
-    "login": "Log in"
+    "login": "Log in",
+    "deleteConfirmTitle": "Delete listing",
+    "deleteConfirmBody": "Permanently delete this listing?",
+    "resetData": "Reset data",
+    "meLabel": "Me",
+    "sellerLabel": "Seller",
+    "noMessages": "No messages",
+    "spinning": "Spinning...",
+    "spinBtn": "Spin!",
+    "nextSpinText": "Next spin in 24 h",
+    "boostBtn": "Boost · 5 🪙",
+    "boostedUntil": "TOP until {{time}}",
+    "boostConfirm": "Move to the top of the board for 24 hours for 5 🪙?",
+    "boostDone": "Your listing is at the top of the board.",
+    "boostNoCoins": "You need 5 🪙 to boost.",
+    "resolveBtn": "Mark as done",
+    "resolveConfirm": "Mark as done? The listing will leave the board.",
+    "resolveRewarded": "Marked as done. +5 🪙 added",
+    "resolveNoReward": "Marked as done. Today's reward limit is used up.",
+    "adminDashboardBtn": "Admin dashboard"
   },
   "listingCard": {
     "priceLabel": "Price",
@@ -180,13 +207,80 @@
     "unlockedInfoName": "Name",
     "unlockedInfoVal": "Contact",
     "imageAttachment": "📷 Photo",
-    "videoAttachment": "🎥 Video"
+    "videoAttachment": "🎥 Video",
+    "securityBanner": "Demo chat: replies are automatic and nothing is sent anywhere."
   },
   "admin": {
     "title": "App overview",
     "listings": "Listings",
     "topups": "Top-ups",
     "categorySplit": "Category split",
-    "activityMap": "User activity map"
+    "activityMap": "User activity map",
+    "weeklyActivity": "Weekly activity (number of actions)",
+    "mapUnavailable": "The map is not available in the web view."
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Create account",
+    "useEmail": "Use your email or phone number",
+    "emailPlaceholder": "Email or phone (Demo: admin)",
+    "passwordPlaceholder": "Password (Demo: anything)",
+    "loginBtn": "Log in",
+    "registerBtn": "Create account",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "toggleRegister": "Create one",
+    "toggleLogin": "Log in",
+    "demoNotice": "Demo account: it is stored only on this phone and the password is not checked.",
+    "loginRequiredTitle": "Log in",
+    "loginRequiredCreate": "You need to log in to post a listing.",
+    "loginRequiredWallet": "Log in to manage your listings and coins.",
+    "loggedInAs": "Logged in as: {{name}}"
+  },
+  "map": {
+    "title": "Pick on map",
+    "webUnavailable": "Maps are not available in a web browser.",
+    "pick": "Choose a location",
+    "selected": "Selected location:",
+    "dragHint": "Move the map...",
+    "permissionDenied": "Location access was denied.",
+    "locateFailed": "Could not get your current location.",
+    "unknownPlace": "Unknown place"
+  },
+  "errorScreen": {
+    "title": "Something went wrong",
+    "body": "The app hit an error. Trying again usually fixes it.",
+    "retry": "Try again",
+    "reset": "Delete app data and restart",
+    "resetTitle": "Delete app data?",
+    "resetMessage": "This removes your listings, coins and settings from this phone and starts fresh.",
+    "resetConfirm": "Delete and restart"
+  },
+  "a11y": {
+    "close": "Close",
+    "like": "Like",
+    "unlike": "Remove like",
+    "share": "Share",
+    "language": "Change language",
+    "wallet": "Wallet, balance {{coins}}",
+    "clearSearch": "Clear search",
+    "deleteListing": "Delete listing",
+    "removeMedia": "Remove attachment",
+    "openListing": "Open listing: {{title}}",
+    "send": "Send",
+    "attach": "Add attachment",
+    "locateMe": "Use my location"
+  },
+  "gamification": {
+    "title": "Donx coins",
+    "hello": "Welcome to Donx: buy, sell and collect coins!",
+    "intro": "Donx is not like ordinary classifieds. Browsing and posting listings is free. Coins are only for unlocking a contact and for boosting, and you earn them by being active.",
+    "s1Title": "1. Starter pack: 50 🪙",
+    "s1Text": "Unlocking one contact costs 1 🪙, so that covers 50 contacts.",
+    "s2Title": "2. Earn by being active",
+    "s2Text": "+1 🪙 for every new listing (up to 3 a day)\n+5 🪙 when you mark a listing as done (up to 2 a day)\nPlus the daily wheel: 1 to 15 🪙",
+    "s3Title": "3. Get noticed",
+    "s3Text": "For 5 🪙 your listing jumps to the top of the board for 24 hours.",
+    "cta": "Got it"
   }
 }

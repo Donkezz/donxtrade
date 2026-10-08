@@ -31,11 +31,13 @@ export const MapPickerModal: React.FC<MapPickerModalProps> = ({ visible, onClose
   const [currentAddress, setCurrentAddress] = useState('');
   const [locationGranted, setLocationGranted] = useState(false);
 
-  // Request permissions on mount
+  // Only *read* the permission here. This component is mounted for as long as the
+  // create screen is, so asking on mount fired the system dialog at app launch with
+  // no context. The prompt now appears when the user taps "use my location".
   useEffect(() => {
     (async () => {
       if (Platform.OS === 'web') return;
-      const { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.getForegroundPermissionsAsync();
       setLocationGranted(status === 'granted');
     })();
   }, []);
@@ -44,7 +46,7 @@ export const MapPickerModal: React.FC<MapPickerModalProps> = ({ visible, onClose
     if (!locationGranted) {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Chyba', 'Prístup k polohe bol zamietnutý.');
+        Alert.alert(t('common.error'), t('map.permissionDenied'));
         return;
       }
       setLocationGranted(true);
@@ -61,7 +63,7 @@ export const MapPickerModal: React.FC<MapPickerModalProps> = ({ visible, onClose
       });
     } catch (e) {
       console.error(e);
-      Alert.alert('Chyba', 'Nepodarilo sa získať aktuálnu polohu.');
+      Alert.alert(t('common.error'), t('map.locateFailed'));
     } finally {
       setLoadingAddress(false);
     }
@@ -95,7 +97,7 @@ export const MapPickerModal: React.FC<MapPickerModalProps> = ({ visible, onClose
       }
     } catch (e) {
       console.error('Geocode error:', e);
-      setCurrentAddress('Neznáma lokalita');
+      setCurrentAddress(t('map.unknownPlace'));
     } finally {
       setLoadingAddress(false);
     }
@@ -110,13 +112,13 @@ export const MapPickerModal: React.FC<MapPickerModalProps> = ({ visible, onClose
       <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
         <ThemedView style={styles.container}>
           <View style={styles.header}>
-            <ThemedText type="subtitle">Výber z mapy</ThemedText>
-            <Pressable onPress={onClose} style={styles.closeBtn}>
+            <ThemedText type="subtitle">{t('map.title')}</ThemedText>
+            <Pressable onPress={onClose} style={styles.closeBtn} accessibilityRole="button" accessibilityLabel={t('a11y.close')}>
               <SymbolView tintColor={theme.textSecondary} name={{ ios: 'xmark.circle.fill', android: 'cancel', web: 'cancel' } as any} size={24} />
             </Pressable>
           </View>
           <View style={[styles.content, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
-            <ThemedText style={{ textAlign: 'center' }}>Mapy nie sú dostupné vo webovom prehliadači.</ThemedText>
+            <ThemedText style={{ textAlign: 'center' }}>{t('map.webUnavailable')}</ThemedText>
           </View>
         </ThemedView>
       </Modal>
@@ -133,8 +135,8 @@ export const MapPickerModal: React.FC<MapPickerModalProps> = ({ visible, onClose
       <ThemedView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <ThemedText type="subtitle">Vyberte lokalitu</ThemedText>
-          <Pressable onPress={onClose} style={styles.closeBtn}>
+          <ThemedText type="subtitle">{t('map.pick')}</ThemedText>
+          <Pressable onPress={onClose} style={styles.closeBtn} accessibilityRole="button" accessibilityLabel={t('a11y.close')}>
             <SymbolView tintColor={theme.textSecondary} name={{ ios: 'xmark.circle.fill', android: 'cancel', web: 'cancel' } as any} size={24} />
           </Pressable>
         </View>
@@ -161,6 +163,8 @@ export const MapPickerModal: React.FC<MapPickerModalProps> = ({ visible, onClose
           <Pressable 
             style={[styles.locateBtn, { backgroundColor: theme.backgroundElement, shadowColor: theme.text }]} 
             onPress={handleLocateMe}
+            accessibilityRole="button"
+            accessibilityLabel={t('a11y.locateMe')}
           >
             <SymbolView tintColor={theme.text} name={{ ios: 'location.fill', android: 'my_location', web: 'my_location' } as any} size={20} />
           </Pressable>
@@ -169,11 +173,11 @@ export const MapPickerModal: React.FC<MapPickerModalProps> = ({ visible, onClose
         {/* Bottom Panel */}
         <View style={[styles.bottomPanel, { backgroundColor: theme.background, borderTopColor: theme.backgroundSelected }]}>
           <View style={{ flex: 1, marginRight: Spacing.two }}>
-            <ThemedText type="small" themeColor="textSecondary">Zvolená lokalita:</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">{t('map.selected')}</ThemedText>
             {loadingAddress ? (
               <ActivityIndicator size="small" color={theme.text} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
             ) : (
-              <ThemedText type="smallBold" numberOfLines={1}>{currentAddress || 'Presuňte mapu...'}</ThemedText>
+              <ThemedText type="smallBold" numberOfLines={1}>{currentAddress || t('map.dragHint')}</ThemedText>
             )}
           </View>
 
@@ -187,7 +191,7 @@ export const MapPickerModal: React.FC<MapPickerModalProps> = ({ visible, onClose
               (loadingAddress || !currentAddress) && { opacity: 0.5 }
             ]}
           >
-            <ThemedText type="smallBold" style={{ color: theme.background }}>Potvrdiť</ThemedText>
+            <ThemedText type="smallBold" style={{ color: theme.background }}>{t('common.confirm')}</ThemedText>
           </Pressable>
         </View>
 

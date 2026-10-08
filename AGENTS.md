@@ -27,7 +27,7 @@ krajín. Nikdy nepredpokladaj jeden jazyk, jednu krajinu, jednu menu ani jeden
 formát dátumu.
 
 - **Žiadny text pre používateľa priamo v kóde.** Všetko cez `t()` a do všetkých
-  piatich locale súborov v `src/i18n/` (`sk`, `en`, `pl`, `hu`, `uk`). Kľúč
+  šiestich locale súborov v `src/i18n/` (`sk`, `en`, `pl`, `hu`, `uk`, `de`). Kľúč
   doplnený len do jedného súboru je nedokončená zmena.
 - **Žiadna natvrdo napísaná mena.** Žiadne `€`, žiadny predpokladaný počet
   desatinných miest. Suma je hodnota plus kód meny, formátovaná cez
@@ -133,10 +133,23 @@ TestFlight ide interným testerom, App Store komukoľvek.
 - Mince sa nepredávajú a predávať sa nebudú, kým na to nie je živnosť. Žiadne
   in-app purchase, žiadne reálne platby. Označenie „fiktívne kredity" v textoch
   je pravdivé a má tam zostať.
-- Nekonečné dobitie zadarmo v profile (`topUpWallet`) je dočasná barla. Kým
-  neexistuje zarábanie mincí za aktivitu, je to jediný zdroj — a zároveň dôvod,
-  prečo mince nemajú hodnotu. Nahradiť, nie len odobrať.
-- `src/components/ui/WheelPicker.tsx` už nikto nepoužíva
-- V `src/app/create.tsx` zostáva sedem slovenských textov mimo i18n
+- **Appka nemá server.** Všetko je v `AsyncStorage` na jednom telefóne, takže
+  inzerát, ktorý niekto pridá, nikto iný neuvidí. Chat je skript (automatické
+  odpovede podľa kľúčových slov) a prihlásenie nekontroluje heslo — kto zadá
+  `admin`, dostane rolu admin. Prihlasovacie okno a chat to používateľovi
+  priamo hovoria. Zarábanie mincí za *potvrdenú dohodu* sa nedá postaviť
+  poctivo, kým obe strany nie sú dve rôzne zariadenia: najprv backend.
+- Ekonomika mincí žije v `src/constants/economy.ts`. Tie isté čísla sú aj
+  v textoch (`gamification.*`, `profile.boost*`), lebo každý jazyk ich píše
+  po svojom — pri zmene hodnoty uprav všetkých šesť locale súborov, inak úvodné
+  okno sľúbi iné, než appka urobí.
+- Bezplatné dobitie mincí neexistuje. Mince sa zarábajú (nový inzerát, vybavený
+  inzerát, denné koleso) alebo sa vrátia tlačidlom „Obnoviť dáta", ktoré slúži
+  testerom.
+- V `src/context/AppContext.tsx` zostáva po slovensky demo obsah — štyri ukážkové
+  inzeráty a skriptované odpovede chatu. Sú to dáta, nie rozhranie, ale
+  nemecký používateľ ich uvidí po slovensky.
+- `src/components/ui/WheelPicker.tsx`, `src/app/(tabs)/explore.tsx` a
+  `src/components/ScratchCard.tsx` už nikto nepoužíva
 - `src/components/animated-icon.web.tsx` a `src/constants/theme.ts` majú
   zastubované importy CSS súborov, ktoré existujú → rozbité štýly na webe

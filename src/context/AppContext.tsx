@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 import i18n from '@/i18n';
+import { ECONOMY } from '@/constants/economy';
 
 export type ListingCategory = 'anything' | 'clothing' | 'material' | 'kids' | 'men' | 'women' | 'service' | 'meeting' | 'tickets' | 'electronics' | 'home' | 'pets' | 'sport' | 'auto';
 export type ListingType = 'supply' | 'demand';
@@ -32,6 +33,8 @@ export interface Listing {
   media?: ListingMedia[];
   isMine?: boolean; // True if created by current user
   isDemo?: boolean; // True if initial mock listing
+  boostedUntil?: string; // ISO time until which the listing is pinned to the top of the board
+  resolvedAt?: string; // ISO time the owner marked it handled; resolved listings leave the board
   likes: number;
   isLiked: boolean;
 }
@@ -55,7 +58,7 @@ export interface ChatConversation {
 
 export interface Transaction {
   id: string;
-  type: 'bonus' | 'topup' | 'unlock' | 'create';
+  type: 'bonus' | 'topup' | 'unlock' | 'create' | 'resolve' | 'boost';
   amount: number;
   timestamp: string;
   listingTitle?: string;
@@ -78,10 +81,13 @@ interface AppContextType {
   lastClaimedBonus: string | null;
   appLanguage: string;
   appTheme: 'light' | 'dark' | 'system';
-  createListing: (listing: Omit<Listing, 'id' | 'createdAt' | 'isMine' | 'likes' | 'isLiked'>) => Promise<void>;
+  /** Resolves to true when publishing earned the author a coin (the daily cap was not yet reached). */
+  createListing: (listing: Omit<Listing, 'id' | 'createdAt' | 'isMine' | 'likes' | 'isLiked'>) => Promise<boolean>;
   deleteListing: (id: string) => Promise<void>;
+  /** Marks one of your own listings handled. `rewarded` is false when the daily reward cap was used up. */
+  resolveListing: (id: string) => Promise<{ ok: boolean; rewarded: boolean }>;
+  boostListing: (id: string) => Promise<'ok' | 'no-coins' | 'invalid'>;
   unlockContact: (id: string) => Promise<boolean>;
-  topUpWallet: (amount?: number) => Promise<void>;
   startChat: (listingId: string, listingTitle: string, participantName: string) => Promise<void>;
   sendMessage: (listingId: string, text: string, media?: ListingMedia) => Promise<void>;
   claimDailyBonus: (amount: number) => Promise<boolean>; // returns true if claimed successfully
@@ -125,6 +131,8 @@ const getInitialListings = (): Listing[] => {
       category: 'sport',
       type: 'supply',
       location: 'Jasná - Chopok',
+      latitude: 48.9433,
+      longitude: 19.5845,
       expiresAt: new Date(now + 4 * 3600 * 1000).toISOString(), // 4 hours from now
       createdAt: new Date(now - 3600000).toISOString(),
       isAnonymous: true,
@@ -132,7 +140,7 @@ const getInitialListings = (): Listing[] => {
       contactType: 'chat',
       contactInfo: 'Súkromný chat Donx',
       isDemo: true,
-      isMine: true,
+      isMine: false,
       likes: 12,
       isLiked: false,
     },
@@ -144,6 +152,8 @@ const getInitialListings = (): Listing[] => {
       category: 'tickets',
       type: 'demand',
       location: 'Prešov, Amfiteáter',
+      latitude: 48.9984,
+      longitude: 21.2339,
       expiresAt: new Date(now + 8 * 3600 * 1000).toISOString(), // 8 hours from now
       createdAt: new Date(now - 7200000).toISOString(),
       isAnonymous: false,
@@ -151,7 +161,7 @@ const getInitialListings = (): Listing[] => {
       contactType: 'phone',
       contactInfo: '+421 905 123 456',
       isDemo: true,
-      isMine: true,
+      isMine: false,
       likes: 3,
       isLiked: true,
     },
@@ -164,6 +174,8 @@ const getInitialListings = (): Listing[] => {
       category: 'service',
       type: 'supply',
       location: 'Žilina, Mtská krytá plaváreň',
+      latitude: 49.2231,
+      longitude: 18.7394,
       expiresAt: new Date(now + 72 * 3600 * 1000).toISOString(), // 3 days from now
       createdAt: new Date(now - 14400000).toISOString(),
       isAnonymous: false,
@@ -171,7 +183,7 @@ const getInitialListings = (): Listing[] => {
       contactType: 'chat',
       contactInfo: 'Súkromný chat Donx',
       isDemo: true,
-      isMine: true,
+      isMine: false,
       likes: 8,
       isLiked: false,
     },
@@ -183,6 +195,8 @@ const getInitialListings = (): Listing[] => {
       category: 'meeting',
       type: 'demand',
       location: 'Vrbické pleso',
+      latitude: 49.07, // approximate — demo data
+      longitude: 19.6,
       expiresAt: new Date(now + 2 * 3600 * 1000).toISOString(), // 2 hours from now
       createdAt: new Date(now - 1800000).toISOString(),
       isAnonymous: false,
@@ -190,17 +204,61 @@ const getInitialListings = (): Listing[] => {
       contactType: 'phone',
       contactInfo: 'peter.beh@gmail.com',
       isDemo: true,
-      isMine: true,
+      isMine: false,
       likes: 4,
       isLiked: false,
     }
   ];
 };
 
+/**
+ * Brings demo listings saved by an older build up to date.
+ *
+ * They were seeded once, with a few hours of life, no coordinates and
+ * `isMine: true`. So they expired within a day and left the board empty, were
+ * counted as the user's own listings, and could not be sorted by distance. This
+ * runs on every load and only touches demo entries; listings the user created
+ * are never altered.
+ */
+const refreshDemoListings = (stored: Listing[]): { listings: Listing[]; changed: boolean } => {
+  const seed = getInitialListings();
+  const now = Date.now();
+  let changed = false;
+
+  const next = stored.map((item) => {
+    if (!item.isDemo) return item;
+    const fresh = seed.find((candidate) => candidate.id === item.id);
+    if (!fresh) return item;
+
+    const patch: Partial<Listing> = {};
+    if (item.isMine !== false) patch.isMine = false;
+    if (item.latitude === undefined) {
+      patch.latitude = fresh.latitude;
+      patch.longitude = fresh.longitude;
+    }
+    if (new Date(item.expiresAt).getTime() <= now) {
+      patch.expiresAt = fresh.expiresAt;
+      patch.createdAt = fresh.createdAt;
+    }
+    if (Object.keys(patch).length === 0) return item;
+
+    changed = true;
+    return { ...item, ...patch };
+  });
+
+  return { listings: next, changed };
+};
+
+const isToday = (iso: string) => new Date(iso).toDateString() === new Date().toDateString();
+
+/** How many times a given kind of reward has already been paid out today. */
+const rewardsPaidToday = (txs: Transaction[], type: Transaction['type']) =>
+  txs.filter((tx) => tx.type === type && tx.amount > 0 && isToday(tx.timestamp)).length;
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [unlockedListings, setUnlockedListings] = useState<string[]>([]);
-  const [walletBalance, setWalletBalance] = useState<number>(50);
+  const [walletBalance, setWalletBalance] = useState<number>(ECONOMY.startingCoins);
   const [chats, setChats] = useState<ChatConversation[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [lastClaimedBonus, setLastClaimedBonus] = useState<string | null>(null);
@@ -216,7 +274,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
    * one contact. Keeping them integer is what makes them work in a currency with
    * no decimal places, and what stops them reading as euros to the user.
    */
-  const unlockFee = 1;
+  const unlockFee = ECONOMY.unlockCost;
 
   // Load state from AsyncStorage
   useEffect(() => {
@@ -235,7 +293,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const initialListings = getInitialListings();
 
         if (storedListings) {
-          setListings(JSON.parse(storedListings));
+          const { listings: refreshed, changed } = refreshDemoListings(JSON.parse(storedListings));
+          setListings(refreshed);
+          if (changed) {
+            await AsyncStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify(refreshed));
+          }
         } else {
           setListings(initialListings);
           await AsyncStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify(initialListings));
@@ -250,8 +312,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (storedBalance) {
           setWalletBalance(parseFloat(storedBalance));
         } else {
-          setWalletBalance(50);
-          await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, '50');
+          setWalletBalance(ECONOMY.startingCoins);
+          await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, String(ECONOMY.startingCoins));
         }
 
         if (storedChats) {
@@ -345,7 +407,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const createListing = async (newListingData: Omit<Listing, 'id' | 'createdAt' | 'isMine' | 'likes' | 'isLiked'>) => {
+  const createListing = async (newListingData: Omit<Listing, 'id' | 'createdAt' | 'isMine' | 'likes' | 'isLiked'>): Promise<boolean> => {
     try {
       const newListing: Listing = {
         ...newListingData,
@@ -360,19 +422,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setListings(updatedListings);
       await AsyncStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify(updatedListings));
 
-      // Log Transaction
+      // Publishing earns a coin, but only a few times a day so the board is not
+      // flooded with throwaway listings.
+      const earned =
+        rewardsPaidToday(transactions, 'create') < ECONOMY.publishRewardsPerDay ? ECONOMY.publishReward : 0;
+
       const newTx: Transaction = {
         id: Math.random().toString(),
         type: 'create',
-        amount: 0.00,
+        amount: earned,
         timestamp: new Date().toISOString(),
         listingTitle: newListing.title
       };
       const updatedTxs = [newTx, ...transactions];
       setTransactions(updatedTxs);
       await AsyncStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updatedTxs));
+
+      if (earned > 0) {
+        const newBalance = walletBalance + earned;
+        setWalletBalance(newBalance);
+        await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, String(newBalance));
+      }
+      return earned > 0;
     } catch (error) {
       console.error('Failed to save listing:', error);
+      return false;
     }
   };
 
@@ -404,6 +478,80 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Also delete related chat threads if we want, or just leave them
     } catch (error) {
       console.error('Failed to delete listing:', error);
+    }
+  };
+
+  // Action: mark one of your own listings as handled. Pays a reward until the daily cap.
+  const resolveListing = async (id: string): Promise<{ ok: boolean; rewarded: boolean }> => {
+    const target = listings.find((l) => l.id === id);
+    // Demo listings are never the user's, so they can never be farmed for coins.
+    if (!target || !target.isMine || target.isDemo || target.resolvedAt) {
+      return { ok: false, rewarded: false };
+    }
+
+    try {
+      const now = new Date().toISOString();
+      const reward =
+        rewardsPaidToday(transactions, 'resolve') < ECONOMY.resolveRewardsPerDay ? ECONOMY.resolveReward : 0;
+
+      const updatedListings = listings.map((l) => (l.id === id ? { ...l, resolvedAt: now } : l));
+      const newTx: Transaction = {
+        id: Math.random().toString(),
+        type: 'resolve',
+        amount: reward,
+        timestamp: now,
+        listingTitle: target.title,
+      };
+      const updatedTxs = [newTx, ...transactions];
+      const newBalance = walletBalance + reward;
+
+      setListings(updatedListings);
+      setTransactions(updatedTxs);
+      setWalletBalance(newBalance);
+
+      await AsyncStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify(updatedListings));
+      await AsyncStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updatedTxs));
+      await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, String(newBalance));
+      return { ok: true, rewarded: reward > 0 };
+    } catch (error) {
+      console.error('Failed to resolve listing:', error);
+      return { ok: false, rewarded: false };
+    }
+  };
+
+  // Action: pin one of your own listings to the top of the board for a day.
+  const boostListing = async (id: string): Promise<'ok' | 'no-coins' | 'invalid'> => {
+    const target = listings.find((l) => l.id === id);
+    const now = Date.now();
+    if (!target || !target.isMine || target.isDemo || target.resolvedAt) return 'invalid';
+    if (new Date(target.expiresAt).getTime() <= now) return 'invalid';
+    if (target.boostedUntil && new Date(target.boostedUntil).getTime() > now) return 'invalid';
+    if (walletBalance < ECONOMY.boostCost) return 'no-coins';
+
+    try {
+      const boostedUntil = new Date(now + ECONOMY.boostHours * 3600 * 1000).toISOString();
+      const updatedListings = listings.map((l) => (l.id === id ? { ...l, boostedUntil } : l));
+      const newTx: Transaction = {
+        id: Math.random().toString(),
+        type: 'boost',
+        amount: -ECONOMY.boostCost,
+        timestamp: new Date(now).toISOString(),
+        listingTitle: target.title,
+      };
+      const updatedTxs = [newTx, ...transactions];
+      const newBalance = walletBalance - ECONOMY.boostCost;
+
+      setListings(updatedListings);
+      setTransactions(updatedTxs);
+      setWalletBalance(newBalance);
+
+      await AsyncStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify(updatedListings));
+      await AsyncStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updatedTxs));
+      await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, String(newBalance));
+      return 'ok';
+    } catch (error) {
+      console.error('Failed to boost listing:', error);
+      return 'invalid';
     }
   };
 
@@ -444,28 +592,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch (error) {
       console.error('Failed to unlock contact:', error);
       return false;
-    }
-  };
-
-  // Action: Top-up Wallet Balance
-  const topUpWallet = async (amount = 50) => {
-    try {
-      const newBalance = walletBalance + Math.round(amount);
-      setWalletBalance(newBalance);
-      await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, newBalance.toString());
-
-      // Log Transaction
-      const newTx: Transaction = {
-        id: Math.random().toString(),
-        type: 'topup',
-        amount,
-        timestamp: new Date().toISOString()
-      };
-      const updatedTxs = [newTx, ...transactions];
-      setTransactions(updatedTxs);
-      await AsyncStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updatedTxs));
-    } catch (error) {
-      console.error('Failed to top up wallet:', error);
     }
   };
 
@@ -630,7 +756,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       setListings(initialListings);
       setUnlockedListings([]);
-      setWalletBalance(50);
+      setWalletBalance(ECONOMY.startingCoins);
       setChats([]);
       setTransactions([]);
       setLastClaimedBonus(null);
@@ -639,7 +765,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       await i18n.changeLanguage('sk');
       
       await AsyncStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify(initialListings));
-      await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, '50');
+      await AsyncStorage.setItem(STORAGE_KEYS.BALANCE, String(ECONOMY.startingCoins));
     } catch (error) {
       console.error('Failed to reset state:', error);
     }
@@ -659,8 +785,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         appTheme,
         createListing,
         deleteListing,
+        resolveListing,
+        boostListing,
         unlockContact,
-        topUpWallet,
         startChat,
         sendMessage,
         claimDailyBonus,
