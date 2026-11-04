@@ -257,7 +257,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
 
         {/* Interaction Buttons */}
         <View style={styles.interactionGroup}>
-          <Pressable onPress={() => requireAuth(() => toggleLike(listing.id))} style={styles.iconButton}>
+          <Pressable
+            onPress={() => requireAuth(() => toggleLike(listing.id))}
+            style={styles.iconButton}
+            accessibilityRole="button"
+            accessibilityLabel={listing.isLiked ? t('a11y.unlike') : t('a11y.like')}
+          >
             <SymbolView 
               tintColor={listing.isLiked ? '#ff3b30' : theme.textSecondary} 
               name={{ ios: listing.isLiked ? 'heart.fill' : 'heart', android: listing.isLiked ? 'favorite' : 'favorite_border', web: listing.isLiked ? 'favorite' : 'favorite_border' } as any} 
@@ -268,7 +273,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
             </ThemedText>
           </Pressable>
 
-          <Pressable onPress={handleShare} style={styles.iconButton}>
+          <Pressable onPress={handleShare} style={styles.iconButton} accessibilityRole="button" accessibilityLabel={t('a11y.share')}>
             <SymbolView 
               tintColor={theme.textSecondary} 
               name={{ ios: 'square.and.arrow.up', android: 'share', web: 'share' } as any} 

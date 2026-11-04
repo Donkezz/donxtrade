@@ -47,7 +47,10 @@
     "onboardingStep3Text": "Bezpieczny czat i odblokowanie kontaktu zapewniają kontrolę i zaufanie.",
     "nextStep": "Dalej",
     "categoriesLabel": "Kategorie",
-    "swipeHint": "Przesuń dalej"
+    "swipeHint": "Przesuń dalej",
+    "nearMe": "W pobliżu",
+    "nearMeDenied": "Do sortowania wg odległości potrzebujemy twojej lokalizacji. Możesz ją włączyć w Ustawieniach.",
+    "topBadge": "TOP"
   },
   "navigation": {
     "marketplace": "Oferty",
@@ -108,7 +111,15 @@
     "preset12Hours": "12 godzin",
     "preset1Day": "1 dzień",
     "preset3Days": "3 dni",
-    "preset7Days": "7 dni"
+    "preset7Days": "7 dni",
+    "attachTitle": "Dodaj załącznik",
+    "attachCamera": "Aparat (zrób i przytnij zdjęcie)",
+    "attachGallery": "Galeria zdjęć i filmów",
+    "attachFiles": "Pliki z telefonu",
+    "cameraDenied": "Aplikacja nie ma dostępu do aparatu.",
+    "contactChat": "🔒 Czat prywatny",
+    "contactPhone": "Telefon / E-mail",
+    "successRewarded": "Ogłoszenie opublikowane. Dodano +1 🪙"
   },
   "profile": {
     "title": "Profil i Portfel",
@@ -116,7 +127,6 @@
     "demoCardLabel": "Użytkownik Demo",
     "demoBalanceLabel": "Wirtualne saldo",
     "dailyBonusTitle": "Koło fortuny (Bonus dzienny)",
-    "topupBtn": "Dodaj monety",
     "resetBtn": "Wyczyść dane",
     "resetConfirm": "Usunąć historię i twoje ogłoszenia oraz przywrócić saldo do 50 🪙?",
     "myListingsSection": "Moje aktywne ogłoszenia (%s)",
@@ -132,7 +142,6 @@
     "themeLight": "Jasny",
     "themeDark": "Ciemny",
     "themeSystem": "Systemowy",
-    "topupSuccess": "Monety dodane (+50 🪙)",
     "txBonus": "Bonus dzienny",
     "txTopup": "Dodanie monet",
     "txUnlock": "Odblokowanie kontaktu",
@@ -150,13 +159,31 @@
     "statEarned": "Zdobyte",
     "statUnlocked": "Odblokowane",
     "statMyListings": "Moje ogłoszenia",
-    "enoughCoins": "Masz dość monet",
     "logout": "Wyloguj się",
     "profileTitle": "Mój profil",
     "profileSubtitle": "Twoje dane i ustawienia",
     "earnMoreTitle": "Jak zdobyć więcej monet?",
     "earnMoreSub": "Sprawdź, jak odblokowywać kontakty za darmo.",
-    "login": "Zaloguj się"
+    "login": "Zaloguj się",
+    "deleteConfirmTitle": "Usuń ogłoszenie",
+    "deleteConfirmBody": "Na pewno trwale usunąć to ogłoszenie?",
+    "resetData": "Zresetuj dane",
+    "meLabel": "Ja",
+    "sellerLabel": "Sprzedawca",
+    "noMessages": "Brak wiadomości",
+    "spinning": "Kręcę...",
+    "spinBtn": "Zakręć!",
+    "nextSpinText": "Kolejny obrót za 24 godz.",
+    "boostBtn": "Podbij · 5 🪙",
+    "boostedUntil": "TOP do {{time}}",
+    "boostConfirm": "Wyświetlać na górze tablicy przez 24 godziny za 5 🪙?",
+    "boostDone": "Twoje ogłoszenie jest na górze tablicy.",
+    "boostNoCoins": "Do podbicia potrzebujesz 5 🪙.",
+    "resolveBtn": "Załatwione",
+    "resolveConfirm": "Oznaczyć jako załatwione? Ogłoszenie zniknie z tablicy.",
+    "resolveRewarded": "Załatwione. Dodano +5 🪙",
+    "resolveNoReward": "Załatwione. Dzisiejszy limit nagród wykorzystany.",
+    "adminDashboardBtn": "Panel administratora"
   },
   "listingCard": {
     "priceLabel": "Cena",
@@ -180,13 +207,80 @@
     "unlockedInfoName": "Imię",
     "unlockedInfoVal": "Kontakt",
     "imageAttachment": "📷 Zdjęcie",
-    "videoAttachment": "🎥 Wideo"
+    "videoAttachment": "🎥 Wideo",
+    "securityBanner": "Czat demo: odpowiedzi są automatyczne i nic nie jest nigdzie wysyłane."
   },
   "admin": {
     "title": "Przegląd aplikacji",
     "listings": "Ogłoszenia",
     "topups": "Doładowania",
     "categorySplit": "Podział kategorii",
-    "activityMap": "Mapa aktywności użytkowników"
+    "activityMap": "Mapa aktywności użytkowników",
+    "weeklyActivity": "Aktywność tygodniowa (liczba akcji)",
+    "mapUnavailable": "Mapa nie jest dostępna w widoku webowym."
+  },
+  "auth": {
+    "loginTitle": "Logowanie",
+    "registerTitle": "Utwórz konto",
+    "useEmail": "Użyj e-maila lub numeru telefonu",
+    "emailPlaceholder": "E-mail lub telefon (Demo: admin)",
+    "passwordPlaceholder": "Hasło (Demo: cokolwiek)",
+    "loginBtn": "Zaloguj się",
+    "registerBtn": "Utwórz konto",
+    "noAccount": "Nie masz konta?",
+    "haveAccount": "Masz już konto?",
+    "toggleRegister": "Utwórz",
+    "toggleLogin": "Zaloguj się",
+    "demoNotice": "Konto demo: zapisane tylko na tym telefonie, hasło nie jest sprawdzane.",
+    "loginRequiredTitle": "Zaloguj się",
+    "loginRequiredCreate": "Aby dodać ogłoszenie, musisz się zalogować.",
+    "loginRequiredWallet": "Zaloguj się, aby zarządzać ogłoszeniami i monetami.",
+    "loggedInAs": "Zalogowano jako: {{name}}"
+  },
+  "map": {
+    "title": "Wybór z mapy",
+    "webUnavailable": "Mapy nie są dostępne w przeglądarce.",
+    "pick": "Wybierz lokalizację",
+    "selected": "Wybrana lokalizacja:",
+    "dragHint": "Przesuń mapę...",
+    "permissionDenied": "Odmówiono dostępu do lokalizacji.",
+    "locateFailed": "Nie udało się pobrać aktualnej lokalizacji.",
+    "unknownPlace": "Nieznane miejsce"
+  },
+  "errorScreen": {
+    "title": "Coś poszło nie tak",
+    "body": "Aplikacja napotkała błąd. Zwykle pomaga ponowna próba.",
+    "retry": "Spróbuj ponownie",
+    "reset": "Usuń dane aplikacji i uruchom ponownie",
+    "resetTitle": "Usunąć dane aplikacji?",
+    "resetMessage": "To usunie z telefonu twoje ogłoszenia, monety i ustawienia i zacznie od nowa.",
+    "resetConfirm": "Usuń i uruchom ponownie"
+  },
+  "a11y": {
+    "close": "Zamknij",
+    "like": "Lubię to",
+    "unlike": "Cofnij polubienie",
+    "share": "Udostępnij",
+    "language": "Zmień język",
+    "wallet": "Portfel, saldo {{coins}}",
+    "clearSearch": "Wyczyść wyszukiwanie",
+    "deleteListing": "Usuń ogłoszenie",
+    "removeMedia": "Usuń załącznik",
+    "openListing": "Otwórz ogłoszenie: {{title}}",
+    "send": "Wyślij",
+    "attach": "Dodaj załącznik",
+    "locateMe": "Użyj mojej lokalizacji"
+  },
+  "gamification": {
+    "title": "Monety Donx",
+    "hello": "Witaj w Donx: kupuj, sprzedawaj i zbieraj monety!",
+    "intro": "Donx nie jest jak zwykłe ogłoszenia. Przeglądanie i dodawanie ogłoszeń jest bezpłatne. Monety służą tylko do odblokowania kontaktu i wyróżniania, a zdobywasz je aktywnością.",
+    "s1Title": "1. Pakiet startowy: 50 🪙",
+    "s1Text": "Odblokowanie jednego kontaktu kosztuje 1 🪙, więc wystarczy na 50 kontaktów.",
+    "s2Title": "2. Zdobywaj aktywnością",
+    "s2Text": "+1 🪙 za każde nowe ogłoszenie (maks. 3 dziennie)\n+5 🪙, gdy oznaczysz ogłoszenie jako załatwione (maks. 2 dziennie)\nDo tego dzienne koło fortuny: od 1 do 15 🪙",
+    "s3Title": "3. Bądź widoczny",
+    "s3Text": "Za 5 🪙 twoje ogłoszenie trafia na górę tablicy na 24 godziny.",
+    "cta": "Rozumiem"
   }
 }

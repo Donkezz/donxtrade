@@ -132,8 +132,8 @@ export const FortuneWheel: React.FC = () => {
           <ThemedText type="smallBold">{t('profile.dailyBonusTitle')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary" style={styles.subtext}>
             {available 
-              ? t('profile.spinAvailableText', 'Roztočte koleso a vyhrajte denný kredit!') 
-              : t('profile.spinClaimedText', 'Dnešný bonus je vybraný. Príďte opäť zajtra!')}
+              ? t('profile.spinAvailableText') 
+              : t('profile.spinClaimedText')}
           </ThemedText>
         </View>
 
@@ -145,7 +145,7 @@ export const FortuneWheel: React.FC = () => {
               size={12}
             />
             <ThemedText type="smallBold" style={styles.claimedText}>
-              {t('profile.claimed', 'Vybrané')}
+              {t('profile.claimed')}
             </ThemedText>
           </View>
         )}
@@ -214,7 +214,7 @@ export const FortuneWheel: React.FC = () => {
             ]}
           >
             <ThemedText type="smallBold" style={{ color: theme.background, fontSize: 13 }}>
-              {spinning ? t('profile.spinning', 'Točím...') : t('profile.spinBtn', 'Roztočiť!')}
+              {spinning ? t('profile.spinning') : t('profile.spinBtn')}
             </ThemedText>
           </Pressable>
         ) : (
@@ -225,7 +225,7 @@ export const FortuneWheel: React.FC = () => {
               </ThemedText>
             )}
             <ThemedText type="small" themeColor="textSecondary" style={styles.nextSpinText}>
-              {t('profile.nextSpinText', 'Nový spin o 24 hod.')}
+              {t('profile.nextSpinText')}
             </ThemedText>
           </View>
         )}

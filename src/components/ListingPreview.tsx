@@ -24,7 +24,15 @@ const CATEGORY_COLORS: Record<string, string> = {
  * whether to open a listing — the full text, media gallery and contact panel
  * live on the detail screen.
  */
-export const ListingPreview: React.FC<{ listing: Listing }> = ({ listing }) => {
+interface ListingPreviewProps {
+  listing: Listing;
+  /** Pinned to the top of the board by its owner. */
+  boosted?: boolean;
+  /** Already formatted, e.g. `2,4 km`. Only passed when the board is sorted by distance. */
+  distanceLabel?: string | null;
+}
+
+export const ListingPreview: React.FC<ListingPreviewProps> = ({ listing, boosted = false, distanceLabel = null }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { format: formatPrice } = useCurrency();
@@ -68,6 +76,13 @@ export const ListingPreview: React.FC<{ listing: Listing }> = ({ listing }) => {
     <Animated.View layout={LinearTransition}>
       <Pressable
         onPress={() => router.push({ pathname: '/listing/[id]', params: { id: listing.id } })}
+        accessible
+        accessibilityRole="button"
+        accessibilityLabel={t('a11y.openListing', { title: listing.title })}
+        accessibilityActions={[{ name: 'toggleLike', label: listing.isLiked ? t('a11y.unlike') : t('a11y.like') }]}
+        onAccessibilityAction={(event) => {
+          if (event.nativeEvent.actionName === 'toggleLike') handleLike();
+        }}
         style={({ pressed }) => [
           styles.card,
           { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected },
@@ -89,6 +104,11 @@ export const ListingPreview: React.FC<{ listing: Listing }> = ({ listing }) => {
 
           <View style={styles.main}>
             <View style={styles.badgeRow}>
+              {boosted && (
+                <View style={[styles.badge, { backgroundColor: '#FFB70340' }]}>
+                  <ThemedText style={[styles.badgeText, { color: theme.text }]}>{t('marketplace.topBadge')}</ThemedText>
+                </View>
+              )}
               <View style={[styles.badge, { backgroundColor: accent + '20' }]}>
                 <ThemedText style={[styles.badgeText, { color: accent }]}>
                   {t(`common.${listing.category}`)}
@@ -118,6 +138,19 @@ export const ListingPreview: React.FC<{ listing: Listing }> = ({ listing }) => {
                 </ThemedText>
               </View>
 
+              {distanceLabel && (
+                <View style={styles.metaItemFixed}>
+                  <SymbolView
+                    tintColor={theme.textSecondary}
+                    name={{ ios: 'location', android: 'near_me', web: 'near_me' } as any}
+                    size={11}
+                  />
+                  <ThemedText type="small" themeColor="textSecondary" style={styles.metaText} numberOfLines={1}>
+                    {distanceLabel}
+                  </ThemedText>
+                </View>
+              )}
+
               <View style={styles.metaItemFixed}>
                 <SymbolView
                   tintColor={theme.textSecondary}
@@ -137,7 +170,13 @@ export const ListingPreview: React.FC<{ listing: Listing }> = ({ listing }) => {
             {listing.price === 0 ? t('common.free') : formatPrice(listing.price)}
           </ThemedText>
 
-          <Pressable onPress={handleLike} hitSlop={8} style={styles.likeBtn}>
+          <Pressable
+            onPress={handleLike}
+            hitSlop={8}
+            style={styles.likeBtn}
+            accessibilityRole="button"
+            accessibilityLabel={listing.isLiked ? t('a11y.unlike') : t('a11y.like')}
+          >
             <SymbolView
               tintColor={listing.isLiked ? '#ff3b30' : theme.textSecondary}
               name={{

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Dimensions, Platform } from 'react-native';
+import { StyleSheet, View, ScrollView, useWindowDimensions, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { LineChart, PieChart } from 'react-native-chart-kit';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useCurrency } from '@/hooks/use-currency';
 import { useApp } from '@/context/AppContext';
@@ -31,7 +31,8 @@ export default function AdminDashboard() {
   const theme = useTheme();
   const { format: formatPrice } = useCurrency();
   const { listings, transactions } = useApp();
-  const screenWidth = Dimensions.get('window').width - Spacing.four * 2;
+  const { width: windowWidth } = useWindowDimensions();
+  const screenWidth = Math.min(windowWidth, MaxContentWidth) - Spacing.four * 2;
 
   // Mock data for Line Chart
   const lineData = {
@@ -85,7 +86,7 @@ export default function AdminDashboard() {
 
           {/* Line Chart */}
           <View style={[styles.chartContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-            <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>Týždenná aktivita (Počet akcií)</ThemedText>
+            <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>{t('admin.weeklyActivity')}</ThemedText>
             <LineChart
               data={lineData}
               width={screenWidth - Spacing.four}
@@ -127,7 +128,7 @@ export default function AdminDashboard() {
             <ThemedText type="smallBold" style={{ marginBottom: Spacing.three }}>{t('admin.activityMap')}</ThemedText>
             {Platform.OS === 'web' || !MapView ? (
               <View style={[styles.mapFallback, { backgroundColor: theme.backgroundSelected }]}>
-                <ThemedText type="small" themeColor="textSecondary">Mapa nie je dostupná vo webovom zobrazení.</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">{t('admin.mapUnavailable')}</ThemedText>
               </View>
             ) : (
               <View style={styles.mapWrapper}>

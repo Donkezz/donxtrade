@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Modal, Pressable, ScrollView, Platform } from 'react-native';
 import { SymbolView } from 'expo-symbols';
+import { useTranslation } from 'react-i18next';
 import { ThemedText } from './themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -12,6 +13,7 @@ interface GamificationModalProps {
 
 export const GamificationModal: React.FC<GamificationModalProps> = ({ visible, onClose }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Modal
@@ -25,19 +27,19 @@ export const GamificationModal: React.FC<GamificationModalProps> = ({ visible, o
           <View style={styles.header}>
             <View style={styles.headerTitleContainer}>
               <SymbolView tintColor="#FFD700" name={{ ios: 'star.circle.fill', android: 'star', web: 'star' } as any} size={28} />
-              <ThemedText type="subtitle" style={{ marginLeft: Spacing.two }}>Donx Kredity</ThemedText>
+              <ThemedText type="subtitle" style={{ marginLeft: Spacing.two }}>{t('gamification.title')}</ThemedText>
             </View>
-            <Pressable onPress={onClose} style={styles.closeBtn}>
+            <Pressable onPress={onClose} style={styles.closeBtn} accessibilityRole="button" accessibilityLabel={t('a11y.close')}>
               <SymbolView tintColor={theme.textSecondary} name={{ ios: 'xmark', android: 'close', web: 'close' } as any} size={24} />
             </Pressable>
           </View>
 
           <ScrollView style={styles.scrollArea} showsVerticalScrollIndicator={false}>
             <ThemedText type="smallBold" style={{ marginBottom: Spacing.three, fontSize: 16 }}>
-              Vitaj v Donx: Nakupuj, predávaj a získavaj Kredity!
+              {t('gamification.hello')}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary" style={{ marginBottom: Spacing.four, lineHeight: 20 }}>
-              Donx je iný ako bežné bazáre. Neotravujeme ťa poplatkami – naopak, odmeňujeme ťa za to, že si aktívny! Kredity slúžia na odomykanie kontaktov a topovanie inzerátov.
+              {t('gamification.intro')}
             </ThemedText>
 
             {/* Block 1 */}
@@ -46,9 +48,9 @@ export const GamificationModal: React.FC<GamificationModalProps> = ({ visible, o
                 <SymbolView tintColor="#00b894" name={{ ios: 'gift.fill', android: 'card_giftcard', web: 'card_giftcard' } as any} size={24} />
               </View>
               <View style={styles.textWrapper}>
-                <ThemedText type="smallBold">1. Tvoj uvítací darček</ThemedText>
+                <ThemedText type="smallBold">{t('gamification.s1Title')}</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: 2 }}>
-                  Hneď po registrácii ti na účet pripíšeme 50 Kreditov. Tieto kredity ti vystačia na odomknutie až 50 kontaktov!
+                  {t('gamification.s1Text')}
                 </ThemedText>
               </View>
             </View>
@@ -59,10 +61,9 @@ export const GamificationModal: React.FC<GamificationModalProps> = ({ visible, o
                 <SymbolView tintColor="#0984e3" name={{ ios: 'arrow.triangle.2.circlepath', android: 'autorenew', web: 'autorenew' } as any} size={24} />
               </View>
               <View style={styles.textWrapper}>
-                <ThemedText type="smallBold">2. Zarábaj späť vlastnou aktivitou!</ThemedText>
+                <ThemedText type="smallBold">{t('gamification.s2Title')}</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: 2 }}>
-                  + 5 Kreditov získaš vždy, keď tvoj inzerát úspešne vybavíš a označíš ho ako vyriešený. Zarábaš dvojnásobne!{"\n"}
-                  + 1 Kredit ti pripíšeme zakaždým, keď pridáš nový, zmysluplný inzerát.
+                  {t('gamification.s2Text')}
                 </ThemedText>
               </View>
             </View>
@@ -73,9 +74,9 @@ export const GamificationModal: React.FC<GamificationModalProps> = ({ visible, o
                 <SymbolView tintColor="#e84393" name={{ ios: 'bolt.fill', android: 'bolt', web: 'bolt' } as any} size={24} />
               </View>
               <View style={styles.textWrapper}>
-                <ThemedText type="smallBold">3. Buď videný (Topovanie)</ThemedText>
+                <ThemedText type="smallBold">{t('gamification.s3Title')}</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: 2 }}>
-                  Súrne niečo zháňaš alebo predávaš? Použi 5 kreditov a vystreľ svoj inzerát úplne na vrchol nástenky!
+                  {t('gamification.s3Text')}
                 </ThemedText>
               </View>
             </View>
@@ -92,7 +93,7 @@ export const GamificationModal: React.FC<GamificationModalProps> = ({ visible, o
                 pressed && { opacity: 0.8 }
               ]}
             >
-              <ThemedText type="smallBold" style={{ color: theme.background }}>Rozumiem, chcem Kredity!</ThemedText>
+              <ThemedText type="smallBold" style={{ color: theme.background }}>{t('gamification.cta')}</ThemedText>
             </Pressable>
           </View>
         </View>

@@ -47,7 +47,10 @@
     "onboardingStep3Text": "Sicherer Chat und das Freischalten von Kontakten geben dir Kontrolle und Vertrauen.",
     "nextStep": "Weiter",
     "categoriesLabel": "Kategorien",
-    "swipeHint": "Wischen für mehr"
+    "swipeHint": "Wischen für mehr",
+    "nearMe": "In der Nähe",
+    "nearMeDenied": "Für die Sortierung nach Entfernung brauchen wir deinen Standort. Du kannst ihn in den Einstellungen erlauben.",
+    "topBadge": "TOP"
   },
   "navigation": {
     "marketplace": "Angebote",
@@ -108,7 +111,15 @@
     "preset12Hours": "12 Stunden",
     "preset1Day": "1 Tag",
     "preset3Days": "3 Tage",
-    "preset7Days": "7 Tage"
+    "preset7Days": "7 Tage",
+    "attachTitle": "Anhang hinzufügen",
+    "attachCamera": "Kamera (Foto aufnehmen und zuschneiden)",
+    "attachGallery": "Foto- und Videomediathek",
+    "attachFiles": "Dateien auf diesem Handy",
+    "cameraDenied": "Die App hat keinen Zugriff auf die Kamera.",
+    "contactChat": "🔒 Privater Chat",
+    "contactPhone": "Telefon / E-Mail",
+    "successRewarded": "Anzeige veröffentlicht. +1 🪙 gutgeschrieben"
   },
   "profile": {
     "title": "Profil & Wallet",
@@ -116,7 +127,6 @@
     "demoCardLabel": "Demo-Nutzer",
     "demoBalanceLabel": "Spielguthaben",
     "dailyBonusTitle": "Glücksrad (Täglicher Bonus)",
-    "topupBtn": "Münzen hinzufügen",
     "resetBtn": "Alle Daten zurücksetzen",
     "resetConfirm": "Verlauf und deine Anzeigen löschen und das Guthaben auf 50 🪙 zurücksetzen?",
     "myListingsSection": "Meine aktiven Anzeigen (%s)",
@@ -132,7 +142,6 @@
     "themeLight": "Hell",
     "themeDark": "Dunkel",
     "themeSystem": "System",
-    "topupSuccess": "Münzen gutgeschrieben (+50 🪙)",
     "txBonus": "Täglicher Bonus",
     "txTopup": "Münzen hinzugefügt",
     "txUnlock": "Kontakt freischalten",
@@ -150,13 +159,31 @@
     "statEarned": "Verdient",
     "statUnlocked": "Freigeschaltet",
     "statMyListings": "Meine Anzeigen",
-    "enoughCoins": "Du hast genug Münzen",
     "logout": "Abmelden",
     "profileTitle": "Mein Profil",
     "profileSubtitle": "Deine Daten und Einstellungen",
     "earnMoreTitle": "Wie bekommst du mehr Münzen?",
     "earnMoreSub": "Finde heraus, wie du Kontakte gratis freischaltest.",
-    "login": "Anmelden"
+    "login": "Anmelden",
+    "deleteConfirmTitle": "Anzeige löschen",
+    "deleteConfirmBody": "Diese Anzeige endgültig löschen?",
+    "resetData": "Daten zurücksetzen",
+    "meLabel": "Ich",
+    "sellerLabel": "Verkäufer",
+    "noMessages": "Keine Nachrichten",
+    "spinning": "Dreht sich...",
+    "spinBtn": "Drehen!",
+    "nextSpinText": "Nächste Drehung in 24 Std.",
+    "boostBtn": "Nach oben · 5 🪙",
+    "boostedUntil": "TOP bis {{time}}",
+    "boostConfirm": "Für 24 Stunden für 5 🪙 ganz nach oben schieben?",
+    "boostDone": "Deine Anzeige steht ganz oben.",
+    "boostNoCoins": "Zum Hervorheben brauchst du 5 🪙.",
+    "resolveBtn": "Erledigt",
+    "resolveConfirm": "Als erledigt markieren? Die Anzeige verschwindet von der Pinnwand.",
+    "resolveRewarded": "Erledigt. +5 🪙 gutgeschrieben",
+    "resolveNoReward": "Erledigt. Das heutige Belohnungslimit ist ausgeschöpft.",
+    "adminDashboardBtn": "Admin-Übersicht"
   },
   "listingCard": {
     "priceLabel": "Preis",
@@ -180,13 +207,80 @@
     "unlockedInfoName": "Name",
     "unlockedInfoVal": "Kontakt",
     "imageAttachment": "📷 Foto",
-    "videoAttachment": "🎥 Video"
+    "videoAttachment": "🎥 Video",
+    "securityBanner": "Demo-Chat: Antworten sind automatisch, nichts wird irgendwohin gesendet."
   },
   "admin": {
     "title": "App-Übersicht",
     "listings": "Anzeigen",
     "topups": "Aufladungen",
     "categorySplit": "Verteilung der Kategorien",
-    "activityMap": "Karte der Nutzeraktivität"
+    "activityMap": "Karte der Nutzeraktivität",
+    "weeklyActivity": "Wochenaktivität (Anzahl Aktionen)",
+    "mapUnavailable": "Die Karte ist in der Webansicht nicht verfügbar."
+  },
+  "auth": {
+    "loginTitle": "Anmeldung",
+    "registerTitle": "Konto erstellen",
+    "useEmail": "E-Mail oder Telefonnummer verwenden",
+    "emailPlaceholder": "E-Mail oder Telefon (Demo: admin)",
+    "passwordPlaceholder": "Passwort (Demo: beliebig)",
+    "loginBtn": "Anmelden",
+    "registerBtn": "Konto erstellen",
+    "noAccount": "Noch kein Konto?",
+    "haveAccount": "Schon ein Konto?",
+    "toggleRegister": "Erstellen",
+    "toggleLogin": "Anmelden",
+    "demoNotice": "Demo-Konto: wird nur auf diesem Handy gespeichert, das Passwort wird nicht geprüft.",
+    "loginRequiredTitle": "Bitte anmelden",
+    "loginRequiredCreate": "Zum Aufgeben einer Anzeige musst du dich anmelden.",
+    "loginRequiredWallet": "Melde dich an, um Anzeigen und Münzen zu verwalten.",
+    "loggedInAs": "Angemeldet als: {{name}}"
+  },
+  "map": {
+    "title": "Auf der Karte wählen",
+    "webUnavailable": "Karten sind im Webbrowser nicht verfügbar.",
+    "pick": "Ort auswählen",
+    "selected": "Gewählter Ort:",
+    "dragHint": "Karte verschieben...",
+    "permissionDenied": "Der Standortzugriff wurde verweigert.",
+    "locateFailed": "Aktueller Standort konnte nicht ermittelt werden.",
+    "unknownPlace": "Unbekannter Ort"
+  },
+  "errorScreen": {
+    "title": "Etwas ist schiefgelaufen",
+    "body": "Die App ist auf einen Fehler gestoßen. Ein neuer Versuch hilft meist.",
+    "retry": "Erneut versuchen",
+    "reset": "App-Daten löschen und neu starten",
+    "resetTitle": "App-Daten löschen?",
+    "resetMessage": "Dadurch werden deine Anzeigen, Münzen und Einstellungen von diesem Handy entfernt und die App startet neu.",
+    "resetConfirm": "Löschen und neu starten"
+  },
+  "a11y": {
+    "close": "Schließen",
+    "like": "Gefällt mir",
+    "unlike": "Gefällt mir entfernen",
+    "share": "Teilen",
+    "language": "Sprache ändern",
+    "wallet": "Wallet, Guthaben {{coins}}",
+    "clearSearch": "Suche löschen",
+    "deleteListing": "Anzeige löschen",
+    "removeMedia": "Anhang entfernen",
+    "openListing": "Anzeige öffnen: {{title}}",
+    "send": "Senden",
+    "attach": "Anhang hinzufügen",
+    "locateMe": "Meinen Standort verwenden"
+  },
+  "gamification": {
+    "title": "Donx-Münzen",
+    "hello": "Willkommen bei Donx: kaufen, verkaufen und Münzen sammeln!",
+    "intro": "Donx ist anders als gewöhnliche Kleinanzeigen. Stöbern und Anzeigen aufgeben ist kostenlos. Münzen brauchst du nur zum Freischalten eines Kontakts und zum Hervorheben – und du verdienst sie durch Aktivität.",
+    "s1Title": "1. Startpaket: 50 🪙",
+    "s1Text": "Ein freigeschalteter Kontakt kostet 1 🪙, damit kommst du auf 50 Kontakte.",
+    "s2Title": "2. Verdiene durch Aktivität",
+    "s2Text": "+1 🪙 für jede neue Anzeige (bis zu 3 am Tag)\n+5 🪙, wenn du eine Anzeige als erledigt markierst (bis zu 2 am Tag)\nDazu das tägliche Glücksrad: 1 bis 15 🪙",
+    "s3Title": "3. Fall auf",
+    "s3Text": "Für 5 🪙 springt deine Anzeige für 24 Stunden ganz nach oben.",
+    "cta": "Verstanden"
   }
 }

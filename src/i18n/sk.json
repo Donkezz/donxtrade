@@ -47,7 +47,10 @@
     "onboardingStep3Text": "Bezpečný chat a odomknutie kontaktu ti dávajú kontrolu a dôveru.",
     "nextStep": "Ďalej",
     "categoriesLabel": "Kategórie",
-    "swipeHint": "Potiahnite pre viac"
+    "swipeHint": "Potiahnite pre viac",
+    "nearMe": "Pri mne",
+    "nearMeDenied": "Na radenie podľa vzdialenosti potrebujeme tvoju polohu. Povoliť ju môžeš v Nastaveniach.",
+    "topBadge": "TOP"
   },
   "navigation": {
     "marketplace": "Ponuky",
@@ -108,7 +111,15 @@
     "preset12Hours": "12 hodín",
     "preset1Day": "1 deň",
     "preset3Days": "3 dni",
-    "preset7Days": "7 dní"
+    "preset7Days": "7 dní",
+    "attachTitle": "Pridať prílohu",
+    "attachCamera": "Fotoaparát (odfotiť a orezať)",
+    "attachGallery": "Galéria fotiek a videí",
+    "attachFiles": "Súbory z pamäte mobilu",
+    "cameraDenied": "Appka nemá prístup k fotoaparátu.",
+    "contactChat": "🔒 Súkromný čet",
+    "contactPhone": "Telefón / E-mail",
+    "successRewarded": "Inzerát bol zverejnený. Pripísané +1 🪙"
   },
   "profile": {
     "title": "Profil a Peňaženka",
@@ -116,7 +127,6 @@
     "demoCardLabel": "Demo Používateľ",
     "demoBalanceLabel": "Fiktívny zostatok",
     "dailyBonusTitle": "Koleso šťastia (Denný bonus)",
-    "topupBtn": "Doplniť mince",
     "resetBtn": "Vyčistiť dáta",
     "resetConfirm": "Naozaj vymazať históriu aj pridané inzeráty a vrátiť zostatok na 50 🪙?",
     "myListingsSection": "Moje aktívne inzeráty (%s)",
@@ -132,7 +142,6 @@
     "themeLight": "Svetlý",
     "themeDark": "Tmavý",
     "themeSystem": "Automatický",
-    "topupSuccess": "Mince pripísané (+50 🪙)",
     "txBonus": "Denný bonus",
     "txTopup": "Doplnenie mincí",
     "txUnlock": "Odomknutie kontaktu",
@@ -150,13 +159,31 @@
     "statEarned": "Zarobené",
     "statUnlocked": "Odomknuté",
     "statMyListings": "Moje inzeráty",
-    "enoughCoins": "Máš dosť mincí",
     "logout": "Odhlásiť sa",
     "profileTitle": "Môj profil",
     "profileSubtitle": "Tvoje údaje a nastavenia",
     "earnMoreTitle": "Ako získať viac mincí?",
     "earnMoreSub": "Zisti, ako si odomykanie kontaktov zarobiť zadarmo.",
-    "login": "Prihlásiť sa"
+    "login": "Prihlásiť sa",
+    "deleteConfirmTitle": "Zmazať inzerát",
+    "deleteConfirmBody": "Naozaj chceš natrvalo odstrániť tento inzerát?",
+    "resetData": "Obnoviť dáta",
+    "meLabel": "Ja",
+    "sellerLabel": "Predajca",
+    "noMessages": "Žiadne správy",
+    "spinning": "Točím...",
+    "spinBtn": "Roztočiť!",
+    "nextSpinText": "Nový spin o 24 hod.",
+    "boostBtn": "Topovať · 5 🪙",
+    "boostedUntil": "TOP do {{time}}",
+    "boostConfirm": "Vyskočiť na vrch nástenky na 24 hodín za 5 🪙?",
+    "boostDone": "Inzerát je na vrchu nástenky.",
+    "boostNoCoins": "Na topovanie potrebuješ 5 🪙.",
+    "resolveBtn": "Vybavené",
+    "resolveConfirm": "Označiť ako vybavené? Inzerát zmizne z nástenky.",
+    "resolveRewarded": "Vybavené. Pripísané +5 🪙",
+    "resolveNoReward": "Vybavené. Dnešný limit odmien je vyčerpaný.",
+    "adminDashboardBtn": "Admin prehľad"
   },
   "listingCard": {
     "priceLabel": "Cena",
@@ -180,13 +207,80 @@
     "unlockedInfoName": "Meno",
     "unlockedInfoVal": "Kontakt",
     "imageAttachment": "📷 Obrázok",
-    "videoAttachment": "🎥 Video"
+    "videoAttachment": "🎥 Video",
+    "securityBanner": "Ukážkový chat: odpovede sú automatické a nikam sa neodosielajú."
   },
   "admin": {
     "title": "Prehľad aplikácie",
     "listings": "Inzeráty",
     "topups": "Dobitia",
     "categorySplit": "Rozloženie kategórií",
-    "activityMap": "Mapa aktivity používateľov"
+    "activityMap": "Mapa aktivity používateľov",
+    "weeklyActivity": "Týždenná aktivita (počet akcií)",
+    "mapUnavailable": "Mapa nie je dostupná vo webovom zobrazení."
+  },
+  "auth": {
+    "loginTitle": "Prihlásenie",
+    "registerTitle": "Vytvoriť účet",
+    "useEmail": "Použiť e-mail alebo telefónne číslo",
+    "emailPlaceholder": "E-mail alebo telefón (Demo: admin)",
+    "passwordPlaceholder": "Heslo (Demo: hocičo)",
+    "loginBtn": "Prihlásiť sa",
+    "registerBtn": "Vytvoriť účet",
+    "noAccount": "Nemáte účet?",
+    "haveAccount": "Už máte účet?",
+    "toggleRegister": "Vytvoriť",
+    "toggleLogin": "Prihlásiť sa",
+    "demoNotice": "Ukážkový účet: ukladá sa len v tomto telefóne a heslo sa nekontroluje.",
+    "loginRequiredTitle": "Prihláste sa",
+    "loginRequiredCreate": "Pre pridávanie nových inzerátov sa musíte prihlásiť.",
+    "loginRequiredWallet": "Pre správu inzerátov a mincí sa musíte prihlásiť.",
+    "loggedInAs": "Prihlásený ako: {{name}}"
+  },
+  "map": {
+    "title": "Výber z mapy",
+    "webUnavailable": "Mapy nie sú dostupné vo webovom prehliadači.",
+    "pick": "Vyberte lokalitu",
+    "selected": "Zvolená lokalita:",
+    "dragHint": "Presuňte mapu...",
+    "permissionDenied": "Prístup k polohe bol zamietnutý.",
+    "locateFailed": "Nepodarilo sa získať aktuálnu polohu.",
+    "unknownPlace": "Neznáma lokalita"
+  },
+  "errorScreen": {
+    "title": "Niečo sa pokazilo",
+    "body": "Appka narazila na chybu. Zvyčajne pomôže skúsiť to znova.",
+    "retry": "Skúsiť znova",
+    "reset": "Vymazať dáta appky a spustiť znova",
+    "resetTitle": "Vymazať dáta appky?",
+    "resetMessage": "Z tohto telefónu sa odstránia tvoje inzeráty, mince a nastavenia a appka začne odznova.",
+    "resetConfirm": "Vymazať a spustiť znova"
+  },
+  "a11y": {
+    "close": "Zavrieť",
+    "like": "Páči sa mi",
+    "unlike": "Zrušiť páči sa mi",
+    "share": "Zdieľať",
+    "language": "Zmeniť jazyk",
+    "wallet": "Peňaženka, zostatok {{coins}}",
+    "clearSearch": "Vymazať hľadanie",
+    "deleteListing": "Zmazať inzerát",
+    "removeMedia": "Odstrániť prílohu",
+    "openListing": "Otvoriť inzerát: {{title}}",
+    "send": "Odoslať",
+    "attach": "Pridať prílohu",
+    "locateMe": "Použiť moju polohu"
+  },
+  "gamification": {
+    "title": "Donx mince",
+    "hello": "Vitaj v Donx: kupuj, predávaj a zbieraj mince!",
+    "intro": "Donx nie je ako bežné bazáre. Prezerať a pridávať inzeráty je zadarmo. Mince slúžia len na odomknutie kontaktu a na topovanie a získaš ich vlastnou aktivitou.",
+    "s1Title": "1. Štartovací balík: 50 🪙",
+    "s1Text": "Jeden odomknutý kontakt stojí 1 🪙, takže ti to vystačí na 50 kontaktov.",
+    "s2Title": "2. Zarábaj aktivitou",
+    "s2Text": "+1 🪙 za každý nový inzerát (najviac 3 denne)\n+5 🪙, keď inzerát označíš ako vybavený (najviac 2 denne)\nK tomu denné koleso šťastia: 1 až 15 🪙",
+    "s3Title": "3. Buď vidieť",
+    "s3Text": "Za 5 🪙 vyskočí tvoj inzerát na 24 hodín na vrch nástenky.",
+    "cta": "Rozumiem"
   }
 }

@@ -1,19 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import * as Location from 'expo-location';
 import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Modal, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Modal, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GamificationModal } from '@/components/GamificationModal';
 import { ListingPreview } from '@/components/ListingPreview';
-import { ThemedText } from '@/components/themed-text';
+import { BODY_MAX_FONT_SCALE, ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { ListingCategory, ListingType, useApp } from '@/context/AppContext';
 import { useTheme } from '@/hooks/use-theme';
 import { formatCoins } from '@/utils/coins';
+import { resolveLocaleTag } from '@/utils/currency';
+import { Coordinates, distanceKm, formatDistance } from '@/utils/geo';
 
 export default function MarketplaceScreen() {
   const { t } = useTranslation();
@@ -51,6 +54,9 @@ export default function MarketplaceScreen() {
   const [onboardingVisible, setOnboardingVisible] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [nowTs, setNowTs] = useState(() => Date.now());
+  const [nearMe, setNearMe] = useState(false);
+  const [userCoords, setUserCoords] = useState<Coordinates | null>(null);
+  const [locating, setLocating] = useState(false);
 
   const onboardingSteps = [
     {
@@ -116,8 +122,40 @@ export default function MarketplaceScreen() {
     return () => clearInterval(timer);
   }, []);
 
-  // Filter listings based on search, category, type, and expiration
+  // Location is only requested when the user taps "near me", never at launch.
+  const toggleNearMe = async () => {
+    if (nearMe) {
+      setNearMe(false);
+      return;
+    }
+    setLocating(true);
+    try {
+      let { status } = await Location.getForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        ({ status } = await Location.requestForegroundPermissionsAsync());
+      }
+      if (status !== 'granted') {
+        Alert.alert(t('common.warning'), t('marketplace.nearMeDenied'));
+        return;
+      }
+      // A fix from the last few minutes is plenty for sorting a list, and instant.
+      const recent = await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
+      const position =
+        recent ?? (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
+      setUserCoords({ latitude: position.coords.latitude, longitude: position.coords.longitude });
+      setNearMe(true);
+    } catch (error) {
+      console.warn('Could not read the location', error);
+      Alert.alert(t('common.error'), t('map.locateFailed'));
+    } finally {
+      setLocating(false);
+    }
+  };
+
+  // Filter listings based on search, category, type, expiration and whether the owner already handled them
   const filteredListings = listings.filter((item) => {
+    if (item.resolvedAt) return false;
+
     // Hide expired listings from main feed
     const isExpired = new Date(item.expiresAt).getTime() < nowTs;
     if (isExpired) return false;
@@ -133,6 +171,31 @@ export default function MarketplaceScreen() {
     return matchesSearch && matchesCategory && matchesType;
   });
 
+  // Boosted listings first. After that, nearest first when "near me" is on, otherwise
+  // the stored order. The original index is the final tiebreaker so the sort never
+  // depends on how a given engine orders equal elements.
+  const entries = filteredListings
+    .map((listing, index) => ({
+      listing,
+      index,
+      boosted: !!listing.boostedUntil && new Date(listing.boostedUntil).getTime() > nowTs,
+      distance:
+        userCoords && listing.latitude !== undefined && listing.longitude !== undefined
+          ? distanceKm(userCoords, { latitude: listing.latitude, longitude: listing.longitude })
+          : null,
+    }))
+    .sort((a, b) => {
+      if (a.boosted !== b.boosted) return a.boosted ? -1 : 1;
+      if (nearMe && a.distance !== b.distance) {
+        if (a.distance === null) return 1;
+        if (b.distance === null) return -1;
+        return a.distance - b.distance;
+      }
+      return a.index - b.index;
+    });
+
+  const locale = resolveLocaleTag(appLanguage);
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -140,7 +203,12 @@ export default function MarketplaceScreen() {
           {/* The brand block gives up width first — the subtitle is far longer in
               German and Polish and would otherwise push the wallet off screen. */}
           <View style={styles.headerBrand}>
-            <Pressable onPress={() => setLangMenuVisible(true)} style={styles.langFlagBtn}>
+            <Pressable
+              onPress={() => setLangMenuVisible(true)}
+              style={styles.langFlagBtn}
+              accessibilityRole="button"
+              accessibilityLabel={t('a11y.language')}
+            >
               <ThemedText style={{ fontSize: 24, marginRight: Spacing.three }}>{currentLang.flag}</ThemedText>
             </Pressable>
             <View style={{ flexShrink: 1 }}>
@@ -153,6 +221,8 @@ export default function MarketplaceScreen() {
 
           <Pressable
             onPress={() => router.push('/wallet')}
+            accessibilityRole="button"
+            accessibilityLabel={t('a11y.wallet', { coins: Math.floor(walletBalance) })}
             style={({ pressed }) => [
               styles.walletBadge,
               {
@@ -174,8 +244,8 @@ export default function MarketplaceScreen() {
         </View>
 
         <FlatList
-          data={filteredListings}
-          keyExtractor={(item) => item.id}
+          data={entries}
+          keyExtractor={(item) => item.listing.id}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           // The filters scroll away with the list, so listings get the full screen
@@ -188,7 +258,7 @@ export default function MarketplaceScreen() {
                 name={{ ios: 'magnifyingglass', android: 'search', web: 'search' }}
                 size={16}
               />
-              <TextInput
+              <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                 placeholder={t('marketplace.searchPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 value={search}
@@ -196,7 +266,7 @@ export default function MarketplaceScreen() {
                 style={[styles.searchInput, { color: theme.text }]}
               />
               {search.length > 0 && (
-                <Pressable onPress={() => setSearch('')}>
+                <Pressable onPress={() => setSearch('')} accessibilityRole="button" accessibilityLabel={t('a11y.clearSearch')}>
                   <SymbolView
                     tintColor={theme.textSecondary}
                     name={{ ios: 'xmark.circle.fill', android: 'clear', web: 'clear' }}
@@ -238,6 +308,41 @@ export default function MarketplaceScreen() {
                 </ThemedText>
               </Pressable>
             </View>
+
+            {Platform.OS !== 'web' && (
+              <View style={styles.nearMeRow}>
+                <Pressable
+                  onPress={toggleNearMe}
+                  disabled={locating}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: nearMe, busy: locating }}
+                  style={({ pressed }) => [
+                    styles.nearMeChip,
+                    {
+                      backgroundColor: nearMe ? theme.text : theme.backgroundElement,
+                      borderColor: nearMe ? theme.text : theme.backgroundSelected,
+                    },
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  {locating ? (
+                    <ActivityIndicator size="small" color={theme.textSecondary} />
+                  ) : (
+                    <SymbolView
+                      tintColor={nearMe ? theme.background : theme.text}
+                      name={{ ios: 'location.fill', android: 'near_me', web: 'near_me' }}
+                      size={14}
+                    />
+                  )}
+                  <ThemedText
+                    type="smallBold"
+                    style={{ color: nearMe ? theme.background : theme.text, marginLeft: Spacing.one }}
+                  >
+                    {t('marketplace.nearMe')}
+                  </ThemedText>
+                </Pressable>
+              </View>
+            )}
 
             <View style={styles.categoriesContainer}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -300,7 +405,13 @@ export default function MarketplaceScreen() {
               </ThemedText>
             </View>
           }
-          renderItem={({ item }) => <ListingPreview listing={item} />}
+          renderItem={({ item }) => (
+            <ListingPreview
+              listing={item.listing}
+              boosted={item.boosted}
+              distanceLabel={nearMe && item.distance !== null ? formatDistance(item.distance, locale) : null}
+            />
+          )}
         />
       </SafeAreaView>
 
@@ -418,15 +529,34 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
+    // At large Dynamic Type sizes the wallet badge drops under the brand instead of
+    // squeezing it down to one letter per line.
+    flexWrap: 'wrap',
+    rowGap: Spacing.two,
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: Spacing.three,
     marginTop: Spacing.two,
   },
+  nearMeRow: {
+    flexDirection: 'row',
+    marginBottom: Spacing.three,
+  },
+  nearMeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+  },
   headerBrand: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexGrow: 1,
     flexShrink: 1,
+    flexBasis: 0,
+    minWidth: 190,
     marginRight: Spacing.two,
   },
   brandTitle: {

@@ -47,7 +47,10 @@
     "onboardingStep3Text": "A biztonságos csevegés és az elérhetőség feloldása kontrollt és bizalmat ad.",
     "nextStep": "Tovább",
     "categoriesLabel": "Kategóriák",
-    "swipeHint": "Húzz tovább"
+    "swipeHint": "Húzz tovább",
+    "nearMe": "Közelben",
+    "nearMeDenied": "A távolság szerinti rendezéshez szükségünk van a helyzetedre. A Beállításokban engedélyezheted.",
+    "topBadge": "TOP"
   },
   "navigation": {
     "marketplace": "Ajánlatok",
@@ -108,7 +111,15 @@
     "preset12Hours": "12 óra",
     "preset1Day": "1 nap",
     "preset3Days": "3 nap",
-    "preset7Days": "7 nap"
+    "preset7Days": "7 nap",
+    "attachTitle": "Melléklet hozzáadása",
+    "attachCamera": "Kamera (fotó készítése és vágása)",
+    "attachGallery": "Fotó- és videótár",
+    "attachFiles": "Fájlok a telefonról",
+    "cameraDenied": "Az alkalmazás nem fér hozzá a kamerához.",
+    "contactChat": "🔒 Privát chat",
+    "contactPhone": "Telefon / E-mail",
+    "successRewarded": "Hirdetés közzétéve. Jóváírva: +1 🪙"
   },
   "profile": {
     "title": "Profil és Pénztárca",
@@ -116,7 +127,6 @@
     "demoCardLabel": "Demo Felhasználó",
     "demoBalanceLabel": "Fiktív egyenleg",
     "dailyBonusTitle": "Szerencsekerék (Napi bónusz)",
-    "topupBtn": "Érmék hozzáadása",
     "resetBtn": "Adatok törlése",
     "resetConfirm": "Törlöd az előzményeket és a hirdetéseidet, és visszaállítod az egyenleget 50 🪙 értékre?",
     "myListingsSection": "Aktív hirdetéseim (%s)",
@@ -132,7 +142,6 @@
     "themeLight": "Világos",
     "themeDark": "Sötét",
     "themeSystem": "Automatikus",
-    "topupSuccess": "Érmék jóváírva (+50 🪙)",
     "txBonus": "Napi bónusz",
     "txTopup": "Érmék hozzáadása",
     "txUnlock": "Kapcsolat feloldása",
@@ -150,13 +159,31 @@
     "statEarned": "Szerzett",
     "statUnlocked": "Feloldva",
     "statMyListings": "Hirdetéseim",
-    "enoughCoins": "Van elég érméd",
     "logout": "Kijelentkezés",
     "profileTitle": "Profilom",
     "profileSubtitle": "Adataid és beállításaid",
     "earnMoreTitle": "Hogyan szerezz több érmét?",
     "earnMoreSub": "Nézd meg, hogyan oldhatsz fel kapcsolatokat ingyen.",
-    "login": "Bejelentkezés"
+    "login": "Bejelentkezés",
+    "deleteConfirmTitle": "Hirdetés törlése",
+    "deleteConfirmBody": "Biztosan véglegesen törlöd ezt a hirdetést?",
+    "resetData": "Adatok visszaállítása",
+    "meLabel": "Én",
+    "sellerLabel": "Eladó",
+    "noMessages": "Nincs üzenet",
+    "spinning": "Pörög...",
+    "spinBtn": "Pörgess!",
+    "nextSpinText": "Következő pörgetés 24 óra múlva",
+    "boostBtn": "Kiemelés · 5 🪙",
+    "boostedUntil": "TOP eddig: {{time}}",
+    "boostConfirm": "A tábla tetejére kerül 24 órára 5 🪙 ellenében?",
+    "boostDone": "A hirdetésed a tábla tetején van.",
+    "boostNoCoins": "A kiemeléshez 5 🪙 kell.",
+    "resolveBtn": "Elintézve",
+    "resolveConfirm": "Elintézettnek jelölöd? A hirdetés lekerül a faliújságról.",
+    "resolveRewarded": "Elintézve. Jóváírva: +5 🪙",
+    "resolveNoReward": "Elintézve. A mai jutalomkeret elfogyott.",
+    "adminDashboardBtn": "Admin áttekintés"
   },
   "listingCard": {
     "priceLabel": "Ár",
@@ -180,13 +207,80 @@
     "unlockedInfoName": "Név",
     "unlockedInfoVal": "Kapcsolat",
     "imageAttachment": "📷 Kép",
-    "videoAttachment": "🎥 Videó"
+    "videoAttachment": "🎥 Videó",
+    "securityBanner": "Demó chat: a válaszok automatikusak, és semmi sem kerül elküldésre."
   },
   "admin": {
     "title": "Alkalmazás áttekintése",
     "listings": "Hirdetések",
     "topups": "Feltöltések",
     "categorySplit": "Kategóriák megoszlása",
-    "activityMap": "Felhasználói aktivitás térképe"
+    "activityMap": "Felhasználói aktivitás térképe",
+    "weeklyActivity": "Heti aktivitás (műveletek száma)",
+    "mapUnavailable": "A térkép webes nézetben nem érhető el."
+  },
+  "auth": {
+    "loginTitle": "Bejelentkezés",
+    "registerTitle": "Fiók létrehozása",
+    "useEmail": "Használd az e-mail-címed vagy a telefonszámod",
+    "emailPlaceholder": "E-mail vagy telefon (Demo: admin)",
+    "passwordPlaceholder": "Jelszó (Demo: bármi)",
+    "loginBtn": "Bejelentkezés",
+    "registerBtn": "Fiók létrehozása",
+    "noAccount": "Nincs még fiókod?",
+    "haveAccount": "Már van fiókod?",
+    "toggleRegister": "Létrehozás",
+    "toggleLogin": "Bejelentkezés",
+    "demoNotice": "Demó fiók: csak ezen a telefonon tárolódik, a jelszót nem ellenőrizzük.",
+    "loginRequiredTitle": "Jelentkezz be",
+    "loginRequiredCreate": "Hirdetés feladásához be kell jelentkezned.",
+    "loginRequiredWallet": "A hirdetések és érmék kezeléséhez jelentkezz be.",
+    "loggedInAs": "Bejelentkezve: {{name}}"
+  },
+  "map": {
+    "title": "Választás térképről",
+    "webUnavailable": "A térkép böngészőben nem érhető el.",
+    "pick": "Válassz helyszínt",
+    "selected": "Kiválasztott helyszín:",
+    "dragHint": "Mozgasd a térképet...",
+    "permissionDenied": "A helyhozzáférés meg lett tagadva.",
+    "locateFailed": "Nem sikerült lekérni a jelenlegi helyzetet.",
+    "unknownPlace": "Ismeretlen hely"
+  },
+  "errorScreen": {
+    "title": "Valami elromlott",
+    "body": "Az alkalmazás hibába ütközött. Általában segít az újrapróbálás.",
+    "retry": "Újra",
+    "reset": "Alkalmazásadatok törlése és újraindítás",
+    "resetTitle": "Törlöd az alkalmazásadatokat?",
+    "resetMessage": "Ez eltávolítja a hirdetéseidet, érméidet és beállításaidat a telefonról, és újrakezdi.",
+    "resetConfirm": "Törlés és újraindítás"
+  },
+  "a11y": {
+    "close": "Bezárás",
+    "like": "Kedvelem",
+    "unlike": "Kedvelés visszavonása",
+    "share": "Megosztás",
+    "language": "Nyelv módosítása",
+    "wallet": "Pénztárca, egyenleg: {{coins}}",
+    "clearSearch": "Keresés törlése",
+    "deleteListing": "Hirdetés törlése",
+    "removeMedia": "Melléklet eltávolítása",
+    "openListing": "Hirdetés megnyitása: {{title}}",
+    "send": "Küldés",
+    "attach": "Melléklet hozzáadása",
+    "locateMe": "Saját helyzetem használata"
+  },
+  "gamification": {
+    "title": "Donx érmék",
+    "hello": "Üdv a Donxban: vegyél, adj el és gyűjts érméket!",
+    "intro": "A Donx nem olyan, mint a megszokott apróhirdetések. A hirdetések böngészése és feladása ingyenes. Az érmék csak kapcsolat feloldására és kiemelésre valók, és aktivitással szerezheted őket.",
+    "s1Title": "1. Kezdőcsomag: 50 🪙",
+    "s1Text": "Egy kapcsolat feloldása 1 🪙, így ez 50 kapcsolatra elég.",
+    "s2Title": "2. Szerezz aktivitással",
+    "s2Text": "+1 🪙 minden új hirdetésért (naponta legfeljebb 3)\n+5 🪙, ha elintézettnek jelölsz egy hirdetést (naponta legfeljebb 2)\nPlusz a napi szerencsekerék: 1–15 🪙",
+    "s3Title": "3. Legyél látható",
+    "s3Text": "5 🪙-ért a hirdetésed 24 órára a tábla tetejére kerül.",
+    "cta": "Értem"
   }
 }

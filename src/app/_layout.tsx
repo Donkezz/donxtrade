@@ -1,7 +1,8 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, type ErrorBoundaryProps } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
+import { AppErrorScreen } from '@/components/AppErrorScreen';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { LoginModal } from '@/components/LoginModal';
 
@@ -39,4 +40,13 @@ export default function RootLayout() {
       <InnerLayout />
     </AppProvider>
   );
+}
+
+/**
+ * Expo Router wraps this layout in a React error boundary when it is exported.
+ * It replaces the whole tree, providers included, so the screen it renders is
+ * deliberately free of context — see AppErrorScreen.
+ */
+export function ErrorBoundary(props: ErrorBoundaryProps) {
+  return <AppErrorScreen error={props.error} retry={props.retry} />;
 }
