@@ -9,7 +9,7 @@ import { Alert, InputAccessoryView, Keyboard, KeyboardAvoidingView, Modal, Platf
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MapPickerModal } from '@/components/MapPickerModal';
-import { ThemedText } from '@/components/themed-text';
+import { BODY_MAX_FONT_SCALE, ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { ContactType, ListingCategory, ListingMedia, ListingType, useApp } from '@/context/AppContext';
@@ -462,7 +462,7 @@ export default function CreateScreen() {
             }}
           >
             <ThemedText type="smallBold" style={styles.label}>{t('create.titleLabel')}</ThemedText>
-            <TextInput
+            <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
               placeholder={t('create.titlePlaceholder')}
               placeholderTextColor={theme.textSecondary}
               value={title}
@@ -479,7 +479,7 @@ export default function CreateScreen() {
             }}
           >
             <ThemedText type="smallBold" style={styles.label}>{t('create.descLabel')}</ThemedText>
-            <TextInput
+            <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
               placeholder={t('create.descPlaceholder')}
               placeholderTextColor={theme.textSecondary}
               value={description}
@@ -545,7 +545,7 @@ export default function CreateScreen() {
                 },
               ]}
             >
-              <TextInput
+              <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                 placeholder={currencyDecimals === 0 ? '0' : '0.00'}
                 placeholderTextColor={theme.textSecondary}
                 value={priceText}
@@ -619,7 +619,7 @@ export default function CreateScreen() {
                     },
                   ]}
                 >
-                  <TextInput
+                  <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                     value={unit.value}
                     onChangeText={(text) => unit.setter(sanitizeUnit(text, unit.max))}
                     onFocus={() => focusField(unit.key, 'duration')}
@@ -683,7 +683,7 @@ export default function CreateScreen() {
           >
             <ThemedText type="smallBold" style={styles.label}>{t('create.locationLabel')}</ThemedText>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TextInput
+              <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                 placeholder={t('create.locationPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 value={location}
@@ -771,7 +771,7 @@ export default function CreateScreen() {
               }}
             >
               <ThemedText type="smallBold" style={styles.label}>{t('create.myRealNameLabel')}</ThemedText>
-              <TextInput
+              <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                 placeholder={t('create.myRealNamePlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 value={ownerName}
@@ -790,7 +790,7 @@ export default function CreateScreen() {
               }}
             >
               <ThemedText type="smallBold" style={styles.label}>{t('create.contactInfoLabel')}</ThemedText>
-              <TextInput
+              <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                 placeholder={t('create.contactInfoPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 value={contactInfo}

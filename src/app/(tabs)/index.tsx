@@ -9,7 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GamificationModal } from '@/components/GamificationModal';
 import { ListingPreview } from '@/components/ListingPreview';
-import { ThemedText } from '@/components/themed-text';
+import { BODY_MAX_FONT_SCALE, ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { ListingCategory, ListingType, useApp } from '@/context/AppContext';
@@ -258,7 +258,7 @@ export default function MarketplaceScreen() {
                 name={{ ios: 'magnifyingglass', android: 'search', web: 'search' }}
                 size={16}
               />
-              <TextInput
+              <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                 placeholder={t('marketplace.searchPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 value={search}
@@ -529,6 +529,10 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
+    // At large Dynamic Type sizes the wallet badge drops under the brand instead of
+    // squeezing it down to one letter per line.
+    flexWrap: 'wrap',
+    rowGap: Spacing.two,
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: Spacing.three,
@@ -549,7 +553,10 @@ const styles = StyleSheet.create({
   headerBrand: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexGrow: 1,
     flexShrink: 1,
+    flexBasis: 0,
+    minWidth: 190,
     marginRight: Spacing.two,
   },
   brandTitle: {

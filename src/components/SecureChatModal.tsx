@@ -7,7 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
-import { ThemedText } from './themed-text';
+import { BODY_MAX_FONT_SCALE, ThemedText } from './themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useApp } from '@/context/AppContext';
@@ -256,7 +256,7 @@ export const SecureChatModal: React.FC<SecureChatModalProps> = ({ visible, listi
             />
           </Pressable>
           
-          <TextInput
+          <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
             placeholder={t('chat.inputPlaceholder')}
             placeholderTextColor={theme.textSecondary}
             value={inputText}

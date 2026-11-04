@@ -3,7 +3,7 @@ import { StyleSheet, View, Modal, Pressable, TextInput, KeyboardAvoidingView, Pl
 import { SymbolView } from 'expo-symbols';
 import { useTranslation } from 'react-i18next';
 
-import { ThemedText } from './themed-text';
+import { BODY_MAX_FONT_SCALE, ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -72,7 +72,7 @@ export const LoginModal = () => {
                 {t('auth.useEmail')}
               </ThemedText>
 
-              <TextInput
+              <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                 style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
                 placeholder={t('auth.emailPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
@@ -81,7 +81,7 @@ export const LoginModal = () => {
                 autoCapitalize="none"
               />
 
-              <TextInput
+              <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                 style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
                 placeholder={t('auth.passwordPlaceholder')}
                 placeholderTextColor={theme.textSecondary}

@@ -278,17 +278,17 @@ export default function WalletScreen() {
 
             <View style={styles.statsRow}>
               <View style={styles.statBox}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.statLabel} numberOfLines={2}>{t('profile.statEarned')}</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.statLabel} numberOfLines={2} maxFontSizeMultiplier={1.15} adjustsFontSizeToFit minimumFontScale={0.8}>{t('profile.statEarned')}</ThemedText>
                 <ThemedText type="smallBold" style={{ color: '#00b894', marginTop: 2 }}>+{Math.floor(earnedCredits)}</ThemedText>
               </View>
               <View style={[styles.statDivider, { backgroundColor: theme.backgroundSelected }]} />
               <View style={styles.statBox}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.statLabel} numberOfLines={2}>{t('profile.statUnlocked')}</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.statLabel} numberOfLines={2} maxFontSizeMultiplier={1.15} adjustsFontSizeToFit minimumFontScale={0.8}>{t('profile.statUnlocked')}</ThemedText>
                 <ThemedText type="smallBold" style={{ marginTop: 2 }}>{unlockedItems.length}</ThemedText>
               </View>
               <View style={[styles.statDivider, { backgroundColor: theme.backgroundSelected }]} />
               <View style={styles.statBox}>
-                <ThemedText type="small" themeColor="textSecondary" style={styles.statLabel} numberOfLines={2}>{t('profile.statMyListings')}</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.statLabel} numberOfLines={2} maxFontSizeMultiplier={1.15} adjustsFontSizeToFit minimumFontScale={0.8}>{t('profile.statMyListings')}</ThemedText>
                 <ThemedText type="smallBold" style={{ marginTop: 2 }}>{myItems.length}</ThemedText>
               </View>
             </View>
@@ -718,7 +718,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.02)',
     padding: Spacing.three,
     borderRadius: Spacing.two,
-    marginBottom: Spacing.four,
   },
   statBox: {
     flex: 1,

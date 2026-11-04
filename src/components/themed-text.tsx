@@ -8,11 +8,23 @@ export type ThemedTextProps = TextProps & {
   themeColor?: ThemeColor;
 };
 
+/**
+ * Upper limits for Dynamic Type. Without them the largest accessibility sizes triple
+ * the text, and a 48pt title breaks into one letter per line — the layouts here are
+ * built for text up to roughly the "XXXL" setting. Body text may grow further than
+ * headings because it is what people with low vision actually need to read; headings
+ * are already large. A caller can still override with its own `maxFontSizeMultiplier`.
+ */
+export const BODY_MAX_FONT_SCALE = 1.5;
+export const HEADING_MAX_FONT_SCALE = 1.2;
+
 export function ThemedText({ style, type = 'default', themeColor, ...rest }: ThemedTextProps) {
   const theme = useTheme();
+  const isHeading = type === 'title' || type === 'subtitle';
 
   return (
     <Text
+      maxFontSizeMultiplier={isHeading ? HEADING_MAX_FONT_SCALE : BODY_MAX_FONT_SCALE}
       style={[
         { color: theme[themeColor ?? 'text'] },
         type === 'default' && styles.default,
