@@ -282,5 +282,23 @@
     "s3Title": "3. Fall auf",
     "s3Text": "Für 5 🪙 springt deine Anzeige für 24 Stunden ganz nach oben.",
     "cta": "Verstanden"
+  },
+  "demo": {
+    "1": {
+      "title": "Tagesskipass Jasná (Rest des Tages)",
+      "description": "Ich höre früher auf, der Skipass gilt für das gesamte Skigebiet Jasná Chopok bis zum Ende des Tages. Übergabe direkt auf dem Parkplatz Biela Púť."
+    },
+    "2": {
+      "title": "Gesucht: 2 Tickets für das IMT-Smile-Konzert in Prešov",
+      "description": "Ich suche zwei Tickets für das heutige Abendkonzert in Prešov. Zahlung bar oder per Überweisung bei Übergabe der Tickets."
+    },
+    "3": {
+      "title": "Schwimmbad-Dauerkarte Žilina (noch 5 Eintritte)",
+      "description": "Verkaufe eine Chip-Dauerkarte für das Schwimmbad in Žilina. Unbegrenzt gültig, es sind noch 5 Eintritte drauf. Abholung im Zentrum."
+    },
+    "4": {
+      "title": "Laufpartner für einen Abendlauf (Chopok / Jasná)",
+      "description": "Ich suche jemanden für einen Lauf im mittleren Tempo rund um den Vrbické pleso heute Abend. Nettes Gespräch und gemeinsames Tempo."
+    }
   }
 }

@@ -146,10 +146,8 @@ TestFlight ide interným testerom, App Store komukoľvek.
 - Bezplatné dobitie mincí neexistuje. Mince sa zarábajú (nový inzerát, vybavený
   inzerát, denné koleso) alebo sa vrátia tlačidlom „Obnoviť dáta", ktoré slúži
   testerom.
-- V `src/context/AppContext.tsx` zostáva po slovensky demo obsah — štyri ukážkové
-  inzeráty a skriptované odpovede chatu. Sú to dáta, nie rozhranie, ale
-  nemecký používateľ ich uvidí po slovensky.
-- `src/components/ui/WheelPicker.tsx`, `src/app/(tabs)/explore.tsx` a
-  `src/components/ScratchCard.tsx` už nikto nepoužíva
+- Štyri ukážkové inzeráty v `src/context/AppContext.tsx` sa ukladajú po slovensky,
+  ale názov a popis sa zobrazujú z kľúčov `demo.<id>.*` v aktívnom jazyku (lokality
+  zostávajú vlastné mená). Po slovensky zostávajú skriptované odpovede chatu.
 - `src/components/animated-icon.web.tsx` a `src/constants/theme.ts` majú
   zastubované importy CSS súborov, ktoré existujú → rozbité štýly na webe

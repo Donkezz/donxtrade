@@ -282,5 +282,23 @@
     "s3Title": "3. Bądź widoczny",
     "s3Text": "Za 5 🪙 twoje ogłoszenie trafia na górę tablicy na 24 godziny.",
     "cta": "Rozumiem"
+  },
+  "demo": {
+    "1": {
+      "title": "Karnet jednodniowy Jasná (reszta dnia)",
+      "description": "Kończę wcześniej, karnet jest ważny w całym ośrodku Jasná Chopok do końca dnia. Przekażę go na parkingu Biela Púť."
+    },
+    "2": {
+      "title": "Szukam: 2 bilety na koncert IMT Smile w Preszowie",
+      "description": "Kupię dwa bilety na dzisiejszy wieczorny koncert w Preszowie. Płatność gotówką lub przelewem przy odbiorze biletów."
+    },
+    "3": {
+      "title": "Karnet na basen w Żylinie (zostało 5 wejść)",
+      "description": "Sprzedam karnet chipowy na basen w Żylinie. Nie traci ważności i zostało na nim jeszcze 5 wejść. Odbiór osobisty w centrum."
+    },
+    "4": {
+      "title": "Partner do biegania wieczorem (Chopok / Jasná)",
+      "description": "Szukam kogoś na bieg w średnim tempie wokół Vrbickiego Plesa dziś wieczorem. Miła rozmowa i wspólne tempo."
+    }
   }
 }

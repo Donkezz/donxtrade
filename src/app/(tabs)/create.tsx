@@ -547,7 +547,7 @@ export default function CreateScreen() {
               ]}
             >
               <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
-                placeholder={currencyDecimals === 0 ? '0' : '0.00'}
+                placeholder="0"
                 placeholderTextColor={theme.textSecondary}
                 value={priceText}
                 onChangeText={(text) => setPriceText(sanitizeAmount(text, currencyDecimals))}

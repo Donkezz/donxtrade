@@ -282,5 +282,23 @@
     "s3Title": "3. Legyél látható",
     "s3Text": "5 🪙-ért a hirdetésed 24 órára a tábla tetejére kerül.",
     "cta": "Értem"
+  },
+  "demo": {
+    "1": {
+      "title": "Napijegy Jasná (a nap hátralévő része)",
+      "description": "Korábban végzek, a jegy a teljes Jasná Chopok síterepen érvényes a nap végéig. A Biela Púť parkolóban adom át."
+    },
+    "2": {
+      "title": "Keresek: 2 jegy az IMT Smile koncertre Eperjesen",
+      "description": "Két jegyet vennék a mai esti eperjesi koncertre. Fizetés készpénzzel vagy átutalással a jegyek átvételekor."
+    },
+    "3": {
+      "title": "Úszóbérlet Zsolna (még 5 belépés)",
+      "description": "Eladok egy chipes úszóbérletet a zsolnai uszodába. Nem jár le, és még 5 belépés van rajta. Személyes átvétel a központban."
+    },
+    "4": {
+      "title": "Futótárs esti futáshoz (Chopok / Jasná)",
+      "description": "Valakit keresek közepes tempójú futáshoz a Vrbické pleso körül ma este. Kellemes beszélgetés és közös tempó."
+    }
   }
 }

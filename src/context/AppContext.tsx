@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 import i18n from '@/i18n';
@@ -257,6 +258,8 @@ const rewardsPaidToday = (txs: Transaction[], type: Transaction['type']) =>
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [listings, setListings] = useState<Listing[]>([]);
+  // Subscribes the provider to language changes so the demo texts below follow them.
+  const { i18n: i18nHook } = useTranslation();
   const [unlockedListings, setUnlockedListings] = useState<string[]>([]);
   const [walletBalance, setWalletBalance] = useState<number>(ECONOMY.startingCoins);
   const [chats, setChats] = useState<ChatConversation[]>([]);
@@ -771,10 +774,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  // The demo listings are stored once, in Slovak. Showing them in the active language is a
+  // display concern, so the stored copy is left alone and only what the screens receive is swapped.
+  const localizedListings = useMemo(
+    () =>
+      listings.map((item) =>
+        item.isDemo
+          ? {
+              ...item,
+              title: i18n.t(`demo.${item.id}.title`, { defaultValue: item.title }),
+              description: i18n.t(`demo.${item.id}.description`, { defaultValue: item.description }),
+            }
+          : item
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the language is what changes the output
+    [listings, i18nHook.language]
+  );
+
   return (
     <AppContext.Provider
       value={{
-        listings,
+        listings: localizedListings,
         unlockedListings,
         walletBalance,
         unlockFee,

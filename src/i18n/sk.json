@@ -282,5 +282,23 @@
     "s3Title": "3. Buď vidieť",
     "s3Text": "Za 5 🪙 vyskočí tvoj inzerát na 24 hodín na vrch nástenky.",
     "cta": "Rozumiem"
+  },
+  "demo": {
+    "1": {
+      "title": "Celodenný skipas Jasná (zvyšok dňa)",
+      "description": "Končím skôr, skipas je platný na celé stredisko Jasná Chopok do konca dňa (16:00). Odovzdám priamo na parkovisku Biela Púť."
+    },
+    "2": {
+      "title": "Dopyt: 2x lístok na koncert IMT Smile v Prešove",
+      "description": "Kúpim dva lístky na dnešný večerný koncert v Prešove. Platba v hotovosti alebo na účet pri prevzatí lístkov."
+    },
+    "3": {
+      "title": "Permanentka na plaváreň Žilina (ostáva 5 vstupov)",
+      "description": "Predám čipovú permanentku na plaváreň v Žiline. Platnosť je neobmedzená, ostalo na nej ešte 5 vstupov. Osobný odber v centre."
+    },
+    "4": {
+      "title": "Parťák na večerný beh (Chopok / Jasná)",
+      "description": "Hľadám niekoho na stredne rýchly beh okolo Vrbického plesa dnes večer. Príjemný pokec a spoločné tempo."
+    }
   }
 }

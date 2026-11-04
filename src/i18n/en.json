@@ -282,5 +282,23 @@
     "s3Title": "3. Get noticed",
     "s3Text": "For 5 🪙 your listing jumps to the top of the board for 24 hours.",
     "cta": "Got it"
+  },
+  "demo": {
+    "1": {
+      "title": "Day ski pass Jasná (rest of the day)",
+      "description": "I'm leaving early. The ski pass is valid for the whole Jasná Chopok resort until the end of the day. I'll hand it over right at the Biela Púť car park."
+    },
+    "2": {
+      "title": "Wanted: 2 tickets for the IMT Smile concert in Prešov",
+      "description": "Looking for two tickets for tonight's concert in Prešov. Payment in cash or by bank transfer when I get the tickets."
+    },
+    "3": {
+      "title": "Swimming pool pass Žilina (5 entries left)",
+      "description": "Selling a chip pass for the swimming pool in Žilina. It never expires and still has 5 entries left. Pickup in the centre."
+    },
+    "4": {
+      "title": "Running buddy for an evening run (Chopok / Jasná)",
+      "description": "Looking for someone for a medium-pace run around Vrbické pleso this evening. A nice chat and a shared pace."
+    }
   }
 }
