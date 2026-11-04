@@ -11,6 +11,7 @@ import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useCurrency } from '@/hooks/use-currency';
+import { formatDateTime } from '@/utils/datetime';
 import { formatCoins } from '@/utils/coins';
 import { useApp, Listing, Transaction } from '@/context/AppContext';
 import { SecureChatModal } from '@/components/SecureChatModal';
@@ -41,7 +42,7 @@ const MyListingItem = ({
   onBoost: () => void;
   onResolve: () => void;
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { format: formatPrice } = useCurrency();
   const [timeLeft, setTimeLeft] = useState('');
@@ -71,7 +72,7 @@ const MyListingItem = ({
 
   const boosted = !!listing.boostedUntil && new Date(listing.boostedUntil).getTime() > now;
   const boostedTime = boosted
-    ? new Date(listing.boostedUntil as string).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    ? formatDateTime(new Date(listing.boostedUntil as string), i18n.language)
     : '';
 
   return (

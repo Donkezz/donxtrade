@@ -15,6 +15,7 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { ContactType, ListingCategory, ListingMedia, ListingType, useApp } from '@/context/AppContext';
 import { useTheme } from '@/hooks/use-theme';
 import { useCurrency } from '@/hooks/use-currency';
+import { formatShortDate, formatTime } from '@/utils/datetime';
 
 const CATEGORY_OPTIONS: { labelKey: string; value: ListingCategory; icon: string; fallbackIcon: string; color: string }[] = [
   { labelKey: 'common.anything', value: 'anything', icon: 'square.grid.2x2', fallbackIcon: 'apps', color: '#6c5ce7' },
@@ -88,7 +89,7 @@ function toNumber(text: string): number {
 }
 
 export default function CreateScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { symbol: currencySign, decimals: currencyDecimals } = useCurrency();
   const { createListing, currentUser, setLoginVisible } = useApp();
@@ -257,8 +258,8 @@ export default function CreateScreen() {
 
   const getFormattedExpiryPreview = () => {
     const expiryDate = new Date(nowTs + getComputedDurationMs());
-    const timeStr = expiryDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const dateStr = expiryDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const timeStr = formatTime(expiryDate, i18n.language);
+    const dateStr = formatShortDate(expiryDate, i18n.language);
     return t('create.expiryPreview', { date: dateStr, time: timeStr });
   };
 
