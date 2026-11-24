@@ -156,7 +156,5 @@ TestFlight ide interným testerom, App Store komukoľvek.
   `expo-modules-jsi` z Expo SDK 56 a pody s deployment targetom pod 15.0 sú chyba.
   Na EAS to nevadí (vlastný Xcode). Lokálne sa dá overovať JS zmeny so
   starším dev buildom; zmeny natívnej konfigurácie len vo vygenerovanom `ios/`.
-- `react-native-chart-kit` po zmazaní admin prehľadu nikto nepoužíva — odobrať
-  sa dá len so súhlasom (zmena závislostí).
 - `src/components/animated-icon.web.tsx` a `src/constants/theme.ts` majú
   zastubované importy CSS súborov, ktoré existujú → rozbité štýly na webe
