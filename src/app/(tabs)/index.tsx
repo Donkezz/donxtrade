@@ -17,6 +17,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { formatCoins } from '@/utils/coins';
 import { resolveLocaleTag } from '@/utils/currency';
 import { Coordinates, distanceKm, formatDistance } from '@/utils/geo';
+import { foldForSearch } from '@/utils/text';
 
 export default function MarketplaceScreen() {
   const { t } = useTranslation();
@@ -26,18 +27,26 @@ export default function MarketplaceScreen() {
   const [langMenuVisible, setLangMenuVisible] = useState(false);
   const [gamificationVisible, setGamificationVisible] = useState(false);
 
-  useEffect(() => {
-    const checkFirstLaunch = async () => {
-      try {
-        const hasSeen = await AsyncStorage.getItem('hasSeenGamification');
-        if (!hasSeen) {
-          setGamificationVisible(true);
-          await AsyncStorage.setItem('hasSeenGamification', 'true');
-        }
-      } catch (e) {}
-    };
-    checkFirstLaunch();
-  }, []);
+  // Set while the onboarding is open and the coins intro still has to follow it.
+  const [gamificationPending, setGamificationPending] = useState(false);
+
+  const showGamification = () => {
+    setGamificationVisible(true);
+    void AsyncStorage.setItem('hasSeenGamification', 'true');
+  };
+
+  // Runs once the onboarding window is fully gone (iOS reports it through onDismiss).
+  const showPendingGamification = () => {
+    if (!gamificationPending) return;
+    setGamificationPending(false);
+    showGamification();
+  };
+
+  const closeOnboarding = () => {
+    setOnboardingVisible(false);
+    // Android has no dismiss callback on Modal, so it moves on straight away.
+    if (Platform.OS !== 'ios') showPendingGamification();
+  };
   const LANGUAGES = [
     { code: 'sk', label: 'SK', flag: '🇸🇰' },
     { code: 'en', label: 'EN', flag: '🇬🇧' },
@@ -103,12 +112,13 @@ export default function MarketplaceScreen() {
         const hasSeen = await AsyncStorage.getItem('hasSeenOnboarding');
         const hasSeenGamification = await AsyncStorage.getItem('hasSeenGamification');
 
+        // One window at a time. iOS will not present a second modal over the first, so
+        // opening both used to drop the coins intro while still marking it as seen.
         if (!hasSeen) {
+          setGamificationPending(!hasSeenGamification);
           setOnboardingVisible(true);
           await AsyncStorage.setItem('hasSeenOnboarding', 'true');
-        }
-
-        if (!hasSeenGamification) {
+        } else if (!hasSeenGamification) {
           setGamificationVisible(true);
           await AsyncStorage.setItem('hasSeenGamification', 'true');
         }
@@ -153,6 +163,7 @@ export default function MarketplaceScreen() {
   };
 
   // Filter listings based on search, category, type, expiration and whether the owner already handled them
+  const query = foldForSearch(search.trim());
   const filteredListings = listings.filter((item) => {
     if (item.resolvedAt) return false;
 
@@ -161,9 +172,10 @@ export default function MarketplaceScreen() {
     if (isExpired) return false;
 
     const matchesSearch =
-      item.title.toLowerCase().includes(search.toLowerCase()) ||
-      item.description.toLowerCase().includes(search.toLowerCase()) ||
-      item.location.toLowerCase().includes(search.toLowerCase());
+      query === '' ||
+      foldForSearch(item.title).includes(query) ||
+      foldForSearch(item.description).includes(query) ||
+      foldForSearch(item.location).includes(query);
 
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
     const matchesType = item.type === selectedType;
@@ -443,12 +455,18 @@ export default function MarketplaceScreen() {
         </Pressable>
       </Modal>
 
-      <Modal visible={onboardingVisible} transparent animationType="slide" onRequestClose={() => setOnboardingVisible(false)}>
-        <Pressable style={styles.modalOverlay} onPress={() => setOnboardingVisible(false)}>
+      <Modal
+        visible={onboardingVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={closeOnboarding}
+        onDismiss={showPendingGamification}
+      >
+        <Pressable style={styles.modalOverlay} onPress={closeOnboarding}>
           <View style={[styles.onboardingCard, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
             <View style={styles.onboardingHeader}>
               <ThemedText type="smallBold" themeColor="textSecondary">{t('marketplace.onboardingTitle')}</ThemedText>
-              <Pressable onPress={() => setOnboardingVisible(false)}>
+              <Pressable onPress={closeOnboarding}>
                 <SymbolView tintColor={theme.textSecondary} name={{ ios: 'xmark.circle.fill', android: 'close', web: 'close' }} size={20} />
               </Pressable>
             </View>
@@ -494,7 +512,7 @@ export default function MarketplaceScreen() {
               <Pressable
                 onPress={() => {
                   if (onboardingStep === onboardingSteps.length - 1) {
-                    setOnboardingVisible(false);
+                    closeOnboarding();
                     setOnboardingStep(0);
                     return;
                   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, View, Modal, Pressable, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ export const LoginModal = () => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const passwordRef = useRef<TextInput>(null);
 
   const handleSubmit = () => {
     // Demo login: simply logs in with email as username
@@ -79,15 +80,24 @@ export const LoginModal = () => {
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="username"
+                returnKeyType="next"
+                submitBehavior="submit"
+                onSubmitEditing={() => passwordRef.current?.focus()}
               />
 
               <TextInput maxFontSizeMultiplier={BODY_MAX_FONT_SCALE}
                 style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.backgroundSelected }]}
                 placeholder={t('auth.passwordPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
+                ref={passwordRef}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                textContentType="password"
+                returnKeyType="go"
+                onSubmitEditing={handleSubmit}
               />
 
               <Pressable

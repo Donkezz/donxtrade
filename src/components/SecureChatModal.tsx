@@ -11,6 +11,7 @@ import { BODY_MAX_FONT_SCALE, ThemedText } from './themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useApp } from '@/context/AppContext';
+import { formatMessageTime } from '@/utils/datetime';
 
 interface SecureChatModalProps {
   visible: boolean;
@@ -34,7 +35,7 @@ const ChatVideoPlayer = ({ uri }: { uri: string }) => {
 };
 
 export const SecureChatModal: React.FC<SecureChatModalProps> = ({ visible, listingId, onClose }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { chats, sendMessage, listings } = useApp();
   const [inputText, setInputText] = useState('');
@@ -194,7 +195,7 @@ export const SecureChatModal: React.FC<SecureChatModalProps> = ({ visible, listi
                         { color: isMe ? theme.background + 'A0' : theme.textSecondary }
                       ]}
                     >
-                      {msg.timestamp}
+                      {formatMessageTime(msg.timestamp, i18n.language)}
                     </ThemedText>
                   </View>
                 </View>

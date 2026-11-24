@@ -36,3 +36,9 @@ export const formatTime = (date: Date, language?: string | null) => format(date,
 export const formatShortDate = (date: Date, language?: string | null) => format(date, language, 'date');
 /** Day, month and clock time — for moments that may be more than a day away. */
 export const formatDateTime = (date: Date, language?: string | null) => format(date, language, 'dateTime');
+
+/** Clock time of a chat message. Older builds stored it already formatted; those pass through. */
+export function formatMessageTime(value: string, language?: string | null): string {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : formatTime(date, language);
+}

@@ -44,6 +44,7 @@ export interface Message {
   id: string;
   sender: 'me' | 'them';
   text: string;
+  /** ISO time. Messages saved by older builds hold a preformatted clock time instead. */
   timestamp: string;
   mediaUri?: string;
   mediaType?: 'image' | 'video';
@@ -338,10 +339,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
 
         // Initialize Language
-        const locales = Localization.getLocales();
-        const systemLanguage = locales && locales.length > 0 ? locales[0].languageCode : 'sk';
-        const activeLanguage = storedLanguage || systemLanguage || 'sk';
-        const supportedLanguage = ['sk', 'en', 'pl', 'hu', 'uk', 'de'].includes(activeLanguage) ? activeLanguage : 'sk';
+        // First of the phone's preferred languages that the app has. Someone whose phone
+        // is set to Italian, then German, gets German; with no match at all, English,
+        // which more people read than Slovak.
+        const supported = ['sk', 'en', 'pl', 'hu', 'uk', 'de'];
+        const deviceLanguage = Localization.getLocales()
+          .map((locale) => locale.languageCode)
+          .find((code): code is string => !!code && supported.includes(code));
+        const supportedLanguage =
+          storedLanguage && supported.includes(storedLanguage) ? storedLanguage : deviceLanguage ?? 'en';
         
         setAppLanguageState(supportedLanguage);
         await i18n.changeLanguage(supportedLanguage);
@@ -612,8 +618,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         {
           id: Math.random().toString(),
           sender: 'them',
-          text: `Ahoj! Píšeš ohľadom inzerátu "${listingTitle}". Chat je plne zabezpečený.`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: `Ahoj! Píšeš ohľadom inzerátu "${listingTitle}"?`,
+          timestamp: new Date().toISOString(),
         },
       ],
     };
@@ -632,7 +638,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: Math.random().toString(),
       sender: 'me',
       text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toISOString(),
       mediaUri: media?.uri,
       mediaType: media?.type,
     };
@@ -693,7 +699,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         id: Math.random().toString(),
         sender: 'them',
         text: replyText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        timestamp: new Date().toISOString(),
       };
 
       latestChat.messages = [...latestChat.messages, replyMessage];

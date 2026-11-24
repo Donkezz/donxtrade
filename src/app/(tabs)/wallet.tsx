@@ -11,7 +11,7 @@ import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useCurrency } from '@/hooks/use-currency';
-import { formatDateTime } from '@/utils/datetime';
+import { formatDateTime, formatMessageTime } from '@/utils/datetime';
 import { formatCoins } from '@/utils/coins';
 import { useApp, Listing, Transaction } from '@/context/AppContext';
 import { SecureChatModal } from '@/components/SecureChatModal';
@@ -133,7 +133,7 @@ const MyListingItem = ({
 
 
 export default function WalletScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { 
     walletBalance, 
@@ -261,11 +261,32 @@ export default function WalletScreen() {
             </View>
           </View>
 
-          {currentUser && (
+          {/* Signed out, the way back in comes first, not under the settings. */}
+          {currentUser ? (
             <View style={{ alignItems: 'flex-end', marginBottom: Spacing.four }}>
               <ThemedText type="smallBold" themeColor="textSecondary">{t('auth.loggedInAs', { name: currentUser.name })}</ThemedText>
               <Pressable onPress={logout} style={{ marginTop: Spacing.one }}>
                 <ThemedText type="smallBold" style={{ color: '#ff6b6b' }}>{t('profile.logout')}</ThemedText>
+              </Pressable>
+            </View>
+          ) : (
+            <View style={[styles.loginPrompt, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
+              <SymbolView tintColor={theme.text} name={{ ios: 'lock.circle.fill', android: 'lock', web: 'lock' } as any} size={48} />
+              <ThemedText type="subtitle" style={{ marginTop: Spacing.three, textAlign: 'center' }}>
+                {t('auth.loginRequiredTitle')}
+              </ThemedText>
+              <ThemedText type="small" themeColor="textSecondary" style={{ textAlign: 'center', marginTop: Spacing.one, marginBottom: Spacing.four }}>
+                {t('auth.loginRequiredWallet')}
+              </ThemedText>
+              <Pressable
+                onPress={() => setLoginVisible(true)}
+                style={({ pressed }) => [
+                  styles.primaryButton,
+                  { backgroundColor: theme.text },
+                  pressed && { opacity: 0.8 }
+                ]}
+              >
+                <ThemedText type="smallBold" style={{ color: theme.background }}>{t('profile.login')}</ThemedText>
               </Pressable>
             </View>
           )}
@@ -351,27 +372,7 @@ export default function WalletScreen() {
             </View>
           </View>
 
-          {!currentUser ? (
-            <View style={[styles.loginPrompt, { backgroundColor: theme.backgroundElement, borderColor: theme.backgroundSelected }]}>
-              <SymbolView tintColor={theme.text} name={{ ios: 'lock.circle.fill', android: 'lock', web: 'lock' } as any} size={48} />
-              <ThemedText type="subtitle" style={{ marginTop: Spacing.three, textAlign: 'center' }}>
-                {t('auth.loginRequiredTitle')}
-              </ThemedText>
-              <ThemedText type="small" themeColor="textSecondary" style={{ textAlign: 'center', marginTop: Spacing.one, marginBottom: Spacing.four }}>
-                {t('auth.loginRequiredWallet')}
-              </ThemedText>
-              <Pressable
-                onPress={() => setLoginVisible(true)}
-                style={({ pressed }) => [
-                  styles.primaryButton,
-                  { backgroundColor: theme.text },
-                  pressed && { opacity: 0.8 }
-                ]}
-              >
-                <ThemedText type="smallBold" style={{ color: theme.background }}>{t('profile.login')}</ThemedText>
-              </Pressable>
-            </View>
-          ) : (
+          {!currentUser ? null : (
             <>
           {/* Action Buttons */}
           <View style={[styles.buttonRow, { marginTop: Spacing.four }]}>
@@ -496,7 +497,8 @@ export default function WalletScreen() {
                     <View style={styles.contactField}>
                       <ThemedText type="small" themeColor="textSecondary">{t('chat.unlockedInfoVal')}:</ThemedText>
                       <ThemedText type="code" style={[styles.contactVal, { color: theme.text }]} selectable>
-                        {item.contactInfo}
+                        {/* Chat listings store a placeholder, not a contact; name the channel in the user's language. */}
+                        {item.contactType === 'chat' ? t('create.contactChat') : item.contactInfo}
                       </ThemedText>
                     </View>
                   </View>
@@ -539,14 +541,15 @@ export default function WalletScreen() {
                     ]}
                   >
                     <View style={styles.unlockedCardHeader}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      {/* The name gives up width; the time always stays whole. */}
+                      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: Spacing.two }}>
                         <View style={styles.onlineDot} />
-                        <ThemedText type="smallBold" style={styles.unlockedItemTitle}>
+                        <ThemedText type="smallBold" style={styles.unlockedItemTitle} numberOfLines={1}>
                           {chat.participantName}
                         </ThemedText>
                       </View>
-                      <ThemedText type="small" themeColor="textSecondary">
-                        {lastMsg ? lastMsg.timestamp : ''}
+                      <ThemedText type="small" themeColor="textSecondary" style={{ flexShrink: 0 }}>
+                        {lastMsg ? formatMessageTime(lastMsg.timestamp, i18n.language) : ''}
                       </ThemedText>
                     </View>
                     <ThemedText type="small" themeColor="textSecondary" numberOfLines={1} style={{ marginTop: Spacing.half }}>
@@ -967,7 +970,7 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.three,
     borderWidth: 1,
     alignItems: 'center',
-    marginTop: Spacing.four,
+    marginBottom: Spacing.four,
   },
   primaryButton: {
     paddingHorizontal: Spacing.four,
