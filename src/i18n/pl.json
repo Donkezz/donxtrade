@@ -44,7 +44,7 @@
     "onboardingStep2Title": "Dodaj ogłoszenie w minucie",
     "onboardingStep2Text": "Dodaj zdjęcia, cenę i lokalizację oraz opublikuj je od razu.",
     "onboardingStep3Title": "Umów się bezpiecznie",
-    "onboardingStep3Text": "Bezpieczny czat i odblokowanie kontaktu zapewniają kontrolę i zaufanie.",
+    "onboardingStep3Text": "Kontakt pojawia się dopiero po odblokowaniu. Na przekazanie wybierz miejsce publiczne.",
     "nextStep": "Dalej",
     "categoriesLabel": "Kategorie",
     "swipeHint": "Przesuń dalej",
@@ -55,8 +55,7 @@
   "navigation": {
     "marketplace": "Oferty",
     "create": "Dodaj",
-    "profile": "Profil",
-    "admin": "Admin"
+    "profile": "Profil"
   },
   "create": {
     "title": "Nowe ogłoszenie",
@@ -79,7 +78,7 @@
     "contactInfoLabel": "Dane kontaktowe (ukryte za 1 🪙)",
     "contactInfoPlaceholder": "Np. Telefon, Telegram, e-mail...",
     "contactInfoSub": "Kupujący odblokuje je po zapłaceniu 1 🪙.",
-    "secureChatTitle": "🔒 Bezpieczny czat włączony",
+    "secureChatTitle": "💬 Kontakt przez czat w aplikacji",
     "secureChatSub": "Zainteresowani rozpoczną z Tobą prywatną konwersację w aplikacji Donx. Nie musisz podawać danych osobowych.",
     "submitBtn": "Opublikuj ogłoszenie",
     "submittingBtn": "Publikowanie...",
@@ -117,7 +116,7 @@
     "attachGallery": "Galeria zdjęć i filmów",
     "attachFiles": "Pliki z telefonu",
     "cameraDenied": "Aplikacja nie ma dostępu do aparatu.",
-    "contactChat": "🔒 Czat prywatny",
+    "contactChat": "💬 Czat prywatny",
     "contactPhone": "Telefon / E-mail",
     "successRewarded": "Ogłoszenie opublikowane. Dodano +1 🪙"
   },
@@ -182,8 +181,7 @@
     "resolveBtn": "Załatwione",
     "resolveConfirm": "Oznaczyć jako załatwione? Ogłoszenie zniknie z tablicy.",
     "resolveRewarded": "Załatwione. Dodano +5 🪙",
-    "resolveNoReward": "Załatwione. Dzisiejszy limit nagród wykorzystany.",
-    "adminDashboardBtn": "Panel administratora"
+    "resolveNoReward": "Załatwione. Dzisiejszy limit nagród wykorzystany."
   },
   "listingCard": {
     "priceLabel": "Cena",
@@ -193,13 +191,13 @@
     "insufficientFundsTitle": "Za mało monet",
     "insufficientFundsSub": "Do odblokowania kontaktu potrzebujesz co najmniej 1 🪙. Monety zdobędziesz w dziennym bonusie.",
     "unlockConfirm": "Odblokować ten kontakt za 1 🪙?",
-    "chatBtn": "Rozpocznij bezpieczny czat",
+    "chatBtn": "Napisz wiadomość",
     "unlockedLabel": "Kontakt odblokowany",
     "unlockedAnonLabel": "Anonim odblokowany",
     "shareMessage": "Zobacz to ogłoszenie na Donx: „{{title}}” za {{price}}! Dołącz do Donx i dogadaj się."
   },
   "chat": {
-    "title": "Bezpieczny czat - %s",
+    "title": "Czat - %s",
     "inputPlaceholder": "Wpisz wiadomość...",
     "typing": "pisze...",
     "emptyChat": "Brak wiadomości. Rozpocznij rozmowę!",
@@ -210,20 +208,11 @@
     "videoAttachment": "🎥 Wideo",
     "securityBanner": "Czat demo: odpowiedzi są automatyczne i nic nie jest nigdzie wysyłane."
   },
-  "admin": {
-    "title": "Przegląd aplikacji",
-    "listings": "Ogłoszenia",
-    "topups": "Doładowania",
-    "categorySplit": "Podział kategorii",
-    "activityMap": "Mapa aktywności użytkowników",
-    "weeklyActivity": "Aktywność tygodniowa (liczba akcji)",
-    "mapUnavailable": "Mapa nie jest dostępna w widoku webowym."
-  },
   "auth": {
     "loginTitle": "Logowanie",
     "registerTitle": "Utwórz konto",
     "useEmail": "Użyj e-maila lub numeru telefonu",
-    "emailPlaceholder": "E-mail lub telefon (Demo: admin)",
+    "emailPlaceholder": "E-mail lub telefon",
     "passwordPlaceholder": "Hasło (Demo: cokolwiek)",
     "loginBtn": "Zaloguj się",
     "registerBtn": "Utwórz konto",
@@ -282,5 +271,23 @@
     "s3Title": "3. Bądź widoczny",
     "s3Text": "Za 5 🪙 twoje ogłoszenie trafia na górę tablicy na 24 godziny.",
     "cta": "Rozumiem"
+  },
+  "demo": {
+    "1": {
+      "title": "Karnet jednodniowy Jasná (reszta dnia)",
+      "description": "Kończę wcześniej, karnet jest ważny w całym ośrodku Jasná Chopok do końca dnia. Przekażę go na parkingu Biela Púť."
+    },
+    "2": {
+      "title": "Szukam: 2 bilety na koncert IMT Smile w Preszowie",
+      "description": "Kupię dwa bilety na dzisiejszy wieczorny koncert w Preszowie. Płatność gotówką lub przelewem przy odbiorze biletów."
+    },
+    "3": {
+      "title": "Karnet na basen w Żylinie (zostało 5 wejść)",
+      "description": "Sprzedam karnet chipowy na basen w Żylinie. Nie traci ważności i zostało na nim jeszcze 5 wejść. Odbiór osobisty w centrum."
+    },
+    "4": {
+      "title": "Partner do biegania wieczorem (Chopok / Jasná)",
+      "description": "Szukam kogoś na bieg w średnim tempie wokół Vrbickiego Plesa dziś wieczorem. Miła rozmowa i wspólne tempo."
+    }
   }
 }

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "DonX",
+    "NSLocationWhenInUseUsageDescription": "Your location is used to sort listings by distance and to place your listing on the map.",
+    "NSLocationAlwaysAndWhenInUseUsageDescription": "Your location is used to sort listings by distance and to place your listing on the map.",
+    "NSLocationAlwaysUsageDescription": "Your location is used to sort listings by distance and to place your listing on the map.",
+    "NSMotionUsageDescription": "DonX does not use motion data.",
+    "NSPhotoLibraryUsageDescription": "Photo access lets you add pictures and videos to your listing.",
+    "NSCameraUsageDescription": "The camera lets you take a photo for your listing."
+  }
+}

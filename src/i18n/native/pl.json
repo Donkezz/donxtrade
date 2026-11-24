@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "DonX",
+    "NSLocationWhenInUseUsageDescription": "Lokalizacja służy do sortowania ogłoszeń według odległości i do zaznaczenia Twojego ogłoszenia na mapie.",
+    "NSLocationAlwaysAndWhenInUseUsageDescription": "Lokalizacja służy do sortowania ogłoszeń według odległości i do zaznaczenia Twojego ogłoszenia na mapie.",
+    "NSLocationAlwaysUsageDescription": "Lokalizacja służy do sortowania ogłoszeń według odległości i do zaznaczenia Twojego ogłoszenia na mapie.",
+    "NSMotionUsageDescription": "DonX nie korzysta z danych o ruchu.",
+    "NSPhotoLibraryUsageDescription": "Dostęp do zdjęć pozwala dodać zdjęcia i filmy do ogłoszenia.",
+    "NSCameraUsageDescription": "Aparat pozwala zrobić zdjęcie do ogłoszenia."
+  }
+}

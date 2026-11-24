@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useMemo, useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 import i18n from '@/i18n';
@@ -43,6 +44,7 @@ export interface Message {
   id: string;
   sender: 'me' | 'them';
   text: string;
+  /** ISO time. Messages saved by older builds hold a preformatted clock time instead. */
   timestamp: string;
   mediaUri?: string;
   mediaType?: 'image' | 'video';
@@ -68,7 +70,6 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'user';
 }
 
 interface AppContextType {
@@ -257,6 +258,8 @@ const rewardsPaidToday = (txs: Transaction[], type: Transaction['type']) =>
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [listings, setListings] = useState<Listing[]>([]);
+  // Subscribes the provider to language changes so the demo texts below follow them.
+  const { i18n: i18nHook } = useTranslation();
   const [unlockedListings, setUnlockedListings] = useState<string[]>([]);
   const [walletBalance, setWalletBalance] = useState<number>(ECONOMY.startingCoins);
   const [chats, setChats] = useState<ChatConversation[]>([]);
@@ -268,6 +271,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoginVisible, setLoginVisible] = useState(false);
+  /** Action that asked for a sign-in; runs once the user has signed in. */
+  const pendingAuthAction = useRef<(() => void) | null>(null);
   
   /**
    * Coins are a whole-number unit of their own, not a money amount. One coin buys
@@ -335,10 +340,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
 
         // Initialize Language
-        const locales = Localization.getLocales();
-        const systemLanguage = locales && locales.length > 0 ? locales[0].languageCode : 'sk';
-        const activeLanguage = storedLanguage || systemLanguage || 'sk';
-        const supportedLanguage = ['sk', 'en', 'pl', 'hu', 'uk', 'de'].includes(activeLanguage) ? activeLanguage : 'sk';
+        // First of the phone's preferred languages that the app has. Someone whose phone
+        // is set to Italian, then German, gets German; with no match at all, English,
+        // which more people read than Slovak.
+        const supported = ['sk', 'en', 'pl', 'hu', 'uk', 'de'];
+        const deviceLanguage = Localization.getLocales()
+          .map((locale) => locale.languageCode)
+          .find((code): code is string => !!code && supported.includes(code));
+        const supportedLanguage =
+          storedLanguage && supported.includes(storedLanguage) ? storedLanguage : deviceLanguage ?? 'en';
         
         setAppLanguageState(supportedLanguage);
         await i18n.changeLanguage(supportedLanguage);
@@ -387,11 +397,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: Math.random().toString(),
       email,
       name: email.split('@')[0],
-      role: email.toLowerCase() === 'admin' ? 'admin' : 'user',
     };
     setCurrentUser(user);
     setLoginVisible(false);
     await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+
+    // Finish what the user was doing when the sign-in sheet came up, e.g. unlocking a
+    // contact. Waits for the sheet to slide away: iOS drops an alert shown over it.
+    const next = pendingAuthAction.current;
+    pendingAuthAction.current = null;
+    if (next) setTimeout(next, 600);
   };
 
   const logout = async () => {
@@ -403,9 +418,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (currentUser) {
       callback();
     } else {
+      pendingAuthAction.current = callback;
       setLoginVisible(true);
     }
   };
+
+  // Closing the sign-in sheet without signing in drops the remembered action, so a
+  // later sign-in from the profile does not suddenly unlock something.
+  useEffect(() => {
+    if (!isLoginVisible && !currentUser) pendingAuthAction.current = null;
+  }, [isLoginVisible, currentUser]);
 
   const createListing = async (newListingData: Omit<Listing, 'id' | 'createdAt' | 'isMine' | 'likes' | 'isLiked'>): Promise<boolean> => {
     try {
@@ -609,8 +631,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         {
           id: Math.random().toString(),
           sender: 'them',
-          text: `Ahoj! Píšeš ohľadom inzerátu "${listingTitle}". Chat je plne zabezpečený.`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: `Ahoj! Píšeš ohľadom inzerátu "${listingTitle}"?`,
+          timestamp: new Date().toISOString(),
         },
       ],
     };
@@ -629,7 +651,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: Math.random().toString(),
       sender: 'me',
       text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toISOString(),
       mediaUri: media?.uri,
       mediaType: media?.type,
     };
@@ -690,7 +712,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         id: Math.random().toString(),
         sender: 'them',
         text: replyText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        timestamp: new Date().toISOString(),
       };
 
       latestChat.messages = [...latestChat.messages, replyMessage];
@@ -771,10 +793,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  // The demo listings are stored once, in Slovak. Showing them in the active language is a
+  // display concern, so the stored copy is left alone and only what the screens receive is swapped.
+  const localizedListings = useMemo(
+    () =>
+      listings.map((item) =>
+        item.isDemo
+          ? {
+              ...item,
+              title: i18n.t(`demo.${item.id}.title`, { defaultValue: item.title }),
+              description: i18n.t(`demo.${item.id}.description`, { defaultValue: item.description }),
+            }
+          : item
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the language is what changes the output
+    [listings, i18nHook.language]
+  );
+
   return (
     <AppContext.Provider
       value={{
-        listings,
+        listings: localizedListings,
         unlockedListings,
         walletBalance,
         unlockFee,

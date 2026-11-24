@@ -317,13 +317,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
                     pressed && { opacity: 0.8 }
                   ]}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.one }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.one, flexShrink: 1 }}>
                     <SymbolView
                       tintColor="#ffffff"
-                      name={{ ios: 'lock.bubble.fill' as any, android: 'chat' as any, web: 'chat' as any }}
+                      name={{ ios: 'bubble.left.fill', android: 'chat', web: 'chat' }}
                       size={12}
                     />
-                    <ThemedText type="smallBold" style={{ color: '#ffffff' }}>
+                    <ThemedText type="smallBold" style={{ color: '#ffffff', flexShrink: 1, textAlign: 'center' }}>
                       {t('listingCard.chatBtn')}
                     </ThemedText>
                   </View>
@@ -476,11 +476,17 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     paddingTop: Spacing.three,
     flexDirection: 'row',
+    // With a struck-through original price, a long button label or a long translation
+    // the action moves under the price instead of drawing over it.
+    flexWrap: 'wrap',
+    rowGap: Spacing.two,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   priceContainer: {
     justifyContent: 'center',
+    flexShrink: 0,
+    marginRight: Spacing.three,
   },
   priceRow: {
     flexDirection: 'row',
@@ -497,11 +503,15 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   actionContainer: {
-    flex: 1,
-    marginLeft: Spacing.three,
+    flexGrow: 1,
+    flexShrink: 1,
+    minWidth: 150,
     alignItems: 'flex-end',
   },
   unlockButton: {
+    // Never wider than the space next to the price: the column aligns it to the right,
+    // so anything wider would spill left over the price.
+    maxWidth: '100%',
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     borderRadius: Spacing.two,

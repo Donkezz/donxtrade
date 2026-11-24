@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "DonX",
+    "NSLocationWhenInUseUsageDescription": "Poloha slúži na zoradenie inzerátov podľa vzdialenosti a na umiestnenie tvojho inzerátu na mape.",
+    "NSLocationAlwaysAndWhenInUseUsageDescription": "Poloha slúži na zoradenie inzerátov podľa vzdialenosti a na umiestnenie tvojho inzerátu na mape.",
+    "NSLocationAlwaysUsageDescription": "Poloha slúži na zoradenie inzerátov podľa vzdialenosti a na umiestnenie tvojho inzerátu na mape.",
+    "NSMotionUsageDescription": "DonX nepoužíva údaje o pohybe.",
+    "NSPhotoLibraryUsageDescription": "Prístup k fotkám slúži na pridanie obrázkov a videí k tvojmu inzerátu.",
+    "NSCameraUsageDescription": "Fotoaparát slúži na odfotenie veci priamo pre tvoj inzerát."
+  }
+}
