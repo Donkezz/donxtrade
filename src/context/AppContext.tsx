@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
+import React, { createContext, useContext, useMemo, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
@@ -70,7 +70,6 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'user';
 }
 
 interface AppContextType {
@@ -272,6 +271,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoginVisible, setLoginVisible] = useState(false);
+  /** Action that asked for a sign-in; runs once the user has signed in. */
+  const pendingAuthAction = useRef<(() => void) | null>(null);
   
   /**
    * Coins are a whole-number unit of their own, not a money amount. One coin buys
@@ -396,11 +397,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: Math.random().toString(),
       email,
       name: email.split('@')[0],
-      role: email.toLowerCase() === 'admin' ? 'admin' : 'user',
     };
     setCurrentUser(user);
     setLoginVisible(false);
     await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+
+    // Finish what the user was doing when the sign-in sheet came up, e.g. unlocking a
+    // contact. Waits for the sheet to slide away: iOS drops an alert shown over it.
+    const next = pendingAuthAction.current;
+    pendingAuthAction.current = null;
+    if (next) setTimeout(next, 600);
   };
 
   const logout = async () => {
@@ -412,9 +418,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (currentUser) {
       callback();
     } else {
+      pendingAuthAction.current = callback;
       setLoginVisible(true);
     }
   };
+
+  // Closing the sign-in sheet without signing in drops the remembered action, so a
+  // later sign-in from the profile does not suddenly unlock something.
+  useEffect(() => {
+    if (!isLoginVisible && !currentUser) pendingAuthAction.current = null;
+  }, [isLoginVisible, currentUser]);
 
   const createListing = async (newListingData: Omit<Listing, 'id' | 'createdAt' | 'isMine' | 'likes' | 'isLiked'>): Promise<boolean> => {
     try {

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "DonX",
+    "NSLocationWhenInUseUsageDescription": "Dein Standort wird verwendet, um Anzeigen nach Entfernung zu sortieren und deine Anzeige auf der Karte zu platzieren.",
+    "NSLocationAlwaysAndWhenInUseUsageDescription": "Dein Standort wird verwendet, um Anzeigen nach Entfernung zu sortieren und deine Anzeige auf der Karte zu platzieren.",
+    "NSLocationAlwaysUsageDescription": "Dein Standort wird verwendet, um Anzeigen nach Entfernung zu sortieren und deine Anzeige auf der Karte zu platzieren.",
+    "NSMotionUsageDescription": "DonX verwendet keine Bewegungsdaten.",
+    "NSPhotoLibraryUsageDescription": "Mit dem Zugriff auf Fotos kannst du Bilder und Videos zu deiner Anzeige hinzufügen.",
+    "NSCameraUsageDescription": "Mit der Kamera kannst du ein Foto für deine Anzeige aufnehmen."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "DonX",
+    "NSLocationWhenInUseUsageDescription": "Геолокація потрібна, щоб сортувати оголошення за відстанню та позначити ваше оголошення на мапі.",
+    "NSLocationAlwaysAndWhenInUseUsageDescription": "Геолокація потрібна, щоб сортувати оголошення за відстанню та позначити ваше оголошення на мапі.",
+    "NSLocationAlwaysUsageDescription": "Геолокація потрібна, щоб сортувати оголошення за відстанню та позначити ваше оголошення на мапі.",
+    "NSMotionUsageDescription": "DonX не використовує дані про рух.",
+    "NSPhotoLibraryUsageDescription": "Доступ до фото дає змогу додати зображення та відео до оголошення.",
+    "NSCameraUsageDescription": "Камера дає змогу сфотографувати річ для оголошення."
+  }
+}

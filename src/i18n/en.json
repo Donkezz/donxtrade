@@ -44,7 +44,7 @@
     "onboardingStep2Title": "Create a listing in a minute",
     "onboardingStep2Text": "Add photos, the price, and your location and publish it right away.",
     "onboardingStep3Title": "Arrange safely",
-    "onboardingStep3Text": "Secure chat and contact unlocking keep the experience safe and trustworthy.",
+    "onboardingStep3Text": "Contact details show only after unlocking. Pick a public place for the handover.",
     "nextStep": "Next",
     "categoriesLabel": "Categories",
     "swipeHint": "Swipe for more",
@@ -55,8 +55,7 @@
   "navigation": {
     "marketplace": "Offers",
     "create": "Add",
-    "profile": "Profile",
-    "admin": "Admin"
+    "profile": "Profile"
   },
   "create": {
     "title": "New Listing",
@@ -79,7 +78,7 @@
     "contactInfoLabel": "Contact details (hidden behind 1 🪙)",
     "contactInfoPlaceholder": "e.g., Phone, Telegram, Email...",
     "contactInfoSub": "The buyer unlocks this after paying 1 🪙.",
-    "secureChatTitle": "🔒 Secure Chat Enabled",
+    "secureChatTitle": "💬 Contact through in-app chat",
     "secureChatSub": "Buyers will start a private conversation with you in the Donx app. No personal contact details needed.",
     "submitBtn": "Publish Listing",
     "submittingBtn": "Publishing...",
@@ -117,7 +116,7 @@
     "attachGallery": "Photo and video library",
     "attachFiles": "Files on this phone",
     "cameraDenied": "The app has no access to the camera.",
-    "contactChat": "🔒 Private chat",
+    "contactChat": "💬 Private chat",
     "contactPhone": "Phone / Email",
     "successRewarded": "Listing published. +1 🪙 added"
   },
@@ -134,7 +133,7 @@
     "transactionsSection": "Transaction History",
     "unlockedContactsSection": "Unlocked Contacts (%s)",
     "noUnlockedContacts": "No unlocked contacts yet. Unlocking one costs 1 🪙.",
-    "activeChatsSection": "Active Secure Chats (%s)",
+    "activeChatsSection": "Active chats (%s)",
     "noActiveChats": "No active chats yet. Unlock a chat-enabled listing to start messaging.",
     "settingsSection": "App Settings",
     "languageLabel": "App Language",
@@ -182,8 +181,7 @@
     "resolveBtn": "Mark as done",
     "resolveConfirm": "Mark as done? The listing will leave the board.",
     "resolveRewarded": "Marked as done. +5 🪙 added",
-    "resolveNoReward": "Marked as done. Today's reward limit is used up.",
-    "adminDashboardBtn": "Admin dashboard"
+    "resolveNoReward": "Marked as done. Today's reward limit is used up."
   },
   "listingCard": {
     "priceLabel": "Price",
@@ -193,13 +191,13 @@
     "insufficientFundsTitle": "Not enough coins",
     "insufficientFundsSub": "You need at least 1 🪙 to unlock this contact. Earn coins with the daily bonus.",
     "unlockConfirm": "Unlock this contact for 1 🪙?",
-    "chatBtn": "Start Secure Chat",
+    "chatBtn": "Send a message",
     "unlockedLabel": "Contact Unlocked",
     "unlockedAnonLabel": "Anonymous Unlocked",
     "shareMessage": "Check out this listing on Donx: “{{title}}” for {{price}}! Join Donx and make a deal."
   },
   "chat": {
-    "title": "Secure Chat - %s",
+    "title": "Chat - %s",
     "inputPlaceholder": "Type a message...",
     "typing": "is typing...",
     "emptyChat": "No messages yet. Start the conversation!",
@@ -210,20 +208,11 @@
     "videoAttachment": "🎥 Video",
     "securityBanner": "Demo chat: replies are automatic and nothing is sent anywhere."
   },
-  "admin": {
-    "title": "App overview",
-    "listings": "Listings",
-    "topups": "Top-ups",
-    "categorySplit": "Category split",
-    "activityMap": "User activity map",
-    "weeklyActivity": "Weekly activity (number of actions)",
-    "mapUnavailable": "The map is not available in the web view."
-  },
   "auth": {
     "loginTitle": "Log in",
     "registerTitle": "Create account",
     "useEmail": "Use your email or phone number",
-    "emailPlaceholder": "Email or phone (Demo: admin)",
+    "emailPlaceholder": "Email or phone",
     "passwordPlaceholder": "Password (Demo: anything)",
     "loginBtn": "Log in",
     "registerBtn": "Create account",

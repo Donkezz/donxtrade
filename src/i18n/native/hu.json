@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "DonX",
+    "NSLocationWhenInUseUsageDescription": "A helyadatot a hirdetések távolság szerinti rendezésére és a hirdetésed térképen való elhelyezésére használjuk.",
+    "NSLocationAlwaysAndWhenInUseUsageDescription": "A helyadatot a hirdetések távolság szerinti rendezésére és a hirdetésed térképen való elhelyezésére használjuk.",
+    "NSLocationAlwaysUsageDescription": "A helyadatot a hirdetések távolság szerinti rendezésére és a hirdetésed térképen való elhelyezésére használjuk.",
+    "NSMotionUsageDescription": "A DonX nem használ mozgásadatokat.",
+    "NSPhotoLibraryUsageDescription": "A fotókhoz való hozzáféréssel képeket és videókat adhatsz a hirdetésedhez.",
+    "NSCameraUsageDescription": "A kamerával fényképet készíthetsz a hirdetésedhez."
+  }
+}

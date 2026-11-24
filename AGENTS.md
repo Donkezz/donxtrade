@@ -33,6 +33,9 @@ formát dátumu.
   desatinných miest. Suma je hodnota plus kód meny, formátovaná cez
   `src/utils/currency.ts`, ktoré berie menu z regiónu zariadenia a formát
   z aktívneho jazyka.
+- **Texty iOS povolení a názov pod ikonou** sú v `src/i18n/native/<jazyk>.json`
+  (odkazuje na ne `locales` v `app.json`). Aj tam patrí všetkých šesť jazykov
+  a v texte nesmú byť úvodzovky — zapisujú sa bez escapovania do `InfoPlist.strings`.
 - **Žiadne natvrdo napísané formáty dátumu, času a čísel.** Používaj `Intl` —
   nikdy pevné `DD.MM.YYYY` ani predpokladanú desatinnú čiarku.
 - **Neodvodzuj krajinu z jazyka ani jazyk z krajiny.** Sú to samostatné veci.
@@ -135,9 +138,9 @@ TestFlight ide interným testerom, App Store komukoľvek.
   je pravdivé a má tam zostať.
 - **Appka nemá server.** Všetko je v `AsyncStorage` na jednom telefóne, takže
   inzerát, ktorý niekto pridá, nikto iný neuvidí. Chat je skript (automatické
-  odpovede podľa kľúčových slov) a prihlásenie nekontroluje heslo — kto zadá
-  `admin`, dostane rolu admin. Prihlasovacie okno a chat to používateľovi
-  priamo hovoria. Zarábanie mincí za *potvrdenú dohodu* sa nedá postaviť
+  odpovede podľa kľúčových slov) a prihlásenie nekontroluje heslo. Prihlasovacie
+  okno a chat to používateľovi priamo hovoria. Chat preto nikde nesmie sľubovať,
+  že je „bezpečný“ alebo „zabezpečený“. Zarábanie mincí za *potvrdenú dohodu* sa nedá postaviť
   poctivo, kým obe strany nie sú dve rôzne zariadenia: najprv backend.
 - Ekonomika mincí žije v `src/constants/economy.ts`. Tie isté čísla sú aj
   v textoch (`gamification.*`, `profile.boost*`), lebo každý jazyk ich píše
@@ -149,5 +152,11 @@ TestFlight ide interným testerom, App Store komukoľvek.
 - Štyri ukážkové inzeráty v `src/context/AppContext.tsx` sa ukladajú po slovensky,
   ale názov a popis sa zobrazujú z kľúčov `demo.<id>.*` v aktívnom jazyku (lokality
   zostávajú vlastné mená). Po slovensky zostávajú skriptované odpovede chatu.
+- **Lokálny natívny build s Xcode 27.2 nejde.** Swift odmieta
+  `expo-modules-jsi` z Expo SDK 56 a pody s deployment targetom pod 15.0 sú chyba.
+  Na EAS to nevadí (vlastný Xcode). Lokálne sa dá overovať JS zmeny so
+  starším dev buildom; zmeny natívnej konfigurácie len vo vygenerovanom `ios/`.
+- `react-native-chart-kit` po zmazaní admin prehľadu nikto nepoužíva — odobrať
+  sa dá len so súhlasom (zmena závislostí).
 - `src/components/animated-icon.web.tsx` a `src/constants/theme.ts` majú
   zastubované importy CSS súborov, ktoré existujú → rozbité štýly na webe

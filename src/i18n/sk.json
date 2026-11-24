@@ -44,7 +44,7 @@
     "onboardingStep2Title": "Vytvor inzerát za minú",
     "onboardingStep2Text": "Pridaj fotky, cenu a lokalitu a zverejni ho hneď.",
     "onboardingStep3Title": "Dohodni sa bezpečne",
-    "onboardingStep3Text": "Bezpečný chat a odomknutie kontaktu ti dávajú kontrolu a dôveru.",
+    "onboardingStep3Text": "Kontakt sa ukáže až po odomknutí. Na odovzdanie si vyber verejné miesto.",
     "nextStep": "Ďalej",
     "categoriesLabel": "Kategórie",
     "swipeHint": "Potiahnite pre viac",
@@ -55,8 +55,7 @@
   "navigation": {
     "marketplace": "Ponuky",
     "create": "Pridať",
-    "profile": "Profil",
-    "admin": "Admin"
+    "profile": "Profil"
   },
   "create": {
     "title": "Nový inzerát",
@@ -79,7 +78,7 @@
     "contactInfoLabel": "Kontaktné údaje (skryté za 1 🪙)",
     "contactInfoPlaceholder": "Napr. Telefón, Telegram nick, email...",
     "contactInfoSub": "Údaj sa kupujúcemu odomkne po zaplatení 1 🪙.",
-    "secureChatTitle": "🔒 Aktivovaný bezpečný chat",
+    "secureChatTitle": "💬 Kontakt cez chat v appke",
     "secureChatSub": "Záujemcovia s vami zahája súkromnú konverzáciu v aplikácii Donx. Nemusíte vypĺňať žiadne osobné údaje.",
     "submitBtn": "Uverejniť inzerát",
     "submittingBtn": "Uverejňujem...",
@@ -117,7 +116,7 @@
     "attachGallery": "Galéria fotiek a videí",
     "attachFiles": "Súbory z pamäte mobilu",
     "cameraDenied": "Appka nemá prístup k fotoaparátu.",
-    "contactChat": "🔒 Súkromný čet",
+    "contactChat": "💬 Súkromný čet",
     "contactPhone": "Telefón / E-mail",
     "successRewarded": "Inzerát bol zverejnený. Pripísané +1 🪙"
   },
@@ -182,8 +181,7 @@
     "resolveBtn": "Vybavené",
     "resolveConfirm": "Označiť ako vybavené? Inzerát zmizne z nástenky.",
     "resolveRewarded": "Vybavené. Pripísané +5 🪙",
-    "resolveNoReward": "Vybavené. Dnešný limit odmien je vyčerpaný.",
-    "adminDashboardBtn": "Admin prehľad"
+    "resolveNoReward": "Vybavené. Dnešný limit odmien je vyčerpaný."
   },
   "listingCard": {
     "priceLabel": "Cena",
@@ -193,13 +191,13 @@
     "insufficientFundsTitle": "Nedostatok mincí",
     "insufficientFundsSub": "Na odomknutie kontaktu potrebuješ aspoň 1 🪙. Mince získaš denným bonusom.",
     "unlockConfirm": "Odomknúť tento kontakt za 1 🪙?",
-    "chatBtn": "Spustiť bezpečný chat",
+    "chatBtn": "Napísať správu",
     "unlockedLabel": "Kontakt odomknutý",
     "unlockedAnonLabel": "Anonym odomknutý",
     "shareMessage": "Pozri na tento inzerát na Donx: „{{title}}\" za {{price}}! Pridaj sa na Donx a dohodni sa."
   },
   "chat": {
-    "title": "Bezpečný čet - %s",
+    "title": "Chat - %s",
     "inputPlaceholder": "Napíšte správu...",
     "typing": "píše...",
     "emptyChat": "Zatiaľ žiadne správy. Začnite konverzáciu!",
@@ -210,20 +208,11 @@
     "videoAttachment": "🎥 Video",
     "securityBanner": "Ukážkový chat: odpovede sú automatické a nikam sa neodosielajú."
   },
-  "admin": {
-    "title": "Prehľad aplikácie",
-    "listings": "Inzeráty",
-    "topups": "Dobitia",
-    "categorySplit": "Rozloženie kategórií",
-    "activityMap": "Mapa aktivity používateľov",
-    "weeklyActivity": "Týždenná aktivita (počet akcií)",
-    "mapUnavailable": "Mapa nie je dostupná vo webovom zobrazení."
-  },
   "auth": {
     "loginTitle": "Prihlásenie",
     "registerTitle": "Vytvoriť účet",
     "useEmail": "Použiť e-mail alebo telefónne číslo",
-    "emailPlaceholder": "E-mail alebo telefón (Demo: admin)",
+    "emailPlaceholder": "E-mail alebo telefón",
     "passwordPlaceholder": "Heslo (Demo: hocičo)",
     "loginBtn": "Prihlásiť sa",
     "registerBtn": "Vytvoriť účet",

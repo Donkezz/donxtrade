@@ -320,7 +320,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, isUnlocked })
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.one, flexShrink: 1 }}>
                     <SymbolView
                       tintColor="#ffffff"
-                      name={{ ios: 'lock.bubble.fill' as any, android: 'chat' as any, web: 'chat' as any }}
+                      name={{ ios: 'bubble.left.fill', android: 'chat', web: 'chat' }}
                       size={12}
                     />
                     <ThemedText type="smallBold" style={{ color: '#ffffff', flexShrink: 1, textAlign: 'center' }}>

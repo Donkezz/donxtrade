@@ -44,7 +44,7 @@
     "onboardingStep2Title": "Hirdetés létrehozása perc alatt",
     "onboardingStep2Text": "Adjon hozzá fényképeket, árat és helyszínt, és tegye közzé azonnal.",
     "onboardingStep3Title": "Biztonságos egyeztetés",
-    "onboardingStep3Text": "A biztonságos csevegés és az elérhetőség feloldása kontrollt és bizalmat ad.",
+    "onboardingStep3Text": "Az elérhetőség csak feloldás után látszik. Az átadáshoz válassz nyilvános helyet.",
     "nextStep": "Tovább",
     "categoriesLabel": "Kategóriák",
     "swipeHint": "Húzz tovább",
@@ -55,8 +55,7 @@
   "navigation": {
     "marketplace": "Ajánlatok",
     "create": "Hozzáadás",
-    "profile": "Profil",
-    "admin": "Admin"
+    "profile": "Profil"
   },
   "create": {
     "title": "Új hirdetés",
@@ -79,7 +78,7 @@
     "contactInfoLabel": "Kapcsolattartási adatok (1 🪙 mögött)",
     "contactInfoPlaceholder": "pl. Telefon, Telegram, e-mail...",
     "contactInfoSub": "A vevő 1 🪙 kifizetése után látja meg.",
-    "secureChatTitle": "🔒 Biztonságos csevegés aktív",
+    "secureChatTitle": "💬 Kapcsolat az alkalmazáson belüli csevegésen",
     "secureChatSub": "Az érdeklődők privát csevegést indíthatnak Önnel a Donx alkalmazáson belül. Nem kell megadnia személyes adatait.",
     "submitBtn": "Hirdetés közzététele",
     "submittingBtn": "Közzététel...",
@@ -117,7 +116,7 @@
     "attachGallery": "Fotó- és videótár",
     "attachFiles": "Fájlok a telefonról",
     "cameraDenied": "Az alkalmazás nem fér hozzá a kamerához.",
-    "contactChat": "🔒 Privát chat",
+    "contactChat": "💬 Privát chat",
     "contactPhone": "Telefon / E-mail",
     "successRewarded": "Hirdetés közzétéve. Jóváírva: +1 🪙"
   },
@@ -182,8 +181,7 @@
     "resolveBtn": "Elintézve",
     "resolveConfirm": "Elintézettnek jelölöd? A hirdetés lekerül a faliújságról.",
     "resolveRewarded": "Elintézve. Jóváírva: +5 🪙",
-    "resolveNoReward": "Elintézve. A mai jutalomkeret elfogyott.",
-    "adminDashboardBtn": "Admin áttekintés"
+    "resolveNoReward": "Elintézve. A mai jutalomkeret elfogyott."
   },
   "listingCard": {
     "priceLabel": "Ár",
@@ -193,13 +191,13 @@
     "insufficientFundsTitle": "Nincs elég érme",
     "insufficientFundsSub": "A kapcsolat feloldásához legalább 1 🪙 kell. Érmét a napi bónuszból szerzel.",
     "unlockConfirm": "Feloldod ezt a kapcsolatot 1 🪙 ellenében?",
-    "chatBtn": "Biztonságos csevegés indítása",
+    "chatBtn": "Üzenet küldése",
     "unlockedLabel": "Kapcsolat feloldva",
     "unlockedAnonLabel": "Anonim feloldva",
     "shareMessage": "Nézd meg ezt a hirdetést a Donxon: „{{title}}” ennyiért: {{price}}! Csatlakozz a Donxhoz és egyezzetek meg."
   },
   "chat": {
-    "title": "Biztonságos csevegés - %s",
+    "title": "Csevegés - %s",
     "inputPlaceholder": "Írjon üzenetet...",
     "typing": "ír...",
     "emptyChat": "Még nincs üzenet. Kezdje el a beszélgetést!",
@@ -210,20 +208,11 @@
     "videoAttachment": "🎥 Videó",
     "securityBanner": "Demó chat: a válaszok automatikusak, és semmi sem kerül elküldésre."
   },
-  "admin": {
-    "title": "Alkalmazás áttekintése",
-    "listings": "Hirdetések",
-    "topups": "Feltöltések",
-    "categorySplit": "Kategóriák megoszlása",
-    "activityMap": "Felhasználói aktivitás térképe",
-    "weeklyActivity": "Heti aktivitás (műveletek száma)",
-    "mapUnavailable": "A térkép webes nézetben nem érhető el."
-  },
   "auth": {
     "loginTitle": "Bejelentkezés",
     "registerTitle": "Fiók létrehozása",
     "useEmail": "Használd az e-mail-címed vagy a telefonszámod",
-    "emailPlaceholder": "E-mail vagy telefon (Demo: admin)",
+    "emailPlaceholder": "E-mail vagy telefon",
     "passwordPlaceholder": "Jelszó (Demo: bármi)",
     "loginBtn": "Bejelentkezés",
     "registerBtn": "Fiók létrehozása",

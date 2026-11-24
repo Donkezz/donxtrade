@@ -44,7 +44,7 @@
     "onboardingStep2Title": "Anzeige in einer Minute",
     "onboardingStep2Text": "Füge Fotos, Preis und Ort hinzu und veröffentliche sie sofort.",
     "onboardingStep3Title": "Sicher abwickeln",
-    "onboardingStep3Text": "Sicherer Chat und das Freischalten von Kontakten geben dir Kontrolle und Vertrauen.",
+    "onboardingStep3Text": "Kontaktdaten erscheinen erst nach dem Freischalten. Wähle für die Übergabe einen öffentlichen Ort.",
     "nextStep": "Weiter",
     "categoriesLabel": "Kategorien",
     "swipeHint": "Wischen für mehr",
@@ -55,8 +55,7 @@
   "navigation": {
     "marketplace": "Angebote",
     "create": "Neu",
-    "profile": "Profil",
-    "admin": "Admin"
+    "profile": "Profil"
   },
   "create": {
     "title": "Neue Anzeige",
@@ -79,7 +78,7 @@
     "contactInfoLabel": "Kontaktdaten (versteckt hinter 1 🪙)",
     "contactInfoPlaceholder": "z. B. Telefon, Telegram, E-Mail...",
     "contactInfoSub": "Der Käufer schaltet sie nach Zahlung von 1 🪙 frei.",
-    "secureChatTitle": "🔒 Sicherer Chat aktiviert",
+    "secureChatTitle": "💬 Kontakt über den Chat in der App",
     "secureChatSub": "Interessenten starten ein privates Gespräch mit dir in der Donx-App. Du musst keine persönlichen Daten angeben.",
     "submitBtn": "Anzeige veröffentlichen",
     "submittingBtn": "Wird veröffentlicht...",
@@ -117,7 +116,7 @@
     "attachGallery": "Foto- und Videomediathek",
     "attachFiles": "Dateien auf diesem Handy",
     "cameraDenied": "Die App hat keinen Zugriff auf die Kamera.",
-    "contactChat": "🔒 Privater Chat",
+    "contactChat": "💬 Privater Chat",
     "contactPhone": "Telefon / E-Mail",
     "successRewarded": "Anzeige veröffentlicht. +1 🪙 gutgeschrieben"
   },
@@ -134,7 +133,7 @@
     "transactionsSection": "Transaktionsverlauf",
     "unlockedContactsSection": "Freigeschaltete Kontakte (%s)",
     "noUnlockedContacts": "Noch keine freigeschalteten Kontakte. Einer kostet 1 🪙.",
-    "activeChatsSection": "Aktive sichere Chats (%s)",
+    "activeChatsSection": "Aktive Chats (%s)",
     "noActiveChats": "Noch keine aktiven Chats. Schalte eine Anzeige mit Chat frei, um zu schreiben.",
     "settingsSection": "App-Einstellungen",
     "languageLabel": "App-Sprache",
@@ -182,8 +181,7 @@
     "resolveBtn": "Erledigt",
     "resolveConfirm": "Als erledigt markieren? Die Anzeige verschwindet von der Pinnwand.",
     "resolveRewarded": "Erledigt. +5 🪙 gutgeschrieben",
-    "resolveNoReward": "Erledigt. Das heutige Belohnungslimit ist ausgeschöpft.",
-    "adminDashboardBtn": "Admin-Übersicht"
+    "resolveNoReward": "Erledigt. Das heutige Belohnungslimit ist ausgeschöpft."
   },
   "listingCard": {
     "priceLabel": "Preis",
@@ -193,13 +191,13 @@
     "insufficientFundsTitle": "Nicht genug Münzen",
     "insufficientFundsSub": "Zum Freischalten brauchst du mindestens 1 🪙. Münzen bekommst du über den Tagesbonus.",
     "unlockConfirm": "Diesen Kontakt für 1 🪙 freischalten?",
-    "chatBtn": "Sicheren Chat starten",
+    "chatBtn": "Nachricht schreiben",
     "unlockedLabel": "Kontakt freigeschaltet",
     "unlockedAnonLabel": "Anonym freigeschaltet",
     "shareMessage": "Schau dir diese Anzeige auf Donx an: „{{title}}“ für {{price}}! Komm zu Donx und werde handelseinig."
   },
   "chat": {
-    "title": "Sicherer Chat - %s",
+    "title": "Chat - %s",
     "inputPlaceholder": "Nachricht schreiben...",
     "typing": "schreibt...",
     "emptyChat": "Noch keine Nachrichten. Starte das Gespräch!",
@@ -210,20 +208,11 @@
     "videoAttachment": "🎥 Video",
     "securityBanner": "Demo-Chat: Antworten sind automatisch, nichts wird irgendwohin gesendet."
   },
-  "admin": {
-    "title": "App-Übersicht",
-    "listings": "Anzeigen",
-    "topups": "Aufladungen",
-    "categorySplit": "Verteilung der Kategorien",
-    "activityMap": "Karte der Nutzeraktivität",
-    "weeklyActivity": "Wochenaktivität (Anzahl Aktionen)",
-    "mapUnavailable": "Die Karte ist in der Webansicht nicht verfügbar."
-  },
   "auth": {
     "loginTitle": "Anmeldung",
     "registerTitle": "Konto erstellen",
     "useEmail": "E-Mail oder Telefonnummer verwenden",
-    "emailPlaceholder": "E-Mail oder Telefon (Demo: admin)",
+    "emailPlaceholder": "E-Mail oder Telefon",
     "passwordPlaceholder": "Passwort (Demo: beliebig)",
     "loginBtn": "Anmelden",
     "registerBtn": "Konto erstellen",
